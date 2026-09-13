@@ -1,0 +1,999 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LawBuddy AI | Your AI Legal Assistant</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+   
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            color: #122b55;
+            background: #ffffff;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button {
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .container {
+            width: min(1180px, 90%);
+            margin: auto;
+        }
+
+        /* =========================
+           2. NAVIGATION BAR
+        ========================= */
+
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid #e5edf7;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            min-height: 82px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: #12376d;
+            border-radius: 12px;
+            color: white;
+            display: grid;
+            place-items: center;
+            font-size: 27px;
+        }
+
+        .logo h2 {
+            font-size: 23px;
+            line-height: 1.2;
+            color: #102b55;
+        }
+
+        .logo h2 span {
+            color: #2374e8;
+        }
+
+        .logo small {
+            display: block;
+            font-size: 11px;
+            color: #657898;
+            letter-spacing: 0.8px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .nav-links a {
+            color: #18345e;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #1769db;
+        }
+
+        .nav-button,
+        .primary-button {
+            background: #176de5;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 13px 25px;
+            font-weight: 600;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .nav-button:hover,
+        .primary-button:hover {
+            background: #0c56bf;
+            transform: translateY(-2px);
+        }
+
+        /* =========================
+           3. HERO SECTION
+        ========================= */
+
+        .hero {
+            background: linear-gradient(135deg, #f1f7ff, #e5f2ff);
+            padding: 85px 0 75px;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            align-items: center;
+            gap: 55px;
+        }
+
+        .hero-text h1 {
+            font-size: clamp(36px, 4vw, 58px);
+            line-height: 1.15;
+            letter-spacing: -2px;
+            margin-bottom: 25px;
+        }
+
+        .hero-text h1 span {
+            color: #176de5;
+        }
+
+        .hero-text p {
+            color: #50678c;
+            font-size: 16px;
+            max-width: 540px;
+            margin-bottom: 30px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .secondary-button {
+            background: transparent;
+            color: #176de5;
+            border: 1px solid #176de5;
+            border-radius: 30px;
+            padding: 12px 25px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .secondary-button:hover {
+            background: #dcecff;
+        }
+
+        .hero-visual {
+            position: relative;
+            min-height: 360px;
+            display: grid;
+            place-items: center;
+        }
+
+        .document-card {
+            background: white;
+            width: 85%;
+            padding: 28px;
+            border-radius: 16px;
+            box-shadow: 0 20px 55px rgba(35, 87, 145, 0.13);
+            transform: rotate(-4deg);
+            position: relative;
+            z-index: 1;
+        }
+
+        .document-card h3 {
+            font-size: 21px;
+            margin-bottom: 20px;
+        }
+
+        .document-line {
+            height: 9px;
+            background: #e4ebf5;
+            border-radius: 10px;
+            margin: 13px 0;
+        }
+
+        .document-line.short {
+            width: 65%;
+        }
+
+        .important-clause {
+            background: #fff0c7;
+            color: #956300;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+
+        .ai-card {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 245px;
+            background: white;
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 15px 40px rgba(35, 87, 145, 0.16);
+            z-index: 2;
+        }
+
+        .ai-card h4 {
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .ai-card p {
+            color: #536b91;
+            font-size: 13px;
+            margin: 9px 0;
+        }
+
+        .check {
+            color: #159b73;
+            font-weight: bold;
+            margin-right: 7px;
+        }
+
+        .language-bubble {
+            position: absolute;
+            background: #d4ebff;
+            color: #176de5;
+            padding: 13px 20px;
+            border-radius: 14px;
+            font-size: 18px;
+            font-weight: 700;
+            top: 10px;
+            right: 20px;
+        }
+
+        /* =========================
+           4. FEATURES
+        ========================= */
+
+        .features {
+            padding: 65px 0;
+            background: #ffffff;
+        }
+
+        .section-heading {
+            text-align: center;
+            max-width: 650px;
+            margin: 0 auto 45px;
+        }
+
+        .section-heading h2 {
+            font-size: 34px;
+            line-height: 1.25;
+            margin-bottom: 12px;
+        }
+
+        .section-heading p {
+            color: #627493;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+        }
+
+        .feature-card {
+            padding: 28px;
+            border: 1px solid #e1eaf5;
+            border-radius: 16px;
+            background: white;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(35, 87, 145, 0.08);
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            display: grid;
+            place-items: center;
+            border-radius: 13px;
+            background: #eaf3ff;
+            font-size: 25px;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 17px;
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            color: #627493;
+            font-size: 14px;
+        }
+
+        /* =========================
+           5. LANGUAGE SECTION
+        ========================= */
+
+        .languages {
+            padding: 60px 0;
+            background: #eef7ff;
+        }
+
+        .language-section {
+            display: grid;
+            grid-template-columns: 0.8fr 1.2fr;
+            align-items: center;
+            gap: 45px;
+        }
+
+        .language-text h2 {
+            font-size: 35px;
+            line-height: 1.25;
+            margin-bottom: 15px;
+        }
+
+        .language-text h2 span {
+            color: #176de5;
+        }
+
+        .language-text p {
+            color: #5d7393;
+            font-size: 15px;
+        }
+
+        .language-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 13px;
+        }
+
+        .language-card {
+            background: white;
+            border: 1px solid #dfebf8;
+            border-radius: 12px;
+            padding: 15px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #24446f;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .language-card:hover {
+            transform: translateY(-3px);
+            border-color: #176de5;
+        }
+
+        .language-symbol {
+            width: 30px;
+            height: 30px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: #e8f2ff;
+            color: #176de5;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        /* =========================
+           6. HOW IT WORKS
+        ========================= */
+
+        .how-it-works {
+            padding: 70px 0;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+        }
+
+        .step {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 18px;
+            border-radius: 50%;
+            background: #176de5;
+            color: white;
+            display: grid;
+            place-items: center;
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .step h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .step p {
+            color: #657898;
+            font-size: 14px;
+        }
+
+        /* =========================
+           7. CTA SECTION
+        ========================= */
+
+        .cta {
+            background: #12376d;
+            color: white;
+            padding: 65px 20px;
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: 34px;
+            line-height: 1.3;
+            margin-bottom: 15px;
+        }
+
+        .cta p {
+            color: #c5d8f4;
+            max-width: 620px;
+            margin: 0 auto 28px;
+        }
+
+        .cta .primary-button {
+            background: white;
+            color: #12376d;
+        }
+
+        .cta .primary-button:hover {
+            background: #e6f0ff;
+        }
+
+        /* =========================
+           8. FOOTER
+        ========================= */
+
+        footer {
+            background: #0b254c;
+            color: #d2e0f4;
+            padding: 28px 0;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .disclaimer {
+            max-width: 700px;
+            margin: 10px auto 0;
+            color: #91acd0;
+            font-size: 12px;
+        }
+
+        /* =========================
+           9. RESPONSIVE DESIGN
+        ========================= */
+
+        @media (max-width: 900px) {
+            .nav-links {
+                gap: 15px;
+            }
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-text p {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .hero-visual {
+                max-width: 550px;
+                width: 100%;
+                margin: auto;
+            }
+
+            .feature-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .language-section {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .language-grid {
+                max-width: 650px;
+                width: 100%;
+                margin: auto;
+            }
+
+            .steps {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .nav-container {
+                min-height: 70px;
+            }
+
+            .logo h2 {
+                font-size: 19px;
+            }
+
+            .logo-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .nav-button {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+
+            .hero {
+                padding: 55px 0;
+            }
+
+            .hero-text h1 {
+                font-size: 36px;
+                letter-spacing: -1px;
+            }
+
+            .hero-visual {
+                min-height: 290px;
+            }
+
+            .document-card {
+                width: 95%;
+                padding: 20px;
+            }
+
+            .ai-card {
+                width: 210px;
+                padding: 16px;
+            }
+
+            .language-bubble {
+                font-size: 14px;
+                padding: 9px 13px;
+                right: 0;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .language-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .language-card {
+                font-size: 12px;
+                padding: 12px 5px;
+            }
+
+            .section-heading h2,
+            .language-text h2,
+            .cta h2 {
+                font-size: 28px;
+            }
+
+            .steps {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================
+         NAVIGATION
+    ========================= -->
+
+    <header class="navbar">
+        <div class="container nav-container">
+
+            <a href="#" class="logo">
+                <div class="logo-icon">⚖</div>
+
+                <div>
+                    <h2>LawBuddy <span>AI</span></h2>
+                    <small>Understand • Compare • Navigate</small>
+                </div>
+            </a>
+
+            <nav class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#languages">Languages</a>
+            </nav>
+
+            <a href="#get-started" class="nav-button">
+                Get Started →
+            </a>
+
+        </div>
+    </header>
+
+
+    <!-- =========================
+         HERO
+    ========================= -->
+
+    <main>
+
+        <section class="hero" id="home">
+            <div class="container hero-content">
+
+                <div class="hero-text">
+
+                    <h1>
+                        Your AI Legal Assistant
+                        <br>
+                        <span>In Your Language</span>
+                    </h1>
+
+                    <p>
+                        Understand, compare, and navigate legal documents
+                        with the power of Generative AI. Get simple explanations,
+                        discover important clauses, identify potential risks,
+                        and prepare your next steps — all in your preferred language.
+                    </p>
+
+                    <div class="hero-buttons">
+                        <a href="#get-started" class="primary-button">
+                            Get Started →
+                        </a>
+
+                        <a href="#features" class="secondary-button">
+                            Explore Features
+                        </a>
+                    </div>
+
+                </div>
+
+                <div class="hero-visual">
+
+                    
+
+                    <div class="document-card">
+
+                        <h3>Legal Document</h3>
+
+                        <div class="document-line"></div>
+                        <div class="document-line"></div>
+                        <div class="document-line short"></div>
+
+                        <div class="important-clause">
+                            ⚠ Important Clause
+                        </div>
+
+                        <div class="document-line"></div>
+                        <div class="document-line"></div>
+                        <div class="document-line short"></div>
+                        <div class="document-line"></div>
+
+                    </div>
+
+                    <!---AI Explanaton-->
+
+                    <div class="ai-card">
+                        <h4>AI Explanation</h4>
+
+                        <p>
+                            <span class="check">✓</span>
+                            Key points
+                        </p>
+
+                        <p>
+                            <span class="check">✓</span>
+                            Potential risks
+                        </p>
+
+                        <p>
+                            <span class="check">✓</span>
+                            Next steps
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- =========================
+             FEATURES
+        ========================= -->
+
+        <section class="features" id="features">
+
+            <div class="container">
+
+                <div class="section-heading">
+                    <h2>Everything You Need to Understand Legal Documents</h2>
+
+                    <p>
+                        Powerful AI assistance that makes complex legal
+                        information easier to understand and navigate.
+                    </p>
+                </div>
+
+                <div class="feature-grid">
+
+                    <article class="feature-card">
+                        <div class="feature-icon">📄</div>
+                        <h3>Simplify Legal Documents</h3>
+                        <p>
+                            Convert complex legal language into simple,
+                            understandable explanations.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">📑</div>
+                        <h3>Compare Agreements</h3>
+                        <p>
+                            Compare two contracts and understand important
+                            changes, additions, and removals.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">⚠️</div>
+                        <h3>Highlight Risks & Clauses</h3>
+                        <p>
+                            Identify important obligations, penalties,
+                            deadlines, and clauses that deserve attention.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">💬</div>
+                        <h3>Ask Questions</h3>
+                        <p>
+                            Ask questions about your uploaded documents
+                            and receive answers with source references.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">📋</div>
+                        <h3>Next Steps & Checklists</h3>
+                        <p>
+                            Generate useful checklists and questions to
+                            prepare for discussions with a lawyer.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Privacy-Focused</h3>
+                        <p>
+                            Protect sensitive documents with secure handling
+                            and clear privacy controls.
+                        </p>
+                    </article>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             LANGUAGES
+        ========================= -->
+
+        <section class="languages" id="languages">
+
+            <div class="container language-section">
+
+                <div class="language-text">
+
+                    <h2>
+                        Legal Assistance
+                        <br>
+                        <span>In Your Language</span>
+                    </h2>
+
+                    <p>
+                        Understand legal information in the language
+                        you are most comfortable with.
+                    </p>
+
+                    <p style="margin-top: 12px;">
+                        Our multilingual vision makes legal information
+                        more accessible to people across India.
+                    </p>
+
+                </div>
+
+                <div class="language-grid">
+
+                    <div class="language-card">
+                        <span class="language-symbol">ಕ</span>
+                        Kannada
+                    </div>
+
+                    <div class="language-card">
+                        <span class="language-symbol">A</span>
+                        English
+                    </div>
+
+                    <div class="language-card">
+                        <span class="language-symbol">अ</span>
+                        Hindi
+                    </div>
+
+                    <div class="language-card">
+                        <span class="language-symbol">മ</span>
+                        Malayalam
+                    </div>
+
+                    <div class="language-card">
+                        <span class="language-symbol">త</span>
+                        Telugu
+                    </div>
+
+                    <div class="language-card">
+                        <span class="language-symbol">த</span>
+                        Tamil
+                    </div>
+
+                    <div class="language-card">
+                        <span class="language-symbol">म</span>
+                        Marathi
+                    </div>
+
+                    <div class="language-card">
+                        <span class="language-symbol">ગુ</span>
+                        Gujarati
+                    </div>
+
+                    <div class="language-card">
+                        <span class="language-symbol">ব</span>
+                        Bengali
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <section class="how-it-works" id="how-it-works">
+
+            <div class="container">
+
+                <div class="section-heading">
+                    <h2>How LawBuddy AI Works</h2>
+
+                    <p>
+                        Understand your legal documents in four simple steps.
+                    </p>
+                </div>
+
+                <div class="steps">
+
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h3>Upload Document</h3>
+                        <p>
+                            Upload a PDF or paste legal document text.
+                        </p>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h3>Choose Language</h3>
+                        <p>
+                            Select English, Kannada, Hindi, or another
+                            supported language.
+                        </p>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h3>Ask the AI</h3>
+                        <p>
+                            Get explanations, comparisons, and
+                            important clause highlights.
+                        </p>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <h3>Understand & Act</h3>
+                        <p>
+                            Receive a checklist and prepare questions
+                            for a legal professional.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="cta" id="get-started">
+
+            <h2>Understand Your Legal Documents Better</h2>
+
+            <p>
+                Get accessible legal information powered by Generative AI.
+                Explore your documents in the language you understand best.
+            </p>
+
+            <a href="signup.html" class="primary-button">
+                Start Exploring →
+            </a>
+
+        </section>
+
+    </main>
+
+
+
+    <footer>
+
+        <p>© 2026 LawBuddy AI. All rights reserved.</p>
+
+        <p class="disclaimer">
+            LawBuddy AI provides informational assistance and does not
+            replace professional legal advice.
+        </p>
+
+    </footer>
+
+</body>
+</html>
