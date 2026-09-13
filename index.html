@@ -387,7 +387,13 @@
             font-weight: 600;
             font-size: 14px;
             color: #24446f;
+            cursor: pointer;
             transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .language-card.active {
+            border-color: #176de5;
+            box-shadow: 0 8px 18px rgba(23, 109, 229, 0.12);
         }
 
         .language-card:hover {
@@ -624,6 +630,33 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .language-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.language-selector label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #18345e;
+}
+
+.language-selector select {
+    padding: 10px 12px;
+    border: 1px solid #d7e2f0;
+    border-radius: 8px;
+    background: white;
+    color: #18345e;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+}
+
+.language-selector select:focus {
+    border-color: #176de5;
+}
     </style>
 </head>
 
@@ -641,22 +674,36 @@
 
                 <div>
                     <h2>LawBuddy <span>AI</span></h2>
-                    <small>Understand • Compare • Navigate</small>
+                    <small data-i18n="tagline">Understand • Compare • Navigate</small>
                 </div>
             </a>
 
             <nav class="nav-links">
-                <a href="#home">Home</a>
-                <a href="#features">Features</a>
-                <a href="#how-it-works">How It Works</a>
-                <a href="#languages">Languages</a>
+                <a href="#home" data-i18n="home">Home</a>
+                <a href="#features" data-i18n="features">Features</a>
+                <a href="#how-it-works" data-i18n="howItWorks">How It Works</a>
             </nav>
 
-            <a href="#get-started" class="nav-button">
-                Get Started →
-            </a>
+            <div class="language-selector">
+                <label for="languageSelect" data-i18n="langLabel">Language</label>
 
-        </div>
+                <select id="languageSelect">
+                    <option value="en">English</option>
+                    <option value="kn">ಕನ್ನಡ</option>
+                    <option value="hi">हिन्दी</option>
+                    <option value="ml">മലയാളം</option>
+                    <option value="te">తెలుగు</option>
+                    <option value="tulu">ತುಳು</option>
+                    <option value="mr">मराठी</option>
+                    <option value="gu">ગુજરાતી</option>
+                    <option value="bn">বাংলা</option>
+                    <option value="ta">தமிழ்</option>
+                </select>
+            </div>
+            <a href="signup.html" class="nav-button" id="continueButton" data-i18n="continue">
+                Continue →
+            </a>
+  </div>
     </header>
 
 
@@ -668,80 +715,48 @@
 
         <section class="hero" id="home">
             <div class="container hero-content">
-
                 <div class="hero-text">
-
                     <h1>
-                        Your AI Legal Assistant
+                        <span data-i18n="heroTitle">Your AI Legal Assistant</span>
                         <br>
-                        <span>In Your Language</span>
+                        <span data-i18n="heroHighlight">In Your Language</span>
                     </h1>
 
-                    <p>
+                    <p data-i18n="heroDescription">
                         Understand, compare, and navigate legal documents
-                        with the power of Generative AI. Get simple explanations,
-                        discover important clauses, identify potential risks,
-                        and prepare your next steps — all in your preferred language.
+                        with the power of Generative AI.
                     </p>
 
                     <div class="hero-buttons">
-                        <a href="#get-started" class="primary-button">
+                        <a href="signup.html" class="primary-button" data-i18n="getStarted">
                             Get Started →
                         </a>
-
-                        <a href="#features" class="secondary-button">
+                        <a href="#features" class="secondary-button" data-i18n="exploreFeatures">
                             Explore Features
                         </a>
                     </div>
-
                 </div>
 
                 <div class="hero-visual">
-
-                    
-
                     <div class="document-card">
-
-                        <h3>Legal Document</h3>
-
+                        <h3 data-i18n="docTitle">Legal Document</h3>
                         <div class="document-line"></div>
                         <div class="document-line"></div>
                         <div class="document-line short"></div>
-
-                        <div class="important-clause">
-                            ⚠ Important Clause
-                        </div>
-
+                        <div class="important-clause" data-i18n="importantClause">⚠ Important Clause</div>
                         <div class="document-line"></div>
                         <div class="document-line"></div>
                         <div class="document-line short"></div>
                         <div class="document-line"></div>
-
                     </div>
-
-                    <!---AI Explanaton-->
 
                     <div class="ai-card">
-                        <h4>AI Explanation</h4>
-
-                        <p>
-                            <span class="check">✓</span>
-                            Key points
-                        </p>
-
-                        <p>
-                            <span class="check">✓</span>
-                            Potential risks
-                        </p>
-
-                        <p>
-                            <span class="check">✓</span>
-                            Next steps
-                        </p>
+                        <h4 data-i18n="aiExplanation">AI Explanation</h4>
+                        <p><span class="check">✓</span> <span data-i18n="keyPoints">Key points</span></p>
+                        <p><span class="check">✓</span> <span data-i18n="potentialRisks">Potential risks</span></p>
+                        <p><span class="check">✓</span> <span data-i18n="nextSteps">Next steps</span></p>
                     </div>
-
                 </div>
-
             </div>
         </section>
 
@@ -755,20 +770,18 @@
             <div class="container">
 
                 <div class="section-heading">
-                    <h2>Everything You Need to Understand Legal Documents</h2>
-
-                    <p>
+                    <h2 data-i18n="featuresTitle">Everything You Need to Understand Legal Documents</h2>
+                    <p data-i18n="featuresDescription">
                         Powerful AI assistance that makes complex legal
                         information easier to understand and navigate.
                     </p>
                 </div>
 
                 <div class="feature-grid">
-
                     <article class="feature-card">
                         <div class="feature-icon">📄</div>
-                        <h3>Simplify Legal Documents</h3>
-                        <p>
+                        <h3 data-i18n="simplify">Simplify Legal Documents</h3>
+                        <p data-i18n="simplifyDesc">
                             Convert complex legal language into simple,
                             understandable explanations.
                         </p>
@@ -776,8 +789,8 @@
 
                     <article class="feature-card">
                         <div class="feature-icon">📑</div>
-                        <h3>Compare Agreements</h3>
-                        <p>
+                        <h3 data-i18n="compare">Compare Agreements</h3>
+                        <p data-i18n="compareDesc">
                             Compare two contracts and understand important
                             changes, additions, and removals.
                         </p>
@@ -785,8 +798,8 @@
 
                     <article class="feature-card">
                         <div class="feature-icon">⚠️</div>
-                        <h3>Highlight Risks & Clauses</h3>
-                        <p>
+                        <h3 data-i18n="risks">Highlight Risks & Clauses</h3>
+                        <p data-i18n="risksDesc">
                             Identify important obligations, penalties,
                             deadlines, and clauses that deserve attention.
                         </p>
@@ -794,8 +807,8 @@
 
                     <article class="feature-card">
                         <div class="feature-icon">💬</div>
-                        <h3>Ask Questions</h3>
-                        <p>
+                        <h3 data-i18n="askQuestions">Ask Questions</h3>
+                        <p data-i18n="askQuestionsDesc">
                             Ask questions about your uploaded documents
                             and receive answers with source references.
                         </p>
@@ -803,8 +816,8 @@
 
                     <article class="feature-card">
                         <div class="feature-icon">📋</div>
-                        <h3>Next Steps & Checklists</h3>
-                        <p>
+                        <h3 data-i18n="checklist">Next Steps & Checklists</h3>
+                        <p data-i18n="checklistDesc">
                             Generate useful checklists and questions to
                             prepare for discussions with a lawyer.
                         </p>
@@ -812,13 +825,12 @@
 
                     <article class="feature-card">
                         <div class="feature-icon">🔒</div>
-                        <h3>Privacy-Focused</h3>
-                        <p>
+                        <h3 data-i18n="privacy">Privacy-Focused</h3>
+                        <p data-i18n="privacyDesc">
                             Protect sensitive documents with secure handling
                             and clear privacy controls.
                         </p>
                     </article>
-
                 </div>
 
             </div>
@@ -837,17 +849,17 @@
                 <div class="language-text">
 
                     <h2>
-                        Legal Assistance
+                        <span data-i18n="languageTitle">Legal Assistance</span>
                         <br>
-                        <span>In Your Language</span>
+                        <span data-i18n="languageTitleHighlight">In Your Language</span>
                     </h2>
 
-                    <p>
+                    <p data-i18n="languageDescription">
                         Understand legal information in the language
                         you are most comfortable with.
                     </p>
 
-                    <p style="margin-top: 12px;">
+                    <p style="margin-top: 12px;" data-i18n="languageDescription2">
                         Our multilingual vision makes legal information
                         more accessible to people across India.
                     </p>
@@ -856,49 +868,54 @@
 
                 <div class="language-grid">
 
-                    <div class="language-card">
+                    <div class="language-card" data-lang="kn">
                         <span class="language-symbol">ಕ</span>
                         Kannada
                     </div>
 
-                    <div class="language-card">
+                    <div class="language-card" data-lang="en">
                         <span class="language-symbol">A</span>
                         English
                     </div>
 
-                    <div class="language-card">
+                    <div class="language-card" data-lang="hi">
                         <span class="language-symbol">अ</span>
                         Hindi
                     </div>
 
-                    <div class="language-card">
+                    <div class="language-card" data-lang="ml">
                         <span class="language-symbol">മ</span>
                         Malayalam
                     </div>
 
-                    <div class="language-card">
+                    <div class="language-card" data-lang="te">
                         <span class="language-symbol">త</span>
                         Telugu
                     </div>
 
-                    <div class="language-card">
-                        <span class="language-symbol">த</span>
-                        Tamil
+                    <div class="language-card" data-lang="tulu">
+                        <span class="language-symbol">ತು</span>
+                        Tulu
                     </div>
 
-                    <div class="language-card">
+                    <div class="language-card" data-lang="mr">
                         <span class="language-symbol">म</span>
                         Marathi
                     </div>
 
-                    <div class="language-card">
+                    <div class="language-card" data-lang="gu">
                         <span class="language-symbol">ગુ</span>
                         Gujarati
                     </div>
 
-                    <div class="language-card">
+                    <div class="language-card" data-lang="bn">
                         <span class="language-symbol">ব</span>
                         Bengali
+                    </div>
+
+                    <div class="language-card" data-lang="ta">
+                        <span class="language-symbol">த</span>
+                        Tamil
                     </div>
 
                 </div>
@@ -914,27 +931,25 @@
             <div class="container">
 
                 <div class="section-heading">
-                    <h2>How LawBuddy AI Works</h2>
-
-                    <p>
+                    <h2 data-i18n="howTitle">How LawBuddy AI Works</h2>
+                    <p data-i18n="howDescription">
                         Understand your legal documents in four simple steps.
                     </p>
                 </div>
 
                 <div class="steps">
-
                     <div class="step">
                         <div class="step-number">1</div>
-                        <h3>Upload Document</h3>
-                        <p>
+                        <h3 data-i18n="upload">Upload Document</h3>
+                        <p data-i18n="uploadDesc">
                             Upload a PDF or paste legal document text.
                         </p>
                     </div>
 
                     <div class="step">
                         <div class="step-number">2</div>
-                        <h3>Choose Language</h3>
-                        <p>
+                        <h3 data-i18n="chooseLanguage">Choose Language</h3>
+                        <p data-i18n="chooseLanguageDesc">
                             Select English, Kannada, Hindi, or another
                             supported language.
                         </p>
@@ -942,8 +957,8 @@
 
                     <div class="step">
                         <div class="step-number">3</div>
-                        <h3>Ask the AI</h3>
-                        <p>
+                        <h3 data-i18n="askAI">Ask the AI</h3>
+                        <p data-i18n="askAIDesc">
                             Get explanations, comparisons, and
                             important clause highlights.
                         </p>
@@ -951,13 +966,12 @@
 
                     <div class="step">
                         <div class="step-number">4</div>
-                        <h3>Understand & Act</h3>
-                        <p>
+                        <h3 data-i18n="understand">Understand & Act</h3>
+                        <p data-i18n="understandDesc">
                             Receive a checklist and prepare questions
                             for a legal professional.
                         </p>
                     </div>
-
                 </div>
 
             </div>
@@ -967,14 +981,14 @@
 
         <section class="cta" id="get-started">
 
-            <h2>Understand Your Legal Documents Better</h2>
+            <h2 data-i18n="ctaTitle">Understand Your Legal Documents Better</h2>
 
-            <p>
+            <p data-i18n="ctaDescription">
                 Get accessible legal information powered by Generative AI.
                 Explore your documents in the language you understand best.
             </p>
 
-            <a href="signup.html" class="primary-button">
+            <a href="signup.html" class="primary-button" data-i18n="startExploring">
                 Start Exploring →
             </a>
 
@@ -986,14 +1000,611 @@
 
     <footer>
 
-        <p>© 2026 LawBuddy AI. All rights reserved.</p>
+        <p data-i18n="footerRights">© 2026 LawBuddy AI. All rights reserved.</p>
 
-        <p class="disclaimer">
+        <p class="disclaimer" data-i18n="disclaimer">
             LawBuddy AI provides informational assistance and does not
             replace professional legal advice.
         </p>
 
     </footer>
+
+
+    <script>
+const translations = {
+    en: {
+        tagline: "Understand • Compare • Navigate",
+        langLabel: "Language",
+        continue: "Continue →",
+        home: "Home",
+        features: "Features",
+        howItWorks: "How It Works",
+        heroTitle: "Your AI Legal Assistant",
+        heroHighlight: "In Your Language",
+        heroDescription: "Understand, compare, and navigate legal documents with the power of Generative AI.",
+        getStarted: "Get Started →",
+        exploreFeatures: "Explore Features",
+        docTitle: "Legal Document",
+        importantClause: "⚠ Important Clause",
+        aiExplanation: "AI Explanation",
+        keyPoints: "Key points",
+        potentialRisks: "Potential risks",
+        nextSteps: "Next steps",
+        featuresTitle: "Everything You Need to Understand Legal Documents",
+        featuresDescription: "Powerful AI assistance that makes complex legal information easier to understand and navigate.",
+        simplify: "Simplify Legal Documents",
+        simplifyDesc: "Convert complex legal language into simple, understandable explanations.",
+        compare: "Compare Agreements",
+        compareDesc: "Compare two contracts and understand important changes, additions, and removals.",
+        risks: "Highlight Risks & Clauses",
+        risksDesc: "Identify important obligations, penalties, deadlines, and clauses that deserve attention.",
+        askQuestions: "Ask Questions",
+        askQuestionsDesc: "Ask questions about your uploaded documents and receive answers with source references.",
+        checklist: "Next Steps & Checklists",
+        checklistDesc: "Generate useful checklists and questions to prepare for discussions with a lawyer.",
+        privacy: "Privacy-Focused",
+        privacyDesc: "Protect sensitive documents with secure handling and clear privacy controls.",
+        languageTitle: "Legal Assistance",
+        languageTitleHighlight: "In Your Language",
+        languageDescription: "Understand legal information in the language you are most comfortable with.",
+        languageDescription2: "Our multilingual vision makes legal information more accessible to people across India.",
+        howTitle: "How LawBuddy AI Works",
+        howDescription: "Understand your legal documents in four simple steps.",
+        upload: "Upload Document",
+        uploadDesc: "Upload a PDF or paste legal document text.",
+        chooseLanguage: "Choose Language",
+        chooseLanguageDesc: "Select English, Kannada, Hindi, or another supported language.",
+        askAI: "Ask the AI",
+        askAIDesc: "Get explanations, comparisons, and important clause highlights.",
+        understand: "Understand & Act",
+        understandDesc: "Receive a checklist and prepare questions for a legal professional.",
+        ctaTitle: "Understand Your Legal Documents Better",
+        ctaDescription: "Get accessible legal information powered by Generative AI. Explore your documents in the language you understand best.",
+        startExploring: "Start Exploring →",
+        footerRights: "© 2026 LawBuddy AI. All rights reserved.",
+        disclaimer: "LawBuddy AI provides informational assistance and does not replace professional legal advice."
+    },
+
+    kn: {
+        tagline: "ಅರ್ಥಮಾಡಿ • ಹೋಲಿಸಿ • ಮುಂದುವರಿಸಿ",
+        langLabel: "ಭಾಷೆ",
+        continue: "ಮುಂದುವರಿಸಿ →",
+        home: "ಮುಖಪುಟ",
+        features: "ವೈಶಿಷ್ಟ್ಯಗಳು",
+        howItWorks: "ಇದು ಹೇಗೆ ಕೆಲಸ ಮಾಡುತ್ತದೆ",
+        heroTitle: "ನಿಮ್ಮ AI ಕಾನೂನು ಸಹಾಯಕ",
+        heroHighlight: "ನಿಮ್ಮ ಭಾಷೆಯಲ್ಲಿ",
+        heroDescription: "ಜನರೇಟಿವ್ AI ಸಹಾಯದಿಂದ ಕಾನೂನು ದಾಖಲೆಗಳನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ, ಹೋಲಿಕೆ ಮಾಡಿ ಮತ್ತು ಮುಂದಿನ ಹಂತಗಳನ್ನು ತಿಳಿಯಿರಿ.",
+        getStarted: "ಪ್ರಾರಂಭಿಸಿ →",
+        exploreFeatures: "ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ನೋಡಿ",
+        docTitle: "ಕಾನೂನು ದಾಖಲೆ",
+        importantClause: "⚠ ಪ್ರಮುಖ ನಿಯಮ",
+        aiExplanation: "AI ವಿವರಣೆ",
+        keyPoints: "ಪ್ರಮುಖ ಅಂಶಗಳು",
+        potentialRisks: "ಸಂಭಾವ್ಯ ಅಪಾಯಗಳು",
+        nextSteps: "ಮುಂದಿನ ಹಂತಗಳು",
+        featuresTitle: "ಕಾನೂನು ದಾಖಲೆಗಳನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಲು ಬೇಕಾದ ಎಲ್ಲವೂ",
+        featuresDescription: "ಸಂಕೀರ್ಣ ಕಾನೂನು ಮಾಹಿತಿಯನ್ನು ಸುಲಭವಾಗಿ ಅರ್ಥಮಾಡಿಕೊಳ್ಳಲು AI ಸಹಾಯ.",
+        simplify: "ಕಾನೂನು ದಾಖಲೆಗಳನ್ನು ಸರಳಗೊಳಿಸಿ",
+        simplifyDesc: "ಸಂಕೀರ್ಣ ಕಾನೂನು ಭಾಷೆಯನ್ನು ಸರಳ, ಅರ್ಥವಾಗುವ ವಿವರಣೆಗಳಾಗಿ ಪರಿವರ್ತಿಸಿ.",
+        compare: "ಒಪ್ಪಂದಗಳನ್ನು ಹೋಲಿಸಿ",
+        compareDesc: "ಎರಡು ಒಪ್ಪಂದಗಳನ್ನು ಹೋಲಿಸಿ ಮತ್ತು ಪ್ರಮುಖ ಬದಲಾವಣೆಗಳನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ.",
+        risks: "ಅಪಾಯಗಳು ಮತ್ತು ಪ್ರಮುಖ ನಿಯಮಗಳನ್ನು ಗುರುತಿಸಿ",
+        risksDesc: "ಪ್ರಮುಖ ಜವಾಬ್ದಾರಿಗಳು, ದಂಡಗಳು, ಗಡುವುಗಳು ಮತ್ತು ನಿಯಮಗಳನ್ನು ಗುರುತಿಸಿ.",
+        askQuestions: "ಪ್ರಶ್ನೆಗಳನ್ನು ಕೇಳಿ",
+        askQuestionsDesc: "ನಿಮ್ಮ ದಾಖಲೆಗಳ ಬಗ್ಗೆ ಪ್ರಶ್ನೆಗಳನ್ನು ಕೇಳಿ ಮತ್ತು ಉಲ್ಲೇಖಗಳೊಂದಿಗೆ ಉತ್ತರ ಪಡೆಯಿರಿ.",
+        checklist: "ಮುಂದಿನ ಹಂತಗಳು ಮತ್ತು ಪರಿಶೀಲನಾ ಪಟ್ಟಿ",
+        checklistDesc: "ವಕೀಲರೊಂದಿಗೆ ಚರ್ಚೆಗೆ ತಯಾರಾಗಲು ಉಪಯುಕ್ತ ಪಟ್ಟಿ ಮತ್ತು ಪ್ರಶ್ನೆಗಳನ್ನು ಪಡೆಯಿರಿ.",
+        privacy: "ಗೌಪ್ಯತೆಗೆ ಆದ್ಯತೆ",
+        privacyDesc: "ಸೂಕ್ಷ್ಮ ದಾಖಲೆಗಳನ್ನು ಸುರಕ್ಷಿತ ನಿರ್ವಹಣೆಯೊಂದಿಗೆ ರಕ್ಷಿಸಿ.",
+        languageTitle: "ಕಾನೂನು ಸಹಾಯ",
+        languageTitleHighlight: "ನಿಮ್ಮ ಭಾಷೆಯಲ್ಲಿ",
+        languageDescription: "ನಿಮಗೆ ಹೆಚ್ಚು ಆರಾಮದಾಯಕವಾಗಿರುವ ಭಾಷೆಯಲ್ಲಿ ಕಾನೂನು ಮಾಹಿತಿಯನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ.",
+        languageDescription2: "ನಮ್ಮ ಬಹುಭಾಷಾ ದೃಷ್ಟಿ ಭಾರತದಾದ್ಯಂತ ಕಾನೂನು ಮಾಹಿತಿಯನ್ನು ಹೆಚ್ಚು ಸುಲಭಗೊಳಿಸುತ್ತದೆ.",
+        howTitle: "LawBuddy AI ಹೇಗೆ ಕೆಲಸ ಮಾಡುತ್ತದೆ",
+        howDescription: "ನಾಲ್ಕು ಸರಳ ಹಂತಗಳಲ್ಲಿ ನಿಮ್ಮ ಕಾನೂನು ದಾಖಲೆಗಳನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ.",
+        upload: "ದಾಖಲೆಯನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
+        uploadDesc: "PDF ಅಪ್‌ಲೋಡ್ ಮಾಡಿ ಅಥವಾ ಕಾನೂನು ಪಠ್ಯವನ್ನು ಅಂಟಿಸಿ.",
+        chooseLanguage: "ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ",
+        chooseLanguageDesc: "ಇಂಗ್ಲಿಷ್, ಕನ್ನಡ, ಹಿಂದಿ ಅಥವಾ ಇತರ ಬೆಂಬಲಿತ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ.",
+        askAI: "AIಗೆ ಪ್ರಶ್ನೆ ಕೇಳಿ",
+        askAIDesc: "ವಿವರಣೆಗಳು, ಹೋಲಿಕೆಗಳು ಮತ್ತು ಪ್ರಮುಖ ನಿಯಮಗಳನ್ನು ಪಡೆಯಿರಿ.",
+        understand: "ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ ಮತ್ತು ಮುಂದುವರಿಯಿರಿ",
+        understandDesc: "ಪರಿಶೀಲನಾ ಪಟ್ಟಿ ಪಡೆಯಿರಿ ಮತ್ತು ಕಾನೂನು ತಜ್ಞರಿಗೆ ಪ್ರಶ್ನೆಗಳನ್ನು ಸಿದ್ಧಪಡಿಸಿ.",
+        ctaTitle: "ನಿಮ್ಮ ಕಾನೂನು ದಾಖಲೆಗಳನ್ನು ಉತ್ತಮವಾಗಿ ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ",
+        ctaDescription: "ಜನರೇಟಿವ್ AI ಸಹಾಯದಿಂದ ಕಾನೂನು ಮಾಹಿತಿಯನ್ನು ಸುಲಭವಾಗಿ ಪಡೆಯಿರಿ. ನಿಮಗೆ ಅರ್ಥವಾಗುವ ಭಾಷೆಯಲ್ಲಿ ದಾಖಲೆಗಳನ್ನು ನೋಡಿ.",
+        startExploring: "ಪ್ರಾರಂಭಿಸಿ →",
+        footerRights: "© 2026 LawBuddy AI. ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.",
+        disclaimer: "LawBuddy AI ಮಾಹಿತಿ ಸಹಾಯವನ್ನು ನೀಡುತ್ತದೆ ಮತ್ತು ವೃತ್ತಿಪರ ಕಾನೂನು ಸಲಹೆಯನ್ನು ಬದಲಿಸುವುದಿಲ್ಲ."
+    },
+
+    hi: {
+        tagline: "समझें • तुलना करें • आगे बढ़ें",
+        langLabel: "भाषा",
+        continue: "जारी रखें →",
+        home: "होम",
+        features: "विशेषताएँ",
+        howItWorks: "यह कैसे काम करता है",
+        heroTitle: "आपका AI कानूनी सहायक",
+        heroHighlight: "आपकी भाषा में",
+        heroDescription: "जनरेटिव AI की मदद से कानूनी दस्तावेज़ों को समझें, तुलना करें और आगे के कदम जानें।",
+        getStarted: "शुरू करें →",
+        exploreFeatures: "विशेषताएँ देखें",
+        docTitle: "कानूनी दस्तावेज़",
+        importantClause: "⚠ महत्वपूर्ण धारा",
+        aiExplanation: "AI व्याख्या",
+        keyPoints: "मुख्य बिंदु",
+        potentialRisks: "संभावित जोखिम",
+        nextSteps: "अगले कदम",
+        featuresTitle: "कानूनी दस्तावेज़ समझने के लिए आवश्यक सभी सुविधाएँ",
+        featuresDescription: "जटिल कानूनी जानकारी को आसानी से समझने के लिए AI सहायता।",
+        simplify: "कानूनी दस्तावेज़ सरल बनाएँ",
+        simplifyDesc: "जटिल कानूनी भाषा को सरल, समझने योग्य व्याख्या में बदलें।",
+        compare: "समझौतों की तुलना करें",
+        compareDesc: "दो अनुबंधों की तुलना करें और महत्वपूर्ण बदलाव समझें।",
+        risks: "जोखिम और महत्वपूर्ण धाराएँ पहचानें",
+        risksDesc: "महत्वपूर्ण दायित्व, जुर्माना, समय सीमा और धाराएँ पहचानें।",
+        askQuestions: "प्रश्न पूछें",
+        askQuestionsDesc: "अपने दस्तावेज़ों के बारे में प्रश्न पूछें और संदर्भ सहित उत्तर पाएँ।",
+        checklist: "अगले कदम और चेकलिस्ट",
+        checklistDesc: "वकील से चर्चा के लिए उपयोगी चेकलिस्ट और प्रश्न तैयार करें।",
+        privacy: "गोपनीयता पर ध्यान",
+        privacyDesc: "संवेदनशील दस्तावेज़ों की सुरक्षित हैंडलिंग से रक्षा करें।",
+        languageTitle: "कानूनी सहायता",
+        languageTitleHighlight: "आपकी भाषा में",
+        languageDescription: "अपनी पसंदीदा भाषा में कानूनी जानकारी समझें।",
+        languageDescription2: "हमारी बहुभाषी दृष्टि भारत भर में कानूनी जानकारी को अधिक सुलभ बनाती है।",
+        howTitle: "LawBuddy AI कैसे काम करता है",
+        howDescription: "चार सरल चरणों में अपने कानूनी दस्तावेज़ समझें।",
+        upload: "दस्तावेज़ अपलोड करें",
+        uploadDesc: "PDF अपलोड करें या कानूनी पाठ पेस्ट करें।",
+        chooseLanguage: "भाषा चुनें",
+        chooseLanguageDesc: "अंग्रेज़ी, कन्नड़, हिंदी या कोई अन्य समर्थित भाषा चुनें।",
+        askAI: "AI से प्रश्न पूछें",
+        askAIDesc: "व्याख्या, तुलना और महत्वपूर्ण धाराओं की जानकारी पाएँ।",
+        understand: "समझें और आगे बढ़ें",
+        understandDesc: "चेकलिस्ट पाएँ और कानूनी विशेषज्ञ के लिए प्रश्न तैयार करें।",
+        ctaTitle: "अपने कानूनी दस्तावेज़ बेहतर समझें",
+        ctaDescription: "जनरेटिव AI की मदद से कानूनी जानकारी प्राप्त करें। अपनी सबसे अच्छी समझ वाली भाषा में दस्तावेज़ देखें।",
+        startExploring: "शुरू करें →",
+        footerRights: "© 2026 LawBuddy AI. सर्वाधिकार सुरक्षित।",
+        disclaimer: "LawBuddy AI सूचनात्मक सहायता देता है और पेशेवर कानूनी सलाह का विकल्प नहीं है।"
+    },
+
+    ml: {
+        tagline: "മനസ്സിലാക്കുക • താരതമ്യം ചെയ്യുക • മുന്നോട്ട് പോകുക",
+        langLabel: "ഭാഷ",
+        continue: "തുടരുക →",
+        home: "ഹോം",
+        features: "സവിശേഷതകൾ",
+        howItWorks: "എങ്ങനെ പ്രവർത്തിക്കുന്നു",
+        heroTitle: "നിങ്ങളുടെ AI നിയമ സഹായി",
+        heroHighlight: "നിങ്ങളുടെ ഭാഷയിൽ",
+        heroDescription: "ജനറേറ്റീവ് AI ഉപയോഗിച്ച് നിയമ രേഖകൾ മനസ്സിലാക്കുകയും താരതമ്യം ചെയ്യുകയും അടുത്ത ഘട്ടങ്ങൾ അറിയുകയും ചെയ്യുക.",
+        getStarted: "ആരംഭിക്കുക →",
+        exploreFeatures: "സവിശേഷതകൾ കാണുക",
+        docTitle: "നിയമ രേഖ",
+        importantClause: "⚠ പ്രധാന വ്യവസ്ഥ",
+        aiExplanation: "AI വിശദീകരണം",
+        keyPoints: "പ്രധാന പോയിന്റുകൾ",
+        potentialRisks: "സാധ്യമായ അപകടങ്ങൾ",
+        nextSteps: "അടുത്ത ഘട്ടങ്ങൾ",
+        featuresTitle: "നിയമ രേഖകൾ മനസ്സിലാക്കാൻ ആവശ്യമായതെല്ലാം",
+        featuresDescription: "സങ്കീർണ്ണമായ നിയമ വിവരങ്ങൾ എളുപ്പത്തിൽ മനസ്സിലാക്കാൻ AI സഹായം.",
+        simplify: "നിയമ രേഖകൾ ലളിതമാക്കുക",
+        simplifyDesc: "സങ്കീർണ്ണമായ നിയമ ഭാഷയെ ലളിതമായ വിശദീകരണങ്ങളാക്കി മാറ്റുക.",
+        compare: "കരാറുകൾ താരതമ്യം ചെയ്യുക",
+        compareDesc: "രണ്ട് കരാറുകൾ താരതമ്യം ചെയ്ത് പ്രധാന മാറ്റങ്ങൾ മനസ്സിലാക്കുക.",
+        risks: "അപകടസാധ്യതകളും പ്രധാന വ്യവസ്ഥകളും കണ്ടെത്തുക",
+        risksDesc: "പ്രധാന ബാധ്യതകൾ, പിഴകൾ, സമയപരിധികൾ, വ്യവസ്ഥകൾ തിരിച്ചറിയുക.",
+        askQuestions: "ചോദ്യങ്ങൾ ചോദിക്കുക",
+        askQuestionsDesc: "നിങ്ങളുടെ രേഖകളെക്കുറിച്ച് ചോദിക്കുകയും ഉറവിട സൂചനകളോടെ ഉത്തരം നേടുകയും ചെയ്യുക.",
+        checklist: "അടുത്ത ഘട്ടങ്ങളും ചെക്ക്ലിസ്റ്റുകളും",
+        checklistDesc: "അഭിഭാഷകനുമായി ചർച്ച ചെയ്യാൻ ഉപയോഗപ്രദമായ ലിസ്റ്റും ചോദ്യങ്ങളും തയ്യാറാക്കുക.",
+        privacy: "സ്വകാര്യതയ്ക്ക് മുൻഗണന",
+        privacyDesc: "സെൻസിറ്റീവ് രേഖകൾ സുരക്ഷിതമായി കൈകാര്യം ചെയ്ത് സംരക്ഷിക്കുക.",
+        languageTitle: "നിയമ സഹായം",
+        languageTitleHighlight: "നിങ്ങളുടെ ഭാഷയിൽ",
+        languageDescription: "നിങ്ങൾക്ക് ഏറ്റവും സൗകര്യപ്രദമായ ഭാഷയിൽ നിയമ വിവരങ്ങൾ മനസ്സിലാക്കുക.",
+        languageDescription2: "ഞങ്ങളുടെ ബഹുഭാഷാ കാഴ്ചപ്പാട് ഇന്ത്യയിലുടനീളം നിയമ വിവരങ്ങൾ കൂടുതൽ ലഭ്യമാക്കുന്നു.",
+        howTitle: "LawBuddy AI എങ്ങനെ പ്രവർത്തിക്കുന്നു",
+        howDescription: "നാല് ലളിതമായ ഘട്ടങ്ങളിലൂടെ നിങ്ങളുടെ നിയമ രേഖകൾ മനസ്സിലാക്കുക.",
+        upload: "രേഖ അപ്‌ലോഡ് ചെയ്യുക",
+        uploadDesc: "PDF അപ്‌ലോഡ് ചെയ്യുക അല്ലെങ്കിൽ നിയമ വാചകം ഒട്ടിക്കുക.",
+        chooseLanguage: "ഭാഷ തിരഞ്ഞെടുക്കുക",
+        chooseLanguageDesc: "ഇംഗ്ലീഷ്, കന്നഡ, ഹിന്ദി അല്ലെങ്കിൽ മറ്റ് പിന്തുണയുള്ള ഭാഷ തിരഞ്ഞെടുക്കുക.",
+        askAI: "AIയോട് ചോദിക്കുക",
+        askAIDesc: "വിശദീകരണങ്ങൾ, താരതമ്യങ്ങൾ, പ്രധാന വ്യവസ്ഥകൾ നേടുക.",
+        understand: "മനസ്സിലാക്കി മുന്നോട്ട് പോകുക",
+        understandDesc: "ചെക്ക്ലിസ്റ്റ് നേടുകയും നിയമ വിദഗ്ധന് ചോദ്യങ്ങൾ തയ്യാറാക്കുകയും ചെയ്യുക.",
+        ctaTitle: "നിങ്ങളുടെ നിയമ രേഖകൾ കൂടുതൽ നന്നായി മനസ്സിലാക്കുക",
+        ctaDescription: "ജനറേറ്റീവ് AI ഉപയോഗിച്ച് നിയമ വിവരങ്ങൾ നേടുക. നിങ്ങൾക്ക് മനസ്സിലാകുന്ന ഭാഷയിൽ രേഖകൾ കാണുക.",
+        startExploring: "ആരംഭിക്കുക →",
+        footerRights: "© 2026 LawBuddy AI. എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്തം.",
+        disclaimer: "LawBuddy AI വിവര സഹായം നൽകുന്നു; ഇത് പ്രൊഫഷണൽ നിയമ ഉപദേശത്തിന് പകരമല്ല."
+    },
+
+    te: {
+        tagline: "అర్థం చేసుకోండి • పోల్చండి • ముందుకు సాగండి",
+        langLabel: "భాష",
+        continue: "కొనసాగించండి →",
+        home: "హోమ్",
+        features: "ఫీచర్లు",
+        howItWorks: "ఇది ఎలా పనిచేస్తుంది",
+        heroTitle: "మీ AI న్యాయ సహాయకుడు",
+        heroHighlight: "మీ భాషలో",
+        heroDescription: "జనరేటివ్ AI సహాయంతో న్యాయ పత్రాలను అర్థం చేసుకోండి, పోల్చండి మరియు తదుపరి అడుగులు తెలుసుకోండి.",
+        getStarted: "ప్రారంభించండి →",
+        exploreFeatures: "ఫీచర్లను చూడండి",
+        docTitle: "న్యాయ పత్రం",
+        importantClause: "⚠ ముఖ్య నిబంధన",
+        aiExplanation: "AI వివరణ",
+        keyPoints: "ముఖ్య అంశాలు",
+        potentialRisks: "సంభావ్య ప్రమాదాలు",
+        nextSteps: "తదుపరి అడుగులు",
+        featuresTitle: "న్యాయ పత్రాలను అర్థం చేసుకోవడానికి కావాల్సినవన్నీ",
+        featuresDescription: "సంక్లిష్టమైన న్యాయ సమాచారాన్ని సులభంగా అర్థం చేసుకోవడానికి AI సహాయం.",
+        simplify: "న్యాయ పత్రాలను సరళీకరించండి",
+        simplifyDesc: "సంక్లిష్ట న్యాయ భాషను సరళమైన వివరణలుగా మార్చండి.",
+        compare: "ఒప్పందాలను పోల్చండి",
+        compareDesc: "రెండు ఒప్పందాలను పోల్చి ముఖ్యమైన మార్పులను అర్థం చేసుకోండి.",
+        risks: "ప్రమాదాలు మరియు నిబంధనలను గుర్తించండి",
+        risksDesc: "ముఖ్య బాధ్యతలు, జరిమానాలు, గడువులు మరియు నిబంధనలను గుర్తించండి.",
+        askQuestions: "ప్రశ్నలు అడగండి",
+        askQuestionsDesc: "మీ పత్రాల గురించి ప్రశ్నలు అడిగి మూలాలతో సమాధానాలు పొందండి.",
+        checklist: "తదుపరి అడుగులు మరియు చెక్‌లిస్ట్",
+        checklistDesc: "న్యాయవాదితో చర్చకు ఉపయోగపడే జాబితా మరియు ప్రశ్నలు సిద్ధం చేసుకోండి.",
+        privacy: "గోప్యతకు ప్రాధాన్యం",
+        privacyDesc: "సున్నితమైన పత్రాలను సురక్షిత నిర్వహణతో రక్షించండి.",
+        languageTitle: "న్యాయ సహాయం",
+        languageTitleHighlight: "మీ భాషలో",
+        languageDescription: "మీకు సౌకర్యవంతమైన భాషలో న్యాయ సమాచారాన్ని అర్థం చేసుకోండి.",
+        languageDescription2: "మా బహుభాషా దృష్టి భారతదేశం అంతటా న్యాయ సమాచారాన్ని మరింత అందుబాటులోకి తెస్తుంది.",
+        howTitle: "LawBuddy AI ఎలా పనిచేస్తుంది",
+        howDescription: "నాలుగు సరళమైన దశల్లో మీ న్యాయ పత్రాలను అర్థం చేసుకోండి.",
+        upload: "పత్రాన్ని అప్‌లోడ్ చేయండి",
+        uploadDesc: "PDF అప్‌లోడ్ చేయండి లేదా న్యాయ పాఠ్యాన్ని అతికించండి.",
+        chooseLanguage: "భాషను ఎంచుకోండి",
+        chooseLanguageDesc: "ఇంగ్లీష్, కన్నడ, హిందీ లేదా మరో మద్దతు ఉన్న భాషను ఎంచుకోండి.",
+        askAI: "AIని అడగండి",
+        askAIDesc: "వివరణలు, పోలికలు మరియు ముఖ్య నిబంధనలను పొందండి.",
+        understand: "అర్థం చేసుకొని ముందుకు సాగండి",
+        understandDesc: "చెక్‌లిస్ట్ పొంది న్యాయ నిపుణుడి కోసం ప్రశ్నలు సిద్ధం చేసుకోండి.",
+        ctaTitle: "మీ న్యాయ పత్రాలను మెరుగ్గా అర్థం చేసుకోండి",
+        ctaDescription: "జనరేటివ్ AI సహాయంతో న్యాయ సమాచారాన్ని పొందండి. మీకు బాగా అర్థమయ్యే భాషలో పత్రాలను చూడండి.",
+        startExploring: "ప్రారంభించండి →",
+        footerRights: "© 2026 LawBuddy AI. అన్ని హక్కులు రిజర్వ్ చేయబడ్డాయి.",
+        disclaimer: "LawBuddy AI సమాచార సహాయం అందిస్తుంది మరియు వృత్తిపరమైన న్యాయ సలహాకు ప్రత్యామ్నాయం కాదు."
+    },
+
+    tulu: {
+        tagline: "ಅರ್ಥ ಮಲ್ಪುಲೆ • ಹೋಲಿಕೆ ಮಲ್ಪುಲೆ • ಮುಂದು ಪೋಲೆ",
+        langLabel: "ಬಾಸೆ",
+        continue: "ಮುಂದು ಪೋಲೆ →",
+        home: "ಮುಖ್ಯ ಪುಟ",
+        features: "ವೈಶಿಷ್ಟ್ಯೊಲು",
+        howItWorks: "ಇಂದೆನ್ ಎಂಚ ಬೇಲೆ ಮಲ್ಪುಂಡು",
+        heroTitle: "ಈರೆನ AI ಕಾನೂನು ಸಹಾಯಕೆ",
+        heroHighlight: "ಈರೆನ ಬಾಸೆಡ್",
+        heroDescription: "ಜನರೇಟಿವ್ AI ಸಹಾಯೊಡು ಕಾನೂನು ದಾಖಲೆಲೆನ್ ಅರ್ಥ ಮಲ್ಪುಲೆ, ಹೋಲಿಕೆ ಮಲ್ಪುಲೆ ಬೊಕ್ಕ ಮುಂದುತ ಹಂತ ತೆರಿಯೊನುಲೆ.",
+        getStarted: "ಸುರು ಮಲ್ಪುಲೆ →",
+        exploreFeatures: "ವೈಶಿಷ್ಟ್ಯೊಲೆನ್ ತೂಲೆ",
+        docTitle: "ಕಾನೂನು ದಾಖಲೆ",
+        importantClause: "⚠ ಮುಖ್ಯ ನಿಯಮೊ",
+        aiExplanation: "AI ವಿವರಣೆ",
+        keyPoints: "ಮುಖ್ಯ ಅಂಶೊಲು",
+        potentialRisks: "ಅಪಾಯೊಲು",
+        nextSteps: "ಮುಂದುತ ಹಂತೊಲು",
+        featuresTitle: "ಕಾನೂನು ದಾಖಲೆಲೆನ್ ಅರ್ಥ ಮಲ್ಪೆರೆ ಬೋಡಾಯಿನ ಮಾತಾ",
+        featuresDescription: "ಕಠಿಣ ಕಾನೂನು ಮಾಹಿತಿನ್ ಸುಲಭವಾದ್ ಅರ್ಥ ಮಲ್ಪೆರೆ AI ಸಹಾಯ.",
+        simplify: "ಕಾನೂನು ದಾಖಲೆಲೆನ್ ಸರಳ ಮಲ್ಪುಲೆ",
+        simplifyDesc: "ಕಠಿಣ ಕಾನೂನು ಬಾಸೆನ್ ಸರಳ ವಿವರಣೆಗ್ ಮಾರ್ಪಾಡ್ ಮಲ್ಪುಲೆ.",
+        compare: "ಒಪ್ಪಂದೊಲೆನ್ ಹೋಲಿಕೆ ಮಲ್ಪುಲೆ",
+        compareDesc: "ರಡ್ಡ್ ಒಪ್ಪಂದೊಲೆನ್ ಹೋಲಿಕೆ ಮಲ್ತ್‌ದ್ ಮುಖ್ಯ ಬದಲಾವಣೆ ತೆರಿಯೊನುಲೆ.",
+        risks: "ಅಪಾಯ ಬೊಕ್ಕ ನಿಯಮೊಲೆನ್ ಗುರುತು ಮಲ್ಪುಲೆ",
+        risksDesc: "ಮುಖ್ಯ ಜವಾಬ್ದಾರಿ, ದಂಡ, ಗಡುವು ಬೊಕ್ಕ ನಿಯಮೊಲೆನ್ ಗುರುತು ಮಲ್ಪುಲೆ.",
+        askQuestions: "ಪ್ರಶ್ನೆ ಕೇನುಲೆ",
+        askQuestionsDesc: "ಈರೆನ ದಾಖಲೆದ ಬಗ್ಗೆ ಪ್ರಶ್ನೆ ಕೇನ್‌ದ್ ಉಲ್ಲೇಖೊಡು ಉತ್ತರ ದೆತ್ತೊನುಲೆ.",
+        checklist: "ಮುಂದುತ ಹಂತ ಬೊಕ್ಕ ಪಟ್ಟಿ",
+        checklistDesc: "ವಕೀಲೆರೆನೊಟ್ಟುಗು ಚರ್ಚೆಗ್ ಉಪಯೋಗದ ಪಟ್ಟಿ ಬೊಕ್ಕ ಪ್ರಶ್ನೆಲೆನ್ ತಯಾರ್ ಮಲ್ಪುಲೆ.",
+        privacy: "ಗೌಪ್ಯತೆಗ್ ಮುಖ್ಯತೆ",
+        privacyDesc: "ಸೂಕ್ಷ್ಮ ದಾಖಲೆಲೆನ್ ಸುರಕ್ಷಿತವಾದ್ ರಕ್ಷಣೆ ಮಲ್ಪುಲೆ.",
+        languageTitle: "ಕಾನೂನು ಸಹಾಯ",
+        languageTitleHighlight: "ಈರೆನ ಬಾಸೆಡ್",
+        languageDescription: "ಈರೆಗ್ ಸುಲಭ ಆಪಿನ ಬಾಸೆಡ್ ಕಾನೂನು ಮಾಹಿತಿನ್ ಅರ್ಥ ಮಲ್ಪುಲೆ.",
+        languageDescription2: "ಎಂಕುಲೆನ ಬಹುಬಾಸೆ ದೃಷ್ಟಿ ಭಾರತೊಡು ಕಾನೂನು ಮಾಹಿತಿನ್ ಮಸ್ತ್ ಜನಕ್ ಸುಲಭ ಮಲ್ಪುಂಡು.",
+        howTitle: "LawBuddy AI ಎಂಚ ಬೇಲೆ ಮಲ್ಪುಂಡು",
+        howDescription: "ನಾಲ್ ಸರಳ ಹಂತೊಡು ಈರೆನ ಕಾನೂನು ದಾಖಲೆಲೆನ್ ಅರ್ಥ ಮಲ್ಪುಲೆ.",
+        upload: "ದಾಖಲೆನ್ ಅಪ್‌ಲೋಡ್ ಮಲ್ಪುಲೆ",
+        uploadDesc: "PDF ಅಪ್‌ಲೋಡ್ ಮಲ್ಪುಲೆ ಅತ್ತ್ಂಡ ಕಾನೂನು ಪಠ್ಯನ್ ಅಂಟಾಲೆ.",
+        chooseLanguage: "ಬಾಸೆನ್ ಆಯ್ಕೆ ಮಲ್ಪುಲೆ",
+        chooseLanguageDesc: "ಇಂಗ್ಲಿಷ್, ಕನ್ನಡ, ಹಿಂದಿ ಅತ್ತ್ಂಡ ಬೇತೆ ಬೆಂಬಲಿತ ಬಾಸೆನ್ ಆಯ್ಕೆ ಮಲ್ಪುಲೆ.",
+        askAI: "AI ಡ್ ಕೇನುಲೆ",
+        askAIDesc: "ವಿವರಣೆ, ಹೋಲಿಕೆ ಬೊಕ್ಕ ಮುಖ್ಯ ನಿಯಮೊಲೆನ್ ದೆತ್ತೊನುಲೆ.",
+        understand: "ಅರ್ಥ ಮಲ್ತ್‌ದ್ ಮುಂದು ಪೋಲೆ",
+        understandDesc: "ಪಟ್ಟಿ ದೆತ್ತೊನುಲೆ ಬೊಕ್ಕ ಕಾನೂನು ತಜ್ಞೆರೆಗ್ ಪ್ರಶ್ನೆ ತಯಾರ್ ಮಲ್ಪುಲೆ.",
+        ctaTitle: "ಈರೆನ ಕಾನೂನು ದಾಖಲೆಲೆನ್ ಎಡ್ಡೆ ಅರ್ಥ ಮಲ್ಪುಲೆ",
+        ctaDescription: "ಜನರೇಟಿವ್ AI ಸಹಾಯೊಡು ಕಾನೂನು ಮಾಹಿತಿ ದೆತ್ತೊನುಲೆ. ಈರೆಗ್ ಅರ್ಥ ಆಪಿನ ಬಾಸೆಡ್ ದಾಖಲೆ ತೂಲೆ.",
+        startExploring: "ಸುರು ಮಲ್ಪುಲೆ →",
+        footerRights: "© 2026 LawBuddy AI. ಮಾತಾ ಹಕ್ಕುಲು ಕಾಯ್ದಿರಿಸಾದುಂಡು.",
+        disclaimer: "LawBuddy AI ಮಾಹಿತಿ ಸಹಾಯ ಕೊರ್ಪುಂಡು; ಇಂದೆನ್ ವೃತ್ತಿಪರ ಕಾನೂನು ಸಲಹೆದ ಬದಲಿ ಅಂದ್ ಪಣೊಲಿ."
+    },
+
+    mr: {
+        tagline: "समजा • तुलना करा • पुढे जा",
+        langLabel: "भाषा",
+        continue: "पुढे चला →",
+        home: "मुख्यपृष्ठ",
+        features: "वैशिष्ट्ये",
+        howItWorks: "हे कसे कार्य करते",
+        heroTitle: "तुमचा AI कायदेशीर सहाय्यक",
+        heroHighlight: "तुमच्या भाषेत",
+        heroDescription: "जनरेटिव्ह AI च्या मदतीने कायदेशीर कागदपत्रे समजा, तुलना करा आणि पुढील पावले जाणून घ्या.",
+        getStarted: "सुरुवात करा →",
+        exploreFeatures: "वैशिष्ट्ये पहा",
+        docTitle: "कायदेशीर कागदपत्र",
+        importantClause: "⚠ महत्त्वाची तरतूद",
+        aiExplanation: "AI स्पष्टीकरण",
+        keyPoints: "मुख्य मुद्दे",
+        potentialRisks: "संभाव्य धोके",
+        nextSteps: "पुढील पावले",
+        featuresTitle: "कायदेशीर कागदपत्रे समजण्यासाठी आवश्यक सर्वकाही",
+        featuresDescription: "गुंतागुंतीची कायदेशीर माहिती सहज समजण्यासाठी AI सहाय्य.",
+        simplify: "कायदेशीर कागदपत्रे सोपी करा",
+        simplifyDesc: "गुंतागुंतीची कायदेशीर भाषा सोप्या स्पष्टीकरणात रूपांतरित करा.",
+        compare: "करारांची तुलना करा",
+        compareDesc: "दोन करारांची तुलना करा आणि महत्त्वाचे बदल समजा.",
+        risks: "धोके आणि तरतुदी ओळखा",
+        risksDesc: "महत्त्वाच्या जबाबदाऱ्या, दंड, मुदत आणि तरतुदी ओळखा.",
+        askQuestions: "प्रश्न विचारा",
+        askQuestionsDesc: "तुमच्या कागदपत्रांबद्दल प्रश्न विचारा आणि संदर्भांसह उत्तरे मिळवा.",
+        checklist: "पुढील पावले आणि चेकलिस्ट",
+        checklistDesc: "वकिलाशी चर्चा करण्यासाठी उपयुक्त यादी आणि प्रश्न तयार करा.",
+        privacy: "गोपनीयतेवर भर",
+        privacyDesc: "संवेदनशील कागदपत्रे सुरक्षित हाताळणीने संरक्षित करा.",
+        languageTitle: "कायदेशीर मदत",
+        languageTitleHighlight: "तुमच्या भाषेत",
+        languageDescription: "तुम्हाला सोयीस्कर असलेल्या भाषेत कायदेशीर माहिती समजा.",
+        languageDescription2: "आमची बहुभाषिक दृष्टी भारतात कायदेशीर माहिती अधिक सुलभ करते.",
+        howTitle: "LawBuddy AI कसे कार्य करते",
+        howDescription: "चार सोप्या पायऱ्यांमध्ये तुमची कायदेशीर कागदपत्रे समजा.",
+        upload: "कागदपत्र अपलोड करा",
+        uploadDesc: "PDF अपलोड करा किंवा कायदेशीर मजकूर पेस्ट करा.",
+        chooseLanguage: "भाषा निवडा",
+        chooseLanguageDesc: "इंग्रजी, कन्नड, हिंदी किंवा इतर समर्थित भाषा निवडा.",
+        askAI: "AI ला विचारा",
+        askAIDesc: "स्पष्टीकरणे, तुलना आणि महत्त्वाच्या तरतुदी मिळवा.",
+        understand: "समजा आणि पुढे जा",
+        understandDesc: "चेकलिस्ट मिळवा आणि कायदेशीर तज्ञासाठी प्रश्न तयार करा.",
+        ctaTitle: "तुमची कायदेशीर कागदपत्रे चांगली समजा",
+        ctaDescription: "जनरेटिव्ह AI च्या मदतीने कायदेशीर माहिती मिळवा. तुम्हाला समजणाऱ्या भाषेत कागदपत्रे पहा.",
+        startExploring: "सुरुवात करा →",
+        footerRights: "© 2026 LawBuddy AI. सर्व हक्क राखीव.",
+        disclaimer: "LawBuddy AI माहितीपर मदत देते आणि व्यावसायिक कायदेशीर सल्ल्याची जागा घेत नाही."
+    },
+
+    gu: {
+        tagline: "સમજો • તુલના કરો • આગળ વધો",
+        langLabel: "ભાષા",
+        continue: "ચાલુ રાખો →",
+        home: "હોમ",
+        features: "વિશેષતાઓ",
+        howItWorks: "આ કેવી રીતે કામ કરે છે",
+        heroTitle: "તમારો AI કાનૂની સહાયક",
+        heroHighlight: "તમારી ભાષામાં",
+        heroDescription: "જનરેટિવ AIની મદદથી કાનૂની દસ્તાવેજો સમજો, તુલના કરો અને આગળના પગલાં જાણો.",
+        getStarted: "શરૂ કરો →",
+        exploreFeatures: "વિશેષતાઓ જુઓ",
+        docTitle: "કાનૂની દસ્તાવેજ",
+        importantClause: "⚠ મહત્વની કલમ",
+        aiExplanation: "AI સમજૂતી",
+        keyPoints: "મુખ્ય મુદ્દા",
+        potentialRisks: "સંભવિત જોખમો",
+        nextSteps: "આગળના પગલાં",
+        featuresTitle: "કાનૂની દસ્તાવેજો સમજવા માટે જરૂરી બધું",
+        featuresDescription: "જટિલ કાનૂની માહિતી સરળતાથી સમજવા માટે AI સહાય.",
+        simplify: "કાનૂની દસ્તાવેજો સરળ બનાવો",
+        simplifyDesc: "જટિલ કાનૂની ભાષાને સરળ સમજૂતીમાં ફેરવો.",
+        compare: "કરારની તુલના કરો",
+        compareDesc: "બે કરારની તુલના કરો અને મહત્વના ફેરફારો સમજો.",
+        risks: "જોખમો અને કલમો ઓળખો",
+        risksDesc: "મહત્વની જવાબદારીઓ, દંડ, સમયમર્યાદા અને કલમો ઓળખો.",
+        askQuestions: "પ્રશ્નો પૂછો",
+        askQuestionsDesc: "તમારા દસ્તાવેજો વિશે પ્રશ્નો પૂછો અને સંદર્ભ સાથે જવાબો મેળવો.",
+        checklist: "આગળના પગલાં અને ચેકલિસ્ટ",
+        checklistDesc: "વકીલ સાથે ચર્ચા માટે ઉપયોગી યાદી અને પ્રશ્નો તૈયાર કરો.",
+        privacy: "ગોપનીયતા પર ધ્યાન",
+        privacyDesc: "સંવેદનશીલ દસ્તાવેજોને સુરક્ષિત રીતે સંભાળો.",
+        languageTitle: "કાનૂની સહાય",
+        languageTitleHighlight: "તમારી ભાષામાં",
+        languageDescription: "તમને આરામદાયક લાગે તે ભાષામાં કાનૂની માહિતી સમજો.",
+        languageDescription2: "અમારી બહુભાષી દ્રષ્ટિ ભારતભરમાં કાનૂની માહિતી વધુ સુલભ બનાવે છે.",
+        howTitle: "LawBuddy AI કેવી રીતે કામ કરે છે",
+        howDescription: "ચાર સરળ પગલાંમાં તમારા કાનૂની દસ્તાવેજો સમજો.",
+        upload: "દસ્તાવેજ અપલોડ કરો",
+        uploadDesc: "PDF અપલોડ કરો અથવા કાનૂની લખાણ પેસ્ટ કરો.",
+        chooseLanguage: "ભાષા પસંદ કરો",
+        chooseLanguageDesc: "અંગ્રેજી, કન્નડ, હિન્દી અથવા અન્ય સમર્થિત ભાષા પસંદ કરો.",
+        askAI: "AIને પૂછો",
+        askAIDesc: "સમજૂતી, તુલના અને મહત્વની કલમો મેળવો.",
+        understand: "સમજો અને આગળ વધો",
+        understandDesc: "ચેકલિસ્ટ મેળવો અને કાનૂની નિષ્ણાત માટે પ્રશ્નો તૈયાર કરો.",
+        ctaTitle: "તમારા કાનૂની દસ્તાવેજો વધુ સારી રીતે સમજો",
+        ctaDescription: "જનરેટિવ AIની મદદથી કાનૂની માહિતી મેળવો. તમે સમજો તે ભાષામાં દસ્તાવેજો જુઓ.",
+        startExploring: "શરૂ કરો →",
+        footerRights: "© 2026 LawBuddy AI. સર્વ હકો અનામત.",
+        disclaimer: "LawBuddy AI માહિતીપ્રદ સહાય આપે છે અને વ્યાવસાયિક કાનૂની સલાહનું સ્થાન લેતું નથી."
+    },
+
+    bn: {
+        tagline: "বুঝুন • তুলনা করুন • এগিয়ে যান",
+        langLabel: "ভাষা",
+        continue: "চালিয়ে যান →",
+        home: "হোম",
+        features: "বৈশিষ্ট্য",
+        howItWorks: "এটি কীভাবে কাজ করে",
+        heroTitle: "আপনার AI আইনি সহকারী",
+        heroHighlight: "আপনার ভাষায়",
+        heroDescription: "জেনারেটিভ AI-এর সাহায্যে আইনি নথি বুঝুন, তুলনা করুন এবং পরবর্তী ধাপ জানুন।",
+        getStarted: "শুরু করুন →",
+        exploreFeatures: "বৈশিষ্ট্য দেখুন",
+        docTitle: "আইনি নথি",
+        importantClause: "⚠ গুরুত্বপূর্ণ ধারা",
+        aiExplanation: "AI ব্যাখ্যা",
+        keyPoints: "মূল বিষয়",
+        potentialRisks: "সম্ভাব্য ঝুঁকি",
+        nextSteps: "পরবর্তী ধাপ",
+        featuresTitle: "আইনি নথি বোঝার জন্য যা যা দরকার",
+        featuresDescription: "জটিল আইনি তথ্য সহজে বোঝার জন্য AI সহায়তা।",
+        simplify: "আইনি নথি সহজ করুন",
+        simplifyDesc: "জটিল আইনি ভাষাকে সহজ ব্যাখ্যায় রূপান্তর করুন।",
+        compare: "চুক্তি তুলনা করুন",
+        compareDesc: "দুটি চুক্তি তুলনা করুন এবং গুরুত্বপূর্ণ পরিবর্তন বুঝুন।",
+        risks: "ঝুঁকি ও ধারা চিহ্নিত করুন",
+        risksDesc: "গুরুত্বপূর্ণ দায়, জরিমানা, সময়সীমা এবং ধারা চিহ্নিত করুন।",
+        askQuestions: "প্রশ্ন করুন",
+        askQuestionsDesc: "আপনার নথি সম্পর্কে প্রশ্ন করুন এবং উৎসসহ উত্তর পান।",
+        checklist: "পরবর্তী ধাপ ও চেকলিস্ট",
+        checklistDesc: "আইনজীবীর সঙ্গে আলোচনার জন্য উপযোগী তালিকা ও প্রশ্ন তৈরি করুন।",
+        privacy: "গোপনীয়তা অগ্রাধিকার",
+        privacyDesc: "সংবেদনশীল নথি নিরাপদভাবে পরিচালনা করে সুরক্ষা দিন।",
+        languageTitle: "আইনি সহায়তা",
+        languageTitleHighlight: "আপনার ভাষায়",
+        languageDescription: "আপনার সবচেয়ে স্বস্তির ভাষায় আইনি তথ্য বুঝুন।",
+        languageDescription2: "আমাদের বহুভাষিক দৃষ্টিভঙ্গি ভারতজুড়ে আইনি তথ্যকে আরও সহজলভ্য করে।",
+        howTitle: "LawBuddy AI কীভাবে কাজ করে",
+        howDescription: "চারটি সহজ ধাপে আপনার আইনি নথি বুঝুন।",
+        upload: "নথি আপলোড করুন",
+        uploadDesc: "PDF আপলোড করুন অথবা আইনি লেখা পেস্ট করুন।",
+        chooseLanguage: "ভাষা বেছে নিন",
+        chooseLanguageDesc: "ইংরেজি, কন্নড়, হিন্দি বা অন্য সমর্থিত ভাষা বেছে নিন।",
+        askAI: "AI-কে জিজ্ঞাসা করুন",
+        askAIDesc: "ব্যাখ্যা, তুলনা এবং গুরুত্বপূর্ণ ধারা পান।",
+        understand: "বুঝুন এবং এগিয়ে যান",
+        understandDesc: "চেকলিস্ট পান এবং আইনি পেশাদারের জন্য প্রশ্ন প্রস্তুত করুন।",
+        ctaTitle: "আপনার আইনি নথি আরও ভালোভাবে বুঝুন",
+        ctaDescription: "জেনারেটিভ AI-এর সাহায্যে আইনি তথ্য পান। যে ভাষা আপনি সবচেয়ে ভালো বোঝেন, সেই ভাষায় নথি দেখুন।",
+        startExploring: "শুরু করুন →",
+        footerRights: "© 2026 LawBuddy AI. সর্বস্বত্ব সংরক্ষিত।",
+        disclaimer: "LawBuddy AI তথ্যমূলক সহায়তা দেয় এবং পেশাদার আইনি পরামর্শের বিকল্প নয়।"
+    },
+
+    ta: {
+        tagline: "புரிந்துகொள்ளுங்கள் • ஒப்பிடுங்கள் • பயன்படுத்துங்கள்",
+        langLabel: "மொழி",
+        continue: "தொடரவும் →",
+        home: "முகப்பு",
+        features: "அம்சங்கள்",
+        howItWorks: "எப்படி செயல்படுகிறது",
+        heroTitle: "உங்கள் AI சட்ட உதவியாளர்",
+        heroHighlight: "உங்கள் மொழியில்",
+        heroDescription: "ஜெனரேட்டிவ் AI மூலம் சட்ட ஆவணங்களை எளிதாகப் புரிந்துகொள்ளுங்கள், ஒப்பிடுங்கள் மற்றும் வழிகாட்டலைப் பெறுங்கள்.",
+        getStarted: "தொடங்கவும் →",
+        exploreFeatures: "அம்சங்களை ஆராயுங்கள்",
+        docTitle: "சட்ட ஆவணம்",
+        importantClause: "⚠ முக்கியமான விதி",
+        aiExplanation: "AI விளக்கம்",
+        keyPoints: "முக்கிய புள்ளிகள்",
+        potentialRisks: "சாத்தியமான ஆபத்துகள்",
+        nextSteps: "அடுத்த கட்டங்கள்",
+        featuresTitle: "சட்ட ஆவணங்களைப் புரிந்துகொள்ள தேவையான அனைத்தும்",
+        featuresDescription: "சிக்கலான சட்டத் தகவல்களை எளிதில் புரிந்துகொள்ள சக்திவாய்ந்த AI உதவி.",
+        simplify: "சட்ட ஆவணங்களை எளிமையாக்குங்கள்",
+        simplifyDesc: "சிக்கலான சட்ட மொழியை எளிமையான, புரிந்துகொள்ளக்கூடிய விளக்கங்களாக மாற்றவும்.",
+        compare: "ஒப்பந்தங்களை ஒப்பிடுங்கள்",
+        compareDesc: "இரண்டு ஒப்பந்தங்களை ஒப்பிட்டு முக்கியமான மாற்றங்களைப் புரிந்துகொள்ளுங்கள்.",
+        risks: "ஆபத்துகள் & விதிகளை சுட்டிக்காட்டுங்கள்",
+        risksDesc: "முக்கியமான கடமைகள், அபராதங்கள், காலக்கெடுகள் மற்றும் விதிகளை அடையாளம் காணவும்.",
+        askQuestions: "கேள்விகள் கேளுங்கள்",
+        askQuestionsDesc: "உங்கள் ஆவணங்களைப் பற்றி கேள்விகள் கேட்டு ஆதாரங்களுடன் பதில்களைப் பெறுங்கள்.",
+        checklist: "அடுத்த கட்டங்கள் & சரிபார்ப்புப் பட்டியல்",
+        checklistDesc: "வழக்கறிஞருடன் கலந்துரையாட பயனுள்ள சரிபார்ப்புப் பட்டியல் மற்றும் கேள்விகளை தயார் செய்யுங்கள்.",
+        privacy: "தனியுரிமைக்கு முன்னுரிமை",
+        privacyDesc: "பாதுகாப்பான கையாளுதலுடன் உணர்திறன் மிக்க ஆவணங்களைப் பாதுகாக்கவும்.",
+        languageTitle: "சட்ட உதவி",
+        languageTitleHighlight: "உங்கள் மொழியில்",
+        languageDescription: "உங்களுக்கு மிகவும் வசதியான மொழியில் சட்டத் தகவல்களைப் புரிந்துகொள்ளுங்கள்.",
+        languageDescription2: "எங்கள் பன்மொழி பார்வை இந்தியா முழுவதும் உள்ள மக்களுக்கு சட்டத் தகவல்களை எளிதில் கிடைக்கச் செய்கிறது.",
+        howTitle: "LawBuddy AI எப்படி செயல்படுகிறது",
+        howDescription: "நான்கு எளிய படிகளில் உங்கள் சட்ட ஆவணங்களைப் புரிந்துகொள்ளுங்கள்.",
+        upload: "ஆவணத்தைப் பதிவேற்றவும்",
+        uploadDesc: "PDF பதிவேற்றவும் அல்லது சட்ட உரையை ஒட்டவும்.",
+        chooseLanguage: "மொழியைத் தேர்ந்தெடுக்கவும்",
+        chooseLanguageDesc: "ஆங்கிலம், தமிழ், கன்னடம், இந்தி அல்லது பிற ஆதரவு மொழியைத் தேர்ந்தெடுக்கவும்.",
+        askAI: "AI இடம் கேளுங்கள்",
+        askAIDesc: "விளக்கங்கள், ஒப்பீடுகள் மற்றும் முக்கிய விதிகளைப் பெறுங்கள்.",
+        understand: "புரிந்துகொண்டு செயல்படுங்கள்",
+        understandDesc: "சரிபார்ப்புப் பட்டியலைப் பெற்று சட்ட வல்லுநருக்கான கேள்விகளைத் தயார் செய்யுங்கள்.",
+        ctaTitle: "உங்கள் சட்ட ஆவணங்களை சிறப்பாகப் புரிந்துகொள்ளுங்கள்",
+        ctaDescription: "ஜெனரேட்டிவ் AI உதவியுடன் சட்டத் தகவல்களைப் பெறுங்கள். உங்களுக்கு நன்றாகப் புரியும் மொழியில் ஆவணங்களை ஆராயுங்கள்.",
+        startExploring: "ஆராயத் தொடங்குங்கள் →",
+        footerRights: "© 2026 LawBuddy AI. அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.",
+        disclaimer: "LawBuddy AI தகவல்களை மட்டுமே வழங்குகிறது மற்றும் தொழில்முறை சட்ட ஆலோசனைகளுக்கு மாற்றாகாது."
+    }
+};
+
+
+// Change the page language.
+function changeLanguage(language) {
+    const selectedLanguage = translations[language] || translations.en;
+
+    document.querySelectorAll("[data-i18n]").forEach((element) => {
+        const key = element.getAttribute("data-i18n");
+        const text = selectedLanguage[key] || translations.en[key];
+
+        if (text) {
+            element.textContent = text;
+        }
+    });
+
+    document.querySelectorAll(".language-card").forEach((card) => {
+        card.classList.toggle("active", card.getAttribute("data-lang") === language);
+    });
+
+    const languageSelect = document.getElementById("languageSelect");
+    if (languageSelect && languageSelect.value !== language) {
+        languageSelect.value = language;
+    }
+
+    localStorage.setItem("lawbuddyLanguage", language);
+    document.documentElement.lang = language === "tulu" ? "tcy" : language;
+}
+
+function initTranslation() {
+    const languageSelect = document.getElementById("languageSelect");
+    const savedLanguage = localStorage.getItem("lawbuddyLanguage") || "en";
+
+    if (languageSelect) {
+        languageSelect.value = savedLanguage;
+        languageSelect.addEventListener("change", function () {
+            changeLanguage(this.value);
+        });
+    }
+
+    changeLanguage(savedLanguage);
+
+    document.querySelectorAll(".language-card[data-lang]").forEach((card) => {
+        card.addEventListener("click", function () {
+            const language = this.getAttribute("data-lang");
+            changeLanguage(language);
+        });
+    });
+
+    const continueButton = document.getElementById("continueButton");
+    if (continueButton) {
+        continueButton.addEventListener("click", function (e) {
+            const selectedLanguage = languageSelect ? languageSelect.value : savedLanguage;
+            localStorage.setItem("lawbuddyLanguage", selectedLanguage);
+        });
+    }
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initTranslation);
+} else {
+    initTranslation();
+}
+    </script>
 
 </body>
 </html>
