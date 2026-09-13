@@ -12,9 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        /* =========================
-           1. GLOBAL STYLES
-        ========================= */
+      
 
         * {
             margin: 0;
@@ -39,10 +37,7 @@
             font: inherit;
         }
 
-        /* =========================
-           2. NAVBAR
-        ========================= */
-
+      
         .navbar {
             background: white;
             border-bottom: 1px solid #e3ebf6;
@@ -226,6 +221,13 @@
             border-color: #e4a1a1;
         }
 
+        button{
+            color: white;
+            background-color: #102b55;
+            padding: 10px 10px;
+            border: 2px solid black;
+            border-radius: 120px;
+        }
         .password-hint {
             display: block;
             font-size: 11px;
@@ -334,9 +336,7 @@
             color: #b42323;
         }
 
-        /* =========================
-           5. RESPONSIVE DESIGN
-        ========================= */
+    
 
         @media (max-width: 850px) {
             .page {
@@ -395,9 +395,7 @@
 
 <body>
 
-    <!-- =========================
-         NAVBAR
-    ========================= -->
+
 
     <header class="navbar">
         <a href="index.html" class="logo">
@@ -427,10 +425,6 @@
         </div>
     </header>
 
-
-    <!-- =========================
-         MAIN CONTENT
-    ========================= -->
 
     <main class="page">
 
@@ -582,27 +576,20 @@
     </main>
 
 
-    <!-- =========================
-         FIREBASE AUTHENTICATION
-    ========================= -->
-
     <script type="module">
-
-        // Import Firebase App.
         import { initializeApp } from
             "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 
-        // Import Firebase Authentication functions.
         import {
             getAuth,
             createUserWithEmailAndPassword,
             updateProfile,
-            sendEmailVerification
+            sendEmailVerification,
+            GoogleAuthProvider,
+            signInWithPopup
         } from
             "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
-
-        // Your Firebase configuration.
         const firebaseConfig = {
             apiKey: "AIzaSyB_fuclvAZM2lWJ0WmfHzrKFCroSmDL2T8",
             authDomain: "lawbuddypromptwars.firebaseapp.com",
@@ -612,159 +599,138 @@
             appId: "1:33818178704:web:c27c73fb4a4fa089619415"
         };
 
-
-        // Initialize Firebase.
         const app = initializeApp(firebaseConfig);
-
-        // Initialize Firebase Authentication.
         const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider();
 
-
-        // Get HTML elements.
         const signupForm = document.getElementById("signupForm");
         const signupButton = document.getElementById("signupButton");
+        const googleSignupButton = document.getElementById("googleSignupButton");
         const message = document.getElementById("message");
 
-
-        // Display a success or error message.
         function showMessage(text, type) {
-
             message.textContent = text;
-
             message.className = "message " + type;
-
         }
 
+        function getFirebaseErrorMessage(error) {
+            switch (error.code) {
+                case "auth/unauthorized-domain":
+                    return "This website domain is not authorized in Firebase. Add localhost and 127.0.0.1 in Firebase Authentication → Settings → Authorized domains.";
 
-        // Handle signup form submission.
-        signupForm.addEventListener("submit", async (event) => {
+                case "auth/operation-not-allowed":
+                    return "Google Sign-In is disabled. Enable Google under Firebase Authentication → Sign-in method.";
 
-            // Prevent the page from refreshing.
-            event.preventDefault();
+                case "auth/popup-blocked":
+                    return "The browser blocked the Google sign-in popup. Allow popups for localhost.";
 
+                case "auth/popup-closed-by-user":
+                    return "The Google sign-in popup was closed before completion.";
 
-            // Read values entered by the user.
-            const fullName = document.getElementById("fullName").value.trim();
+                case "auth/cancelled-popup-request":
+                    return "Another Google sign-in popup is already open.";
 
-            const email = document.getElementById("email").value.trim();
+                case "auth/network-request-failed":
+                    return "Network error. Check your internet connection.";
 
-            const password = document.getElementById("password").value;
+                case "auth/email-already-in-use":
+                    return "This email is already registered. Please log in instead.";
 
-            const confirmPassword =
-                document.getElementById("confirmPassword").value;
-
-
-            // Check whether passwords match.
-            if (password !== confirmPassword) {
-
-                showMessage("Passwords do not match.", "error");
-
-                return;
+                default:
+                    return `${error.code || "Unknown error"}: ${error.message || "Please try again."}`;
             }
+        }
 
+        if (googleSignupButton) {
+            googleSignupButton.addEventListener("click", async () => {
+                googleSignupButton.disabled = true;
 
-            // Check minimum password length.
-            if (password.length < 6) {
+                try {
+                    const result = await signInWithPopup(auth, googleProvider);
+                    const user = result.user;
 
-                showMessage(
-                    "Password must contain at least 6 characters.",
-                    "error"
-                );
+                    localStorage.setItem("lawbuddyUser", JSON.stringify({
+                        uid: user.uid,
+                        name: user.displayName || "",
+                        email: user.email || "",
+                        photoURL: user.photoURL || ""
+                    }));
 
-                return;
-            }
-
-
-            // Disable button while creating the account.
-            signupButton.disabled = true;
-
-            signupButton.textContent = "Creating Account...";
-
-
-            try {
-
-                // Create a new Firebase user.
-                const userCredential =
-                    await createUserWithEmailAndPassword(
-                        auth,
-                        email,
-                        password
+                    showMessage(
+                        "Signed in successfully as " +
+                        (user.displayName || user.email) + "!",
+                        "success"
                     );
 
+                    setTimeout(() => {
+                        window.location.href = "dashboard.html";
+                    }, 800);
 
-                // Get the newly created user.
-                const user = userCredential.user;
+                } catch (error) {
+                    console.error("Google sign-in error code:", error.code);
+                    console.error("Google sign-in error message:", error.message);
+                    showMessage(getFirebaseErrorMessage(error), "error");
 
+                } finally {
+                    googleSignupButton.disabled = false;
+                }
+            });
+        }
 
-                // Save the user's full name in Firebase Auth.
-                await updateProfile(user, {
-                    displayName: fullName
-                });
+        if (signupForm) {
+            signupForm.addEventListener("submit", async (event) => {
+                event.preventDefault();
 
+                const fullName = document.getElementById("fullName").value.trim();
+                const email = document.getElementById("email").value.trim();
+                const password = document.getElementById("password").value;
+                const confirmPassword =
+                    document.getElementById("confirmPassword").value;
 
-                // Send an email verification link.
-                await sendEmailVerification(user);
-
-
-                // Display success message.
-                showMessage(
-                    "Account created successfully! " +
-                    "A verification email has been sent to " +
-                    email + ". Please verify your email before logging in.",
-                    "success"
-                );
-
-
-                // Clear the form.
-                signupForm.reset();
-
-            } catch (error) {
-
-                // Handle Firebase errors.
-                let errorMessage = "Something went wrong. Please try again.";
-
-                if (error.code === "auth/email-already-in-use") {
-
-                    errorMessage =
-                        "This email is already registered. Please log in.";
-
-                } else if (error.code === "auth/invalid-email") {
-
-                    errorMessage = "Please enter a valid email address.";
-
-                } else if (error.code === "auth/weak-password") {
-
-                    errorMessage =
-                        "Your password is too weak. Use at least 6 characters.";
-
-                } else if (error.code === "auth/operation-not-allowed") {
-
-                    errorMessage =
-                        "Email/Password sign-in is not enabled in Firebase Console.";
-
-                } else if (error.code === "auth/network-request-failed") {
-
-                    errorMessage =
-                        "Network error. Check your internet connection.";
-
+                if (password !== confirmPassword) {
+                    showMessage("Passwords do not match.", "error");
+                    return;
                 }
 
-                showMessage(errorMessage, "error");
+                if (password.length < 6) {
+                    showMessage("Password must contain at least 6 characters.", "error");
+                    return;
+                }
 
-                console.error("Firebase signup error:", error);
+                signupButton.disabled = true;
+                signupButton.textContent = "Creating Account...";
 
-            } finally {
+                try {
+                    const userCredential =
+                        await createUserWithEmailAndPassword(auth, email, password);
 
-                // Enable the button again.
-                signupButton.disabled = false;
+                    await updateProfile(userCredential.user, {
+                        displayName: fullName
+                    });
 
-                signupButton.textContent = "Create Account →";
+                    await sendEmailVerification(userCredential.user);
 
-            }
+                    showMessage(
+                        "Account created successfully! A verification email has been sent to " +
+                        email + ". Please verify your email before logging in.",
+                        "success"
+                    );
 
-        });
+                    signupForm.reset();
 
+                } catch (error) {
+                    console.error("Email signup error code:", error.code);
+                    console.error("Email signup error message:", error.message);
+                    showMessage(getFirebaseErrorMessage(error), "error");
+
+                } finally {
+                    signupButton.disabled = false;
+                    signupButton.textContent = "Create Account →";
+                }
+            });
+        }
     </script>
+
 
     <script>
 const signupTranslations = {
@@ -777,6 +743,8 @@ const signupTranslations = {
         benefit1: "Understand complex legal documents simply.",
         benefit2: "Compare agreements and identify important changes.",
         benefit3: "Explore legal information in 9 languages.",
+        signupWithGoogle: "Sign up with Google",
+        orDivider: "OR",
         createAccount: "Create Account",
         signupSubtitle: "Join LawBuddy and start understanding legal information.",
         fullNameLabel: "Full Name",
@@ -801,6 +769,8 @@ const signupTranslations = {
         benefit1: "ಸಂಕೀರ್ಣ ಕಾನೂನು ದಾಖಲೆಗಳನ್ನು ಸರಳವಾಗಿ ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ.",
         benefit2: "ಒಪ್ಪಂದಗಳನ್ನು ಹೋಲಿಸಿ ಮತ್ತು ಪ್ರಮುಖ ಬದಲಾವಣೆಗಳನ್ನು ಗುರುತಿಸಿ.",
         benefit3: "9 ಭಾಷೆಗಳಲ್ಲಿ ಕಾನೂನು ಮಾಹಿತಿಯನ್ನು ನೋಡಿ.",
+        signupWithGoogle: "Google ನೊಂದಿಗೆ ಸೈನ್ ಅಪ್ ಮಾಡಿ",
+        orDivider: "ಅಥವಾ",
         createAccount: "ಖಾತೆ ರಚಿಸಿ",
         signupSubtitle: "LawBuddyಗೆ ಸೇರಿ ಮತ್ತು ಕಾನೂನು ಮಾಹಿತಿಯನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ.",
         fullNameLabel: "ಪೂರ್ಣ ಹೆಸರು",
@@ -825,6 +795,8 @@ const signupTranslations = {
         benefit1: "जटिल कानूनी दस्तावेज़ों को सरलता से समझें।",
         benefit2: "समझौतों की तुलना करें और महत्वपूर्ण बदलाव पहचानें।",
         benefit3: "9 भाषाओं में कानूनी जानकारी देखें।",
+        signupWithGoogle: "Google के साथ साइन अप करें",
+        orDivider: "या",
         createAccount: "खाता बनाएँ",
         signupSubtitle: "LawBuddy से जुड़ें और कानूनी जानकारी समझना शुरू करें।",
         fullNameLabel: "पूरा नाम",
@@ -849,6 +821,8 @@ const signupTranslations = {
         benefit1: "സങ്കീർണ്ണമായ നിയമ രേഖകൾ ലളിതമായി മനസ്സിലാക്കുക.",
         benefit2: "കരാറുകൾ താരതമ്യം ചെയ്ത് പ്രധാന മാറ്റങ്ങൾ കണ്ടെത്തുക.",
         benefit3: "9 ഭാഷകളിൽ നിയമ വിവരങ്ങൾ കാണുക.",
+        signupWithGoogle: "Google ഉപയോഗിച്ച് സൈൻ അപ്പ് ചെയ്യുക",
+        orDivider: "അല്ലെങ്കിൽ",
         createAccount: "അക്കൗണ്ട് സൃഷ്ടിക്കുക",
         signupSubtitle: "LawBuddyയിൽ ചേരുക, നിയമ വിവരങ്ങൾ മനസ്സിലാക്കാൻ ആരംഭിക്കുക.",
         fullNameLabel: "പൂർണ്ണ നാമം",
@@ -873,6 +847,8 @@ const signupTranslations = {
         benefit1: "సంక్లిష్టమైన న్యాయ పత్రాలను సరళంగా అర్థం చేసుకోండి.",
         benefit2: "ఒప్పందాలను పోల్చి ముఖ్యమైన మార్పులను గుర్తించండి.",
         benefit3: "9 భాషల్లో న్యాయ సమాచారాన్ని చూడండి.",
+        signupWithGoogle: "Google తో సైన్ అప్ చేయండి",
+        orDivider: "లేదా",
         createAccount: "ఖాతాను సృష్టించండి",
         signupSubtitle: "LawBuddyలో చేరి న్యాయ సమాచారాన్ని అర్థం చేసుకోవడం ప్రారంభించండి.",
         fullNameLabel: "పూర్తి పేరు",
@@ -897,6 +873,8 @@ const signupTranslations = {
         benefit1: "ಕಠಿಣ ಕಾನೂನು ದಾಖಲೆಲೆನ್ ಸುಲಭವಾದ್ ಅರ್ಥ ಮಲ್ಪುಲೆ.",
         benefit2: "ಒಪ್ಪಂದೊಲೆನ್ ಹೋಲಿಕೆ ಮಲ್ತ್‌ದ್ ಮುಖ್ಯ ಬದಲಾವಣೆ ಗುರುತು ಮಲ್ಪುಲೆ.",
         benefit3: "9 ಬಾಸೆಡ್ ಕಾನೂನು ಮಾಹಿತಿ ತೂಲೆ.",
+        signupWithGoogle: "Google ಡ್ ಸೈನ್ ಅಪ್ ಆಲೆ",
+        orDivider: "ಅತ್ತ್ಂಡ",
         createAccount: "ಖಾತೆ ಸುರು ಮಲ್ಪುಲೆ",
         signupSubtitle: "LawBuddyಗ್ ಸೇರ್ದ್ ಕಾನೂನು ಮಾಹಿತಿ ಅರ್ಥ ಮಲ್ಪೆರೆ ಸುರು ಮಲ್ಪುಲೆ.",
         fullNameLabel: "ಪೂರ್ತಿ ಪುದರ್",
@@ -921,6 +899,8 @@ const signupTranslations = {
         benefit1: "गुंतागुंतीची कायदेशीर कागदपत्रे सोप्या पद्धतीने समजा.",
         benefit2: "करारांची तुलना करा आणि महत्त्वाचे बदल ओळखा.",
         benefit3: "9 भाषांमध्ये कायदेशीर माहिती पहा.",
+        signupWithGoogle: "Google সহ साइन अप करा",
+        orDivider: "किंवा",
         createAccount: "खाते तयार करा",
         signupSubtitle: "LawBuddy मध्ये सामील व्हा आणि कायदेशीर माहिती समजून घेणे सुरू करा.",
         fullNameLabel: "पूर्ण नाव",
@@ -945,6 +925,8 @@ const signupTranslations = {
         benefit1: "જટિલ કાનૂની દસ્તાવેજો સરળતાથી સમજો.",
         benefit2: "કરારની તુલના કરો અને મહત્વના ફેરફારો ઓળખો.",
         benefit3: "9 ભાષાઓમાં કાનૂની માહિતી જુઓ.",
+        signupWithGoogle: "Google સાથે સાઇન અપ કરો",
+        orDivider: "અથવા",
         createAccount: "એકાઉન્ટ બનાવો",
         signupSubtitle: "LawBuddy સાથે જોડાઓ અને કાનૂની માહિતી સમજવાનું શરૂ કરો.",
         fullNameLabel: "પૂરું નામ",
@@ -969,6 +951,8 @@ const signupTranslations = {
         benefit1: "জটিল আইনি নথি সহজে বুঝুন।",
         benefit2: "চুক্তি তুলনা করুন এবং গুরুত্বপূর্ণ পরিবর্তন চিহ্নিত করুন।",
         benefit3: "৯টি ভাষায় আইনি তথ্য দেখুন।",
+        signupWithGoogle: "Google দিয়ে সাইন আপ করুন",
+        orDivider: "অথবা",
         createAccount: "অ্যাকাউন্ট তৈরি করুন",
         signupSubtitle: "LawBuddy-তে যোগ দিন এবং আইনি তথ্য বোঝা শুরু করুন।",
         fullNameLabel: "পূর্ণ নাম",
@@ -993,6 +977,8 @@ const signupTranslations = {
         benefit1: "சிக்கலான சட்ட ஆவணங்களை எளிமையாகப் புரிந்துகொள்ளுங்கள்.",
         benefit2: "ஒப்பந்தங்களை ஒப்பிட்டு முக்கியமான மாற்றங்களை அடையாளம் காணுங்கள்.",
         benefit3: "10 மொழிகளில் சட்டத் தகவல்களை ஆராயுங்கள்.",
+        signupWithGoogle: "Google மூலம் பதிவு செய்யவும்",
+        orDivider: "அல்லது",
         createAccount: "கணக்கை உருவாக்குங்கள்",
         signupSubtitle: "LawBuddy இல் இணைந்து சட்டத் தகவல்களைப் புரிந்துகொள்ளத் தொடங்குங்கள்.",
         fullNameLabel: "முழு பெயர்",
