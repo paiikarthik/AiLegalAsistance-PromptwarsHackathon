@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LawBuddy | Login</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Inter, sans-serif;
+            background: #f2f7ff;
+            color: #132e57;
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+            color: #176de5;
+        }
+
+        .navbar {
+            background: #fff;
+            border-bottom: 1px solid #e3ebf6;
+            padding: 18px 6%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: #12376d;
+            color: #fff;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            font-size: 25px;
+        }
+
+        .logo h2 {
+            font-size: 23px;
+            color: #102b55;
+        }
+
+        .logo h2 span {
+            color: #176de5;
+        }
+
+        .logo small {
+            display: block;
+            color: #7183a0;
+            font-size: 10px;
+            letter-spacing: 0.7px;
+        }
+
+        .language-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .language-selector label {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .language-selector select {
+            padding: 10px 12px;
+            border: 1px solid #d7e2f0;
+            border-radius: 8px;
+            background: #fff;
+            color: #18345e;
+        }
+
+        .page {
+            min-height: calc(100vh - 82px);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 50px;
+            max-width: 1180px;
+            width: 90%;
+            margin: auto;
+            padding: 55px 0;
+        }
+
+        .intro h1 {
+            font-size: clamp(35px, 4vw, 52px);
+            line-height: 1.2;
+            letter-spacing: -1.5px;
+            margin-bottom: 22px;
+        }
+
+        .intro h1 span {
+            color: #176de5;
+        }
+
+        .intro p {
+            color: #5c7293;
+            font-size: 16px;
+            line-height: 1.8;
+            max-width: 480px;
+            margin-bottom: 28px;
+        }
+
+        .benefit {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 17px 0;
+            color: #355477;
+            font-size: 14px;
+        }
+
+        .benefit-icon {
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            background: #dcecff;
+            border-radius: 50%;
+            color: #176de5;
+            font-weight: bold;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #e1eaf5;
+            border-radius: 22px;
+            padding: 38px;
+            box-shadow: 0 15px 45px #23579117;
+            max-width: 480px;
+            width: 100%;
+            margin-left: auto;
+        }
+
+        .card h2 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #7083a0;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        .group {
+            margin-bottom: 18px;
+        }
+
+        .group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #28466e;
+        }
+
+        .group input {
+            width: 100%;
+            padding: 13px 15px;
+            border: 1px solid #d7e2f0;
+            border-radius: 10px;
+            outline: none;
+            color: #19365e;
+            background: #fbfdff;
+            font-size: 14px;
+        }
+
+        .group input:focus {
+            border-color: #176de5;
+            box-shadow: 0 0 0 3px #176de51a;
+        }
+
+        .button {
+            width: 100%;
+            padding: 13px;
+            border: 0;
+            border-radius: 10px;
+            background: #102b55;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .google {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #d7e2f0;
+            border-radius: 10px;
+            background: #fff;
+            color: #19365e;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .google svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+            color: #8293aa;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #e1eaf5;
+        }
+
+        .message {
+            display: none;
+            padding: 12px;
+            border-radius: 9px;
+            font-size: 13px;
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+
+        .message.success {
+            display: block;
+            background: #e7f8ef;
+            color: #147a4a;
+        }
+
+        .message.error {
+            display: block;
+            background: #fff0f0;
+            color: #b42323;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 23px;
+            color: #7183a0;
+            font-size: 13px;
+        }
+
+        .forgot {
+            text-align: right;
+            font-size: 12px;
+            margin-top: -8px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 850px) {
+            .page {
+                grid-template-columns: 1fr;
+                gap: 35px;
+                padding: 45px 0;
+            }
+
+            .intro {
+                text-align: center;
+            }
+
+            .intro p {
+                margin: auto auto 28px;
+            }
+
+            .benefit {
+                justify-content: center;
+            }
+
+            .card {
+                margin: auto;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .navbar {
+                padding: 15px 5%;
+            }
+
+            .logo h2 {
+                font-size: 20px;
+            }
+
+            .page {
+                width: 92%;
+                padding: 30px 0;
+            }
+
+            .card {
+                padding: 25px 20px;
+                border-radius: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <a href="index.html" class="logo">
+            <div class="logo-icon">⚖</div>
+
+            <div>
+                <h2>LawBuddy <span>AI</span></h2>
+                <small data-i18n="tagline">Understand • Compare • Navigate</small>
+            </div>
+        </a>
+
+        <div class="language-selector">
+            <label for="languageSelect" data-i18n="langLabel">Language</label>
+
+            <select id="languageSelect">
+                <option value="en">English</option>
+                <option value="kn">ಕನ್ನಡ</option>
+                <option value="hi">हिन्दी</option>
+                <option value="ml">മലയാളം</option>
+                <option value="te">తెలుగు</option>
+                <option value="tulu">ತುಳು</option>
+                <option value="mr">ಮರಾಠಿ</option>
+                <option value="gu">ગુજરાતી</option>
+                <option value="bn">বাংলা</option>
+                <option value="ta">தமிழ்</option>
+            </select>
+        </div>
+    </header>
+
+    <main class="page">
+        <section class="intro">
+            <h1>
+                <span data-i18n="loginTitle">Your Legal Assistant,</span>
+                <br>
+                <span data-i18n="loginTitleHighlight">Always by Your Side.</span>
+            </h1>
+
+            <p data-i18n="loginDesc">
+                Log in to your LawBuddy account and make legal information easier
+                to understand. Explore documents, identify important clauses, and
+                get AI-powered assistance in your preferred language.
+            </p>
+
+            <div class="benefit">
+                <div class="benefit-icon">✓</div>
+                <span data-i18n="benefit1">Understand complex legal documents simply.</span>
+            </div>
+
+            <div class="benefit">
+                <div class="benefit-icon">✓</div>
+                <span data-i18n="benefit2">Compare agreements and identify important changes.</span>
+            </div>
+
+            <div class="benefit">
+                <div class="benefit-icon">✓</div>
+                <span data-i18n="benefit3">Explore legal information in multiple languages.</span>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2 data-i18n="welcomeBack">Welcome Back</h2>
+
+            <p class="subtitle" data-i18n="loginSubtitle">
+                Log in to continue using LawBuddy.
+            </p>
+
+            <div id="message" class="message" role="alert"></div>
+
+            <button class="google" id="googleLogin">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        fill="#4285F4"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    />
+
+                    <path
+                        fill="#34A853"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                    />
+
+                    <path
+                        fill="#FBBC05"
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                    />
+
+                    <path
+                        fill="#EA4335"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                    />
+                </svg>
+
+                <span data-i18n="loginWithGoogle">Log in with Google</span>
+            </button>
+
+            <div class="divider">
+                <span data-i18n="orDivider">OR</span>
+            </div>
+
+            <form id="loginForm">
+                <div class="group">
+                    <label for="email" data-i18n="emailLabel">Email Address</label>
+
+                    <input
+                        id="email"
+                        type="email"
+                        placeholder="Enter your email"
+                        data-i18n-placeholder="emailPlaceholder"
+                        required
+                        autocomplete="email"
+                    >
+                </div>
+
+                <div class="group">
+                    <label for="password" data-i18n="passwordLabel">Password</label>
+
+                    <input
+                        id="password"
+                        type="password"
+                        placeholder="Enter your password"
+                        data-i18n-placeholder="passwordPlaceholder"
+                        required
+                        autocomplete="current-password"
+                    >
+                </div>
+
+                <div class="forgot">
+                    <a href="#" id="forgotPassword" data-i18n="forgotPassword">Forgot password?</a>
+                </div>
+
+                <button class="button" id="loginButton" type="submit" data-i18n="loginBtn">
+                    Log In →
+                </button>
+            </form>
+
+            <p class="login-link">
+                <span data-i18n="dontHaveAccount">Don't have an account?</span>
+                <a href="signup.html" data-i18n="createAccount">Create Account</a>
+            </p>
+        </section>
+    </main>
+
+    <script type="module">
+        import {
+            initializeApp
+        } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+
+        import {
+            getAuth,
+            signInWithEmailAndPassword,
+            GoogleAuthProvider,
+            signInWithPopup,
+            sendPasswordResetEmail,
+            signOut,
+            getAdditionalUserInfo
+        } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB_fuclvAZM2lWJ0WmfHzrKFCroSmDL2T8",
+            authDomain: "lawbuddypromptwars.firebaseapp.com",
+            projectId: "lawbuddypromptwars",
+            storageBucket: "lawbuddypromptwars.firebasestorage.app",
+            messagingSenderId: "33818178704",
+            appId: "1:33818178704:web:c27c73fb4a4fa089619415"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        const message = document.getElementById("message");
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+
+        function show(text, type = "error") {
+            message.textContent = text;
+            message.className = "message " + type;
+        }
+
+        function save(user) {
+            localStorage.setItem(
+                "lawbuddyUser",
+                JSON.stringify({
+                    uid: user.uid,
+                    name: user.displayName || "",
+                    email: user.email || "",
+                    photoURL: user.photoURL || ""
+                })
+            );
+
+            window.location.href = "index.html";
+        }
+
+        function errorText(error) {
+            console.error("Firebase auth error code:", error.code, "message:", error.message);
+            const messages = {
+                "auth/invalid-credential": "Invalid email or password.",
+                "auth/user-not-found":
+                    "No account found with this email. Please sign up first.",
+                "auth/wrong-password": "Invalid email or password.",
+                "auth/invalid-email":
+                    "Please enter a valid email address.",
+                "auth/too-many-requests":
+                    "Too many login attempts. Please wait and try again later.",
+                "auth/popup-closed-by-user":
+                    "Google login was cancelled.",
+                "auth/popup-blocked":
+                    "Please allow popups for this website.",
+                "auth/unauthorized-domain":
+                    "Add this domain in Firebase Authentication → Settings → Authorized domains.",
+                "auth/operation-not-allowed":
+                    "Enable this sign-in method in Firebase Authentication → Sign-in method.",
+                "auth/network-request-failed":
+                    "Network error. Check your internet connection."
+            };
+
+            return messages[error.code] || (error.message ? `${error.code || 'Error'}: ${error.message}` : "Login failed. Please try again.");
+        }
+
+        document
+            .getElementById("loginForm")
+            .addEventListener("submit", async (event) => {
+                event.preventDefault();
+
+                const button = document.getElementById("loginButton");
+
+                button.disabled = true;
+                button.textContent = "Logging in...";
+
+                try {
+                    const result = await signInWithEmailAndPassword(
+                        auth,
+                        emailInput.value.trim(),
+                        passwordInput.value
+                    );
+
+                    save(result.user);
+                } catch (error) {
+                    show(errorText(error));
+                } finally {
+                    button.disabled = false;
+                    button.textContent = "Log In →";
+                }
+            });
+
+        document
+            .getElementById("googleLogin")
+            .addEventListener("click", async () => {
+                try {
+                    const result = await signInWithPopup(auth, provider);
+                    const info = getAdditionalUserInfo(result);
+
+                    if (info?.isNewUser) {
+                        await signOut(auth);
+
+                        show(
+                            "No account found for this Google account. Please sign up first."
+                        );
+
+                        return;
+                    }
+
+                    save(result.user);
+                } catch (error) {
+                    show(errorText(error));
+                }
+            });
+
+        document
+            .getElementById("forgotPassword")
+            .addEventListener("click", async (event) => {
+                event.preventDefault();
+
+                const email = emailInput.value.trim();
+
+                if (!email) {
+                    show("Enter your email address first.");
+                    return;
+                }
+
+                try {
+                    await sendPasswordResetEmail(auth, email);
+
+                    show(
+                        "Password reset email sent. Check your inbox.",
+                        "success"
+                    );
+                } catch (error) {
+                    show(errorText(error));
+                }
+            });
+    </script>
+
+    <script>
+const loginTranslations = {
+    en: {
+        tagline: "Understand • Compare • Navigate",
+        langLabel: "Language",
+        loginTitle: "Your Legal Assistant,",
+        loginTitleHighlight: "Always by Your Side.",
+        loginDesc: "Log in to your LawBuddy account and make legal information easier to understand. Explore documents, identify important clauses, and get AI-powered assistance in your preferred language.",
+        benefit1: "Understand complex legal documents simply.",
+        benefit2: "Compare agreements and identify important changes.",
+        benefit3: "Explore legal information in multiple languages.",
+        welcomeBack: "Welcome Back",
+        loginSubtitle: "Log in to continue using LawBuddy.",
+        loginWithGoogle: "Log in with Google",
+        orDivider: "OR",
+        emailLabel: "Email Address",
+        emailPlaceholder: "Enter your email",
+        passwordLabel: "Password",
+        passwordPlaceholder: "Enter your password",
+        forgotPassword: "Forgot password?",
+        loginBtn: "Log In →",
+        dontHaveAccount: "Don't have an account?",
+        createAccount: "Create Account"
+    },
+    kn: {
+        tagline: "ಅರ್ಥಮಾಡಿ • ಹೋಲಿಸಿ • ಮುಂದುವರಿಸಿ",
+        langLabel: "ಭಾಷೆ",
+        loginTitle: "ನಿಮ್ಮ ಕಾನೂನು ಸಹಾಯಕ,",
+        loginTitleHighlight: "ಎಂದಿಗೂ ನಿಮ್ಮೊಂದಿಗೆ.",
+        loginDesc: "ನಿಮ್ಮ LawBuddy ಖಾತೆಗೆ ಲಾಗಿನ್ ಮಾಡಿ ಮತ್ತು ಕಾನೂನು ಮಾಹಿತಿಯನ್ನು ಸುಲಭವಾಗಿ ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ.",
+        benefit1: "ಸಂಕೀರ್ಣ ಕಾನೂನು ದಾಖಲೆಗಳನ್ನು ಸರಳವಾಗಿ ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ.",
+        benefit2: "ಒಪ್ಪಂದಗಳನ್ನು ಹೋಲಿಸಿ ಮತ್ತು ಪ್ರಮುಖ ಬದಲಾವಣೆಗಳನ್ನು ಗುರುತಿಸಿ.",
+        benefit3: "ಹಲವು ಭಾಷೆಗಳಲ್ಲಿ ಕಾನೂನು ಮಾಹಿತಿಯನ್ನು ನೋಡಿ.",
+        welcomeBack: "ಮತ್ತೆ ಸುಸ್ವಾಗತ",
+        loginSubtitle: "LawBuddy ಬಳಸುವುದನ್ನು ಮುಂದುವರಿಸಲು ಲಾಗಿನ್ ಮಾಡಿ.",
+        loginWithGoogle: "Google ನೊಂದಿಗೆ ಲಾಗಿನ್ ಮಾಡಿ",
+        orDivider: "ಅಥವಾ",
+        emailLabel: "ಇಮೇಲ್ ವಿಳಾಸ",
+        emailPlaceholder: "ನಿಮ್ಮ ಇಮೇಲ್ ನಮೂದಿಸಿ",
+        passwordLabel: "ಪಾಸ್‌ವರ್ಡ್",
+        passwordPlaceholder: "ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ",
+        forgotPassword: "ಪಾಸ್‌ವರ್ಡ್ ಮರೆತಿದ್ದೀರಾ?",
+        loginBtn: "ಲಾಗಿನ್ ಮಾಡಿ →",
+        dontHaveAccount: "ಖಾತೆ ಇಲ್ಲವೇ?",
+        createAccount: "ಖಾತೆ ರಚಿಸಿ"
+    },
+    hi: {
+        tagline: "समझें • तुलना करें • आगे बढ़ें",
+        langLabel: "भाषा",
+        loginTitle: "आपका कानूनी सहायक,",
+        loginTitleHighlight: "हमेशा आपके साथ।",
+        loginDesc: "अपने LawBuddy खाते में लॉग इन करें और कानूनी जानकारी आसानी से समझें।",
+        benefit1: "जटिल कानूनी दस्तावेज़ों को सरलता से समझें।",
+        benefit2: "समझौतों की तुलना करें और महत्वपूर्ण बदलाव पहचानें।",
+        benefit3: "कई भाषाओं में कानूनी जानकारी देखें।",
+        welcomeBack: "वापसी पर स्वागत है",
+        loginSubtitle: "LawBuddy का उपयोग जारी रखने के लिए लॉग इन करें।",
+        loginWithGoogle: "Google के साथ लॉग इन करें",
+        orDivider: "या",
+        emailLabel: "ईमेल पता",
+        emailPlaceholder: "अपना ईमेल दर्ज करें",
+        passwordLabel: "पासवर्ड",
+        passwordPlaceholder: "अपना पासवर्ड दर्ज करें",
+        forgotPassword: "पासवर्ड भूल गए?",
+        loginBtn: "लॉग इन करें →",
+        dontHaveAccount: "खाता नहीं है?",
+        createAccount: "खाता बनाएँ"
+    },
+    ml: {
+        tagline: "മനസ്സിലാക്കുക • താരതമ്യം ചെയ്യുക • മുന്നോട്ട് പോകുക",
+        langLabel: "ഭാഷ",
+        loginTitle: "നിങ്ങളുടെ നിയമ സഹായി,",
+        loginTitleHighlight: "എപ്പോഴും നിങ്ങളുടെ ഒപ്പം.",
+        loginDesc: "നിങ്ങളുടെ LawBuddy അക്കൗണ്ടിലേക്ക് ലോഗിൻ ചെയ്ത് നിയമ വിവരങ്ങൾ എളുപ്പത്തിൽ മനസ്സിലാക്കുക.",
+        benefit1: "സങ്കീർണ്ണമായ നിയമ രേഖകൾ ലളിതമായി മനസ്സിലാക്കുക.",
+        benefit2: "കരാറുകൾ താരതമ്യം ചെയ്ത് പ്രധാന മാറ്റങ്ങൾ കണ്ടെത്തുക.",
+        benefit3: "വിവിധ ഭാഷകളിൽ നിയമ വിവരങ്ങൾ കാണുക.",
+        welcomeBack: "വീണ്ടും സ്വാഗതം",
+        loginSubtitle: "LawBuddy ഉപയോഗിക്കുന്നത് തുടരാൻ ലോഗിൻ ചെയ്യുക.",
+        loginWithGoogle: "Google ഉപയോഗിച്ച് ലോഗിൻ ചെയ്യുക",
+        orDivider: "അല്ലെങ്കിൽ",
+        emailLabel: "ഇമെയിൽ വിലാസം",
+        emailPlaceholder: "നിങ്ങളുടെ ഇമെയിൽ നൽകുക",
+        passwordLabel: "പാസ്‌വേഡ്",
+        passwordPlaceholder: "നിങ്ങളുടെ പാസ്‌വേഡ് നൽകുക",
+        forgotPassword: "പാസ്‌വേഡ് മറന്നോ?",
+        loginBtn: "ലോഗിൻ ചെയ്യുക →",
+        dontHaveAccount: "അക്കൗണ്ട് ഇല്ലേ?",
+        createAccount: "അക്കൗണ്ട് സൃഷ്ടിക്കുക"
+    },
+    te: {
+        tagline: "అర్థం చేసుకోండి • పోల్చండి • ముందుకు సాగండి",
+        langLabel: "భాష",
+        loginTitle: "మీ న్యాయ సహాయకుడు,",
+        loginTitleHighlight: "ఎల్లప్పుడూ మీ వెంట.",
+        loginDesc: "మీ LawBuddy ఖాతాలోకి లాగిన్ అవ్వండి మరియు న్యాయ సమాచారాన్ని సులభంగా అర్థం చేసుకోండి.",
+        benefit1: "సంక్లిష్టమైన న్యాయ పత్రాలను సరళంగా అర్థం చేసుకోండి.",
+        benefit2: "ఒప్పందాలను పోల్చి ముఖ్యమైన మార్పులను గుర్తించండి.",
+        benefit3: "పలు భాషల్లో న్యాయ సమాచారాన్ని చూడండి.",
+        welcomeBack: "మళ్లీ స్వాగతం",
+        loginSubtitle: "LawBuddyని ఉపయోగించడం కొనసాగించడానికి లాగిన్ చేయండి.",
+        loginWithGoogle: "Google తో లాగిన్ చేయండి",
+        orDivider: "లేదా",
+        emailLabel: "ఇమెయిల్ చిరునామా",
+        emailPlaceholder: "మీ ఇమెయిల్ నమోదు చేయండి",
+        passwordLabel: "పాస్‌వర్డ్",
+        passwordPlaceholder: "మీ పాస్‌వర్డ్ నమోదు చేయండి",
+        forgotPassword: "పాస్‌వర్డ్ మరిచిపోయారా?",
+        loginBtn: "లాగిన్ చేయండి →",
+        dontHaveAccount: "ఖాతా లేదా?",
+        createAccount: "ఖాతాను సృష్టించండి"
+    },
+    tulu: {
+        tagline: "ಅರ್ಥ ಮಲ್ಪುಲೆ • ಹೋಲಿಕೆ ಮಲ್ಪುಲೆ • ಮುಂದು ಪೋಲೆ",
+        langLabel: "ಬಾಸೆ",
+        loginTitle: "ಈರೆನ ಕಾನೂನು ಸಹಾಯಕೆ,",
+        loginTitleHighlight: "ಎಪೊಲ ಈರೆನೊಟ್ಟುಗು.",
+        loginDesc: "ಈರೆನ LawBuddy ಖಾತೆಗ್ ಲಾಗಿನ್ ಆಲೆ ಬೊಕ್ಕ ಕಾನೂನು ಮಾಹಿತಿನ್ ಸುಲಭವಾದ್ ಅರ್ಥ ಮಲ್ಪುಲೆ.",
+        benefit1: "ಕಠಿಣ ಕಾನೂನು ದಾಖಲೆಲೆನ್ ಸುಲಭವಾದ್ ಅರ್ಥ ಮಲ್ಪುಲೆ.",
+        benefit2: "ಒಪ್ಪಂದೊಲೆನ್ ಹೋಲಿಕೆ ಮಲ್ತ್‌ದ್ ಮುಖ್ಯ ಬದಲಾವಣೆ ಗುರುತು ಮಲ್ಪುಲೆ.",
+        benefit3: "ಮಸ್ತ್ ಬಾಸೆಡ್ ಕಾನೂನು ಮಾಹಿತಿ ತೂಲೆ.",
+        welcomeBack: "ಪಿರೊರ ಸ್ವಾಗತ",
+        loginSubtitle: "LawBuddy ಗಳಸೆರೆ ಲಾಗಿನ್ ಆಲೆ.",
+        loginWithGoogle: "Google ಡ್ ಲಾಗಿನ್ ಆಲೆ",
+        orDivider: "ಅತ್ತ್ಂಡ",
+        emailLabel: "ಇಮೇಲ್ ವಿಳಾಸ",
+        emailPlaceholder: "ಈರೆನ ಇಮೇಲ್ ಪಾಡುಲೆ",
+        passwordLabel: "ಪಾಸ್‌ವರ್ಡ್",
+        passwordPlaceholder: "ಈರೆನ ಪಾಸ್‌ವರ್ಡ್ ಪಾಡುಲೆ",
+        forgotPassword: "ಪಾಸ್‌ವರ್ಡ್ ಮರತ್ತ್ಂಡಾ?",
+        loginBtn: "ಲಾಗಿನ್ ಆಲೆ →",
+        dontHaveAccount: "ಖಾತೆ ಇಜ್ಜಿಯಾ?",
+        createAccount: "ಖಾತೆ ಸುರು ಮಲ್ಪುಲೆ"
+    },
+    mr: {
+        tagline: "समजा • तुलना करा • पुढे जा",
+        langLabel: "भाषा",
+        loginTitle: "तुमचा कायदेशीर सहाय्यक,",
+        loginTitleHighlight: "नेहमी तुमच्या सोबत.",
+        loginDesc: "तुमच्या LawBuddy खात्यात लॉगिन करा आणि कायदेशीर माहिती सहज समजा.",
+        benefit1: "गुंतागुंतीची कायदेशीर कागदपत्रे सोप्या पद्धतीने समजा.",
+        benefit2: "करारांची तुलना करा आणि महत्त्वाचे बदल ओळखा.",
+        benefit3: "अनेक भाषांमध्ये कायदेशीर माहिती पहा.",
+        welcomeBack: "पुन्हा स्वागत आहे",
+        loginSubtitle: "LawBuddy वापरणे सुरू ठेवण्यासाठी लॉगिन करा.",
+        loginWithGoogle: "Google सह लॉगिन करा",
+        orDivider: "किंवा",
+        emailLabel: "ईमेल पत्ता",
+        emailPlaceholder: "तुमचा ईमेल प्रविष्ट करा",
+        passwordLabel: "पासवर्ड",
+        passwordPlaceholder: "तुमचा पासवर्ड प्रविष्ट करा",
+        forgotPassword: "पासवर्ड विसरलात?",
+        loginBtn: "लॉगिन करा →",
+        dontHaveAccount: "खाते नाही?",
+        createAccount: "खाते तयार करा"
+    },
+    gu: {
+        tagline: "સમજો • તુલના કરો • આગળ વધો",
+        langLabel: "ભાષા",
+        loginTitle: "તમારો કાનૂની સહાયક,",
+        loginTitleHighlight: "હંમેશાં તમારી સાથે.",
+        loginDesc: "તમારા LawBuddy એકાઉન્ટમાં લોગ ઈન કરો અને કાનૂની માહિતી સરળતાથી સમજો.",
+        benefit1: "જટિલ કાનૂની દસ્તાવેજો સરળતાથી સમજો.",
+        benefit2: "કરારની તુલના કરો અને મહત્વના ફેરફારો ઓળખો.",
+        benefit3: "અનેક ભાષાઓમાં કાનૂની માહિતી જુઓ.",
+        welcomeBack: "પુનઃ સ્વાગત છે",
+        loginSubtitle: "LawBuddy નો ઉપયોગ ચાલુ રાખવા માટે લોગ ઈન કરો.",
+        loginWithGoogle: "Google સાથે લોગ ઈન કરો",
+        orDivider: "અથવા",
+        emailLabel: "ઈમેઈલ સરનામું",
+        emailPlaceholder: "તમારું ઈમેઈલ દાખલ કરો",
+        passwordLabel: "પાસવર્ડ",
+        passwordPlaceholder: "તમારો પાસવર્ડ દાખલ કરો",
+        forgotPassword: "પાસવર્ડ ભૂલી ગયા?",
+        loginBtn: "લોગ ઈન કરો →",
+        dontHaveAccount: "એકાઉન્ટ નથી?",
+        createAccount: "એકાઉન્ટ બનાવો"
+    },
+    bn: {
+        tagline: "বুঝুন • তুলনা করুন • এগিয়ে যান",
+        langLabel: "ভাষা",
+        loginTitle: "আপনার আইনি সহকারী,",
+        loginTitleHighlight: "সবসময় আপনার পাশে।",
+        loginDesc: "আপনার LawBuddy অ্যাকাউন্টে লগ ইন করুন এবং আইনি তথ্য সহজে বুঝুন।",
+        benefit1: "জটিল আইনি নথি সহজে বুঝুন।",
+        benefit2: "চুক্তি তুলনা করুন এবং গুরুত্বপূর্ণ পরিবর্তন চিহ্নিত করুন।",
+        benefit3: "বিভিন্ন ভাষায় আইনি তথ্য দেখুন।",
+        welcomeBack: "পুনরায় স্বাগতম",
+        loginSubtitle: "LawBuddy ব্যবহার চালিয়ে যেতে লগ ইন করুন।",
+        loginWithGoogle: "Google দিয়ে লগ ইন করুন",
+        orDivider: "অথবা",
+        emailLabel: "ইমেল ঠিকানা",
+        emailPlaceholder: "আপনার ইমেল লিখুন",
+        passwordLabel: "পাসওয়ার্ড",
+        passwordPlaceholder: "আপনার পাসওয়ার্ড লিখুন",
+        forgotPassword: "পাসওয়ার্ড ভুলে গেছেন?",
+        loginBtn: "লগ ইন করুন →",
+        dontHaveAccount: "অ্যাকাউন্ট নেই?",
+        createAccount: "অ্যাকাউন্ট তৈরি করুন"
+    },
+    ta: {
+        tagline: "புரிந்துகொள்ளுங்கள் • ஒப்பிடுங்கள் • பயன்படுத்துங்கள்",
+        langLabel: "மொழி",
+        loginTitle: "உங்கள் சட்ட உதவியாளர்,",
+        loginTitleHighlight: "எப்போதும் உங்களுடன்.",
+        loginDesc: "உங்கள் LawBuddy கணக்கில் உள்நுழைந்து சட்டத் தகவல்களை எளிதாகப் புரிந்துகொள்ளுங்கள்.",
+        benefit1: "சிக்கலான சட்ட ஆவணங்களை எளிமையாகப் புரிந்துகொள்ளுங்கள்.",
+        benefit2: "ஒப்பந்தங்களை ஒப்பிட்டு முக்கியமான மாற்றங்களை அடையாளம் காணுங்கள்.",
+        benefit3: "பல மொழிகளில் சட்டத் தகவல்களை ஆராயுங்கள்.",
+        welcomeBack: "மீண்டும் வருக",
+        loginSubtitle: "LawBuddy ஐப் பயன்படுத்தத் தொடர உள்நுழையவும்.",
+        loginWithGoogle: "Google மூலம் உள்நுழையவும்",
+        orDivider: "அல்லது",
+        emailLabel: "மின்னஞ்சல் முகவரி",
+        emailPlaceholder: "உங்கள் மின்னஞ்சலை உள்ளிடுங்கள்",
+        passwordLabel: "கடவுச்சொல்",
+        passwordPlaceholder: "உங்கள் கடவுச்சொல்லை உள்ளிடுங்கள்",
+        forgotPassword: "கடவுச்சொல்லை மறந்துவிட்டீர்களா?",
+        loginBtn: "உள்நுழையவும் →",
+        dontHaveAccount: "கணக்கு இல்லையா?",
+        createAccount: "கணக்கை உருவாக்குங்கள்"
+    }
+};
+
+function changeLoginLanguage(language) {
+    const selectedLanguage = loginTranslations[language] || loginTranslations.en;
+
+    document.querySelectorAll("[data-i18n]").forEach((element) => {
+        const key = element.getAttribute("data-i18n");
+        const text = selectedLanguage[key] || loginTranslations.en[key];
+
+        if (text) {
+            element.textContent = text;
+        }
+    });
+
+    document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
+        const key = element.getAttribute("data-i18n-placeholder");
+        const text = selectedLanguage[key] || loginTranslations.en[key];
+
+        if (text) {
+            element.placeholder = text;
+        }
+    });
+
+    const languageSelect = document.getElementById("languageSelect");
+    if (languageSelect && languageSelect.value !== language) {
+        languageSelect.value = language;
+    }
+
+    localStorage.setItem("lawbuddyLanguage", language);
+    document.documentElement.lang = language === "tulu" ? "tcy" : language;
+}
+
+function initLoginTranslation() {
+    const languageSelect = document.getElementById("languageSelect");
+    const savedLanguage = localStorage.getItem("lawbuddyLanguage") || "en";
+
+    if (languageSelect) {
+        languageSelect.value = savedLanguage;
+        languageSelect.addEventListener("change", function () {
+            changeLoginLanguage(this.value);
+        });
+    }
+
+    changeLoginLanguage(savedLanguage);
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initLoginTranslation);
+} else {
+    initLoginTranslation();
+}
+    </script>
+</body>
+</html>
