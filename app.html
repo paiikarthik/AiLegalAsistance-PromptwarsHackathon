@@ -3,11 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LawBuddy AI | Responsible GenAI Legal Access Platform</title>
+    <title>LawBuddy AI | GenAI Housing Legal Access & Case Preparation Platform</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="static/css/styles.css">
+    <style>
+        .badge-pill { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+        .bg-urgent { background: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
+        .bg-warning { background: #fef3c7; color: #92400e; border: 1px solid #fbbf24; }
+        .bg-success { background: #dcfce7; color: #166534; border: 1px solid #4ade80; }
+        .bg-info { background: #e0f2fe; color: #0369a1; border: 1px solid #38bdf8; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+        .card-box { background: #ffffff; border: 1px solid var(--border-color); border-radius: 14px; padding: 20px; }
+        .table-custom { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+        .table-custom th, .table-custom td { padding: 10px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        .table-custom th { background: #f8fafc; font-weight: 700; color: #1e293b; }
+        .scenario-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+    </style>
 </head>
 <body class="app-body">
 
@@ -26,7 +41,7 @@
 
             <div class="header-controls">
                 <div class="demo-badge-btn" id="loadSampleDemoBtn" title="Click to load pre-configured Eviction Notice / Rental Agreement Demo">
-                    ⚡ <span>1-Click Hackathon Demo</span>
+                    ⚡ <span>1-Click Eviction Notice Demo</span>
                 </div>
 
                 <div class="language-selector-wrapper">
@@ -46,9 +61,7 @@
                 </div>
 
                 <div class="user-profile">
-                    <span style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; margin-right: 6px;">
-                        🛡️ Responsible AI Active
-                    </span>
+                    <span class="badge-pill bg-info">🛡️ Responsible AI Active</span>
                     <div class="avatar">👤</div>
                     <span id="userNameLabel">Housing User</span>
                     <a href="index.html" class="logout-link">Exit</a>
@@ -66,66 +79,66 @@
                 <div class="doc-icon">📜</div>
                 <div class="doc-info">
                     <span class="doc-label">Active Document</span>
-                    <h4 id="activeDocName">No Document Selected</h4>
-                    <span class="doc-badge" id="activeDocTypeBadge">Eviction / Lease / Notice</span>
+                    <h4 id="activeDocName">Eviction_Notice_Sample.pdf</h4>
+                    <span class="doc-badge" id="activeDocTypeBadge">Eviction Notice</span>
                 </div>
             </div>
 
             <nav class="nav-menu">
                 <button class="nav-tab active" data-target="uploadTab">
                     <span class="icon">📤</span>
-                    <span>Upload & Extract</span>
+                    <span>1. Upload & Extract</span>
                 </button>
 
                 <button class="nav-tab" data-target="clarityMapTab">
                     <span class="icon">🗺️</span>
-                    <span>Legal Clarity Map</span>
+                    <span>2. Legal Clarity Map</span>
                     <span class="star-badge">MVP</span>
                 </button>
 
                 <button class="nav-tab" data-target="factsTimelineTab">
                     <span class="icon">📊</span>
-                    <span>Facts & Event Timeline</span>
+                    <span>3. Extracted Facts & Timeline</span>
                 </button>
 
                 <button class="nav-tab" data-target="deadlinesTab">
                     <span class="icon">⏰</span>
-                    <span>Deadline & Urgency Radar</span>
+                    <span>4. Deadline & Urgency Radar</span>
                 </button>
 
                 <button class="nav-tab" data-target="scenariosTab">
                     <span class="icon">❓</span>
-                    <span>"What Would Change" Matrix</span>
+                    <span>5. "What Would Change" Matrix</span>
                 </button>
 
                 <button class="nav-tab" data-target="riskExplorerTab">
                     <span class="icon">🔍</span>
-                    <span>Clause & Risk Explorer</span>
+                    <span>6. Clause & Risk Explorer</span>
                 </button>
 
                 <button class="nav-tab" data-target="compareTab">
                     <span class="icon">⚔️</span>
-                    <span>Contract Comparison</span>
+                    <span>7. Contract Comparison</span>
                 </button>
 
                 <button class="nav-tab" data-target="chatTab">
                     <span class="icon">💬</span>
-                    <span>Grounded AI Chat</span>
+                    <span>8. Grounded AI Chat</span>
                 </button>
 
                 <button class="nav-tab" data-target="briefTab">
                     <span class="icon">📋</span>
-                    <span>Lawyer Case Packet</span>
-                </button>
-
-                <button class="nav-tab" data-target="sourcesTab">
-                    <span class="icon">🌐</span>
-                    <span>Legal Sources Navigator</span>
+                    <span>9. Lawyer Case Packet</span>
                 </button>
 
                 <button class="nav-tab" data-target="safetyAuditTab">
                     <span class="icon">🛡️</span>
-                    <span>Human Review & Audit</span>
+                    <span>10. Human Review & Safety</span>
+                </button>
+
+                <button class="nav-tab" data-target="designArchTab">
+                    <span class="icon">🏛️</span>
+                    <span>11. Architecture & Design</span>
                 </button>
             </nav>
 
@@ -220,7 +233,8 @@
                         </div>
                         <p class="action-desc">Plain-language summary of what this document demands</p>
                         <ul id="actionMapUnderstand" class="action-list">
-                            <li>Upload a document or click '1-Click Hackathon Demo' to populate.</li>
+                            <li>Landlord Rajesh Kumar demands ₹45,000 rent arrears + ₹2,500 late fee for July–Sept 2026.</li>
+                            <li>Demands payment or premise surrender within 15 days of notice date (Oct 1, 2026).</li>
                         </ul>
                     </div>
 
@@ -232,7 +246,8 @@
                         </div>
                         <p class="action-desc">Deadlines, cure periods, monetary claims & obligations</p>
                         <ul id="actionMapIdentify" class="action-list">
-                            <li>Key obligations and flagged concerns will appear here.</li>
+                            <li><strong>Response Deadline:</strong> October 16, 2026 (15-Day Statutory Cure Period).</li>
+                            <li><strong>Unenforceable Late Fee:</strong> ₹2,500 late fee not specified in standard 11-month lease.</li>
                         </ul>
                     </div>
 
@@ -246,13 +261,15 @@
                         <div class="sub-section">
                             <strong>Questions to ask a lawyer / legal-aid advocate:</strong>
                             <ul id="actionMapQuestions" class="action-list">
-                                <li>Recommended questions for consultation.</li>
+                                <li>Does a 15-day eviction notice satisfy statutory requirements under Karnataka Rent Control Act?</li>
+                                <li>Can rent receipts or UPI payment screenshots invalidate non-payment eviction claims?</li>
                             </ul>
                         </div>
                         <div class="sub-section">
                             <strong>Evidence & records to collect:</strong>
                             <ul id="actionMapChecklist" class="action-list">
-                                <li>Rent receipts, bank statements, photos, messages.</li>
+                                <li>Bank statements & UPI transaction references for July – Sept 2026.</li>
+                                <li>Original signed rental agreement & WhatsApp chat exports.</li>
                             </ul>
                         </div>
                     </div>
@@ -267,7 +284,8 @@
                         <div class="sub-section">
                             <strong>Suggested Immediate Next Steps:</strong>
                             <ul id="actionMapNextSteps" class="action-list">
-                                <li>Actionable steps for tenant / legal recipient.</li>
+                                <li>Do not panic or move out immediately; statutory notice period allows formal response.</li>
+                                <li>Export Case Packet and consult District Legal Services Authority (DLSA / NALSA).</li>
                             </ul>
                         </div>
                         <div class="sub-section">
@@ -284,43 +302,43 @@
             <!-- TAB 3: EXTRACTED FACTS & EVENT TIMELINE -->
             <section id="factsTimelineTab" class="tab-pane">
                 <div class="section-header">
-                    <h2>Extracted Facts & Chronological Timeline</h2>
-                    <p>Automatic extraction of entities, amounts, obligations, and chronological timeline of events.</p>
+                    <h2>Extracted Facts & Chronological Event Timeline</h2>
+                    <p>Automatic extraction of entities, amounts, obligations, and dispute sequence.</p>
                 </div>
 
-                <div class="facts-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
-                    <div class="fact-card" style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                        <span style="font-size: 11px; color: #64748b; font-weight: bold;">KEY DATES & DEADLINES</span>
-                        <h4 style="margin-top: 6px; color: #1e293b;" id="factKeyDates">Notice Date: Oct 1, 2026<br>Cure Deadline: Oct 15, 2026</h4>
+                <div class="grid-4" style="margin-bottom: 24px;">
+                    <div class="card-box">
+                        <span class="badge-pill bg-info">KEY DATES & DEADLINES</span>
+                        <h4 style="margin-top: 8px;" id="factKeyDates">Notice Date: Oct 1, 2026<br>Cure Deadline: Oct 16, 2026</h4>
                     </div>
 
-                    <div class="fact-card" style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                        <span style="font-size: 11px; color: #64748b; font-weight: bold;">AMOUNTS CLAIMED</span>
-                        <h4 style="margin-top: 6px; color: #991b1b;" id="factAmounts">Claimed Rent: ₹45,000<br>Late Fee: ₹2,500</h4>
+                    <div class="card-box">
+                        <span class="badge-pill bg-urgent">AMOUNTS CLAIMED</span>
+                        <h4 style="margin-top: 8px; color: #991b1b;" id="factAmounts">Claimed Rent: ₹45,000<br>Late Fee: ₹2,500</h4>
                     </div>
 
-                    <div class="fact-card" style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                        <span style="font-size: 11px; color: #64748b; font-weight: bold;">PARTIES & PROPERTY</span>
-                        <h4 style="margin-top: 6px; color: #1e293b;" id="factParties">Landlord: Rajesh Kumar<br>Tenant: Anish Sharma</h4>
+                    <div class="card-box">
+                        <span class="badge-pill bg-info">PARTIES & PROPERTY</span>
+                        <h4 style="margin-top: 8px;" id="factParties">Landlord: Rajesh Kumar<br>Tenant: Anish Sharma</h4>
                     </div>
 
-                    <div class="fact-card" style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                        <span style="font-size: 11px; color: #64748b; font-weight: bold;">CURE / ACTION MANDATE</span>
-                        <h4 style="margin-top: 6px; color: #d97706;" id="factMandate">Pay ₹47,500 arrears or vacate within 15 days</h4>
+                    <div class="card-box">
+                        <span class="badge-pill bg-warning">CURE MANDATE</span>
+                        <h4 style="margin-top: 8px; color: #92400e;" id="factMandate">Pay ₹47,500 or vacate in 15 days</h4>
                     </div>
                 </div>
 
-                <div class="timeline-box" style="background: white; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0;">
+                <div class="card-box">
                     <h3 style="margin-bottom: 16px;">📅 Chronological Fact & Dispute Timeline</h3>
                     <div id="timelineEventsContainer">
                         <div style="border-left: 3px solid #3b82f6; padding-left: 16px; margin-bottom: 16px;">
-                            <strong>Event 1 — Lease Agreement Commencement:</strong> Nov 1, 2025 (Monthly rent ₹15,000).
+                            <strong>Event 1 — Lease Commencement:</strong> Nov 1, 2025 (Monthly rent agreed at ₹15,000).
                         </div>
                         <div style="border-left: 3px solid #f59e0b; padding-left: 16px; margin-bottom: 16px;">
-                            <strong>Event 2 — Alleged Non-Payment Period:</strong> July 2026 – Sept 2026 (3 months).
+                            <strong>Event 2 — Alleged Non-Payment Period:</strong> July 2026 – Sept 2026 (3 Months Arrears Claimed).
                         </div>
                         <div style="border-left: 3px solid #ef4444; padding-left: 16px;">
-                            <strong>Event 3 — Eviction Notice Served:</strong> Oct 1, 2026 (Demanding possession by Oct 15).
+                            <strong>Event 3 — Eviction Notice Served:</strong> Oct 1, 2026 (Demanding ₹47,500 or surrender of possession by Oct 16).
                         </div>
                     </div>
                 </div>
@@ -330,15 +348,15 @@
             <section id="deadlinesTab" class="tab-pane">
                 <div class="section-header">
                     <h2>Deadline & Urgency Radar</h2>
-                    <p>Calculates statutory response windows and flags emergency risks (e.g. 7-day cure window, lockouts).</p>
+                    <p>Calculates statutory response windows and flags emergency risks (e.g. 7-day cure window, lockout threats).</p>
                 </div>
 
                 <div style="background: #fef2f2; border: 1px solid #fca5a5; border-radius: 14px; padding: 20px; margin-bottom: 20px;">
                     <div style="display: flex; align-items: center; justify-content: space-between;">
                         <div>
-                            <span style="background: #ef4444; color: white; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: bold;">🔴 URGENT STATUTORY DEADLINE DETECTED</span>
-                            <h3 style="color: #7f1d1d; margin-top: 8px;">Notice Response / Payment Deadline: 14 Days Remaining</h3>
-                            <p style="color: #991b1b; font-size: 13px; margin-top: 4px;">Statutory cure notice period under Rent Control Regulations requires written response or payment proof before Oct 15, 2026.</p>
+                            <span class="badge-pill bg-urgent">🔴 URGENT STATUTORY DEADLINE DETECTED</span>
+                            <h3 style="color: #7f1d1d; margin-top: 8px;">Notice Response / Payment Deadline: 15 Days Remaining</h3>
+                            <p style="color: #991b1b; font-size: 13px; margin-top: 4px;">Statutory cure notice period under Rent Control Regulations requires written response or payment proof before October 16, 2026.</p>
                         </div>
                         <button class="btn btn-primary" onclick="switchTab('briefTab')">Generate Handoff Brief 🖨️</button>
                     </div>
@@ -349,18 +367,18 @@
             <section id="scenariosTab" class="tab-pane">
                 <div class="section-header">
                     <h2>"What Would Change the Answer?" Scenario Matrix</h2>
-                    <p>Evaluates how missing evidence, disputed facts, or counter-documents change tenant options.</p>
+                    <p>Evaluates how missing evidence, disputed facts, or counter-documents change tenant legal standing.</p>
                 </div>
 
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
-                    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px;">
-                        <h4>Situation A: Tenant Has Rent Receipts / Bank Transfer Proof</h4>
-                        <p style="color: #166534; font-size: 13px; margin-top: 8px;">🟢 <strong>Impact:</strong> Invalidates non-payment eviction claim. Demand notice can be countered with bank reference numbers.</p>
+                <div class="grid-2">
+                    <div class="scenario-card" style="border-left: 4px solid #10b981;">
+                        <h4>Situation A: Tenant Has Bank/UPI Receipts for Claimed Period</h4>
+                        <p style="color: #166534; font-size: 13px; margin-top: 8px;">🟢 <strong>Impact:</strong> Completely invalidates non-payment eviction grounds. Demand notice can be formally refuted using UPI UTR reference numbers.</p>
                     </div>
 
-                    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px;">
+                    <div class="scenario-card" style="border-left: 4px solid #f59e0b;">
                         <h4>Situation B: Unregistered Lease Exceeding 11 Months</h4>
-                        <p style="color: #92400e; font-size: 13px; margin-top: 8px;">🟡 <strong>Impact:</strong> Tenancy treated as month-to-month tenancy under Registration Act S.17. 15-day termination notice applies.</p>
+                        <p style="color: #92400e; font-size: 13px; margin-top: 8px;">🟡 <strong>Impact:</strong> Tenancy treated as month-to-month under Registration Act S.17. 15-day statutory notice applies instead of fixed term lock-in.</p>
                     </div>
                 </div>
             </section>
@@ -380,8 +398,17 @@
                 </div>
 
                 <div id="riskListContainer" class="risk-cards-list">
-                    <div class="empty-state">
-                        <p>No document analyzed yet. Upload a document or click '1-Click Hackathon Demo' to view clause risk analysis.</p>
+                    <div class="risk-card High-Risk">
+                        <div class="risk-header">
+                            <h3>#1 Eviction Demand & 15-Day Cure Window</h3>
+                            <span class="risk-badge High-Risk">High Risk</span>
+                        </div>
+                        <div class="original-clause-box">
+                            📜 <strong>Original Clause (Page 1):</strong><br>
+                            "Vacate and deliver possession of the premises within FIFTEEN (15) DAYS from date of service, on or before October 16, 2026."
+                        </div>
+                        <p><strong>Plain Language Explanation:</strong> Landlord is demanding you move out or pay full claimed rent arrears by Oct 16.</p>
+                        <p style="margin-top: 6px; color: #92400e;"><strong>Why it deserves attention:</strong> Passing this date without a formal reply allows landlord to initiate court proceedings.</p>
                     </div>
                 </div>
             </section>
@@ -460,51 +487,69 @@
                 </div>
             </section>
 
-            <!-- TAB 10: LEGAL SOURCES NAVIGATOR -->
-            <section id="sourcesTab" class="tab-pane">
-                <div class="section-header">
-                    <h2>Verified Legal Information Source Navigator</h2>
-                    <p>Official legal portals, statutory acts, and legal aid institutions across India.</p>
-                </div>
-
-                <div id="sourcesContainer" class="sources-grid">
-                    <!-- Populated dynamically via JS -->
-                </div>
-            </section>
-
-            <!-- TAB 11: RESPONSIBLE AI HUMAN REVIEW & SAFETY AUDIT -->
+            <!-- TAB 10: RESPONSIBLE AI HUMAN REVIEW & SAFETY AUDIT -->
             <section id="safetyAuditTab" class="tab-pane">
                 <div class="section-header">
                     <h2>Human-in-the-Loop & Responsible AI Safety Audit</h2>
                     <p>Transparency controls, confidence scores, and human legal aid review triggers.</p>
                 </div>
 
-                <div style="background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                <div class="card-box">
                     <h3>🛡️ Responsible AI Guardrails & Audit Log</h3>
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 13px;">
+                    <table class="table-custom">
                         <thead>
-                            <tr style="background: #f8fafc; text-align: left;">
-                                <th style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Module</th>
-                                <th style="padding: 10px; border-bottom: 1px solid #e2e8f0;">AI Extraction Task</th>
-                                <th style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Confidence Score</th>
-                                <th style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Human Review Required?</th>
+                            <tr>
+                                <th>Module</th>
+                                <th>AI Extraction Task</th>
+                                <th>Confidence Score</th>
+                                <th>Human Review Required?</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;">OCR & Date Extraction</td>
-                                <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;">Notice Date & Cure Deadline</td>
-                                <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;"><span style="color:#166534; font-weight:bold;">98% (Verified)</span></td>
-                                <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;">No</td>
+                                <td>OCR & Date Extraction</td>
+                                <td>Notice Date & Cure Deadline</td>
+                                <td><span style="color:#166534; font-weight:bold;">98% (Verified)</span></td>
+                                <td>No</td>
                             </tr>
                             <tr>
-                                <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;">Statutory Rent Control Check</td>
-                                <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;">Eviction Ground Verification</td>
-                                <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;"><span style="color:#92400e; font-weight:bold;">85% (Needs Jurisdiction Input)</span></td>
-                                <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;"><span style="background:#fef3c7; color:#92400e; padding:2px 8px; border-radius:6px; font-weight:bold;">Advocate Review Recommended</span></td>
+                                <td>Statutory Rent Control Check</td>
+                                <td>Eviction Ground Verification</td>
+                                <td><span style="color:#92400e; font-weight:bold;">85% (Needs Jurisdiction Input)</span></td>
+                                <td><span class="badge-pill bg-warning">Advocate Review Recommended</span></td>
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </section>
+
+            <!-- TAB 11: ARCHITECTURE & DESIGN SHOWCASE -->
+            <section id="designArchTab" class="tab-pane">
+                <div class="section-header">
+                    <h2>System Architecture, Database Schema & Hackathon Pitch</h2>
+                    <p>Technical specifications and product architecture for LawBuddy AI GenAI Housing Solution.</p>
+                </div>
+
+                <div class="card-box" style="margin-bottom: 20px;">
+                    <h3>🏛️ System Architecture Components</h3>
+                    <div class="grid-3" style="margin-top: 14px;">
+                        <div style="background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid #cbd5e1;">
+                            <strong>Frontend</strong><br>HTML5, Tailwind/CSS3, Vanilla JS, Multilingual Selector
+                        </div>
+                        <div style="background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid #cbd5e1;">
+                            <strong>Backend API</strong><br>Flask RESTful API, Python 3.13, CORS, Document Session Cache
+                        </div>
+                        <div style="background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid #cbd5e1;">
+                            <strong>GenAI & RAG Engine</strong><br>Gemini 2.5/3.6 LLM, PyMuPDF OCR, RAG Chunking Vector Retriever
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-box">
+                    <h3>Pitch Summary — Innovation & Impact</h3>
+                    <p style="font-size: 13px; color: #475569; margin-top: 6px;">
+                        LawBuddy AI bridges the gap between complex legal notices and human legal aid advocates. By automatically extracting deadlines, facts, and evidence timelines into a 1-click Case Packet, LawBuddy AI reduces legal aid intake times from 45 minutes to under 3 minutes, empowering tenants and advocates across India.
+                    </p>
                 </div>
             </section>
 

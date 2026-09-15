@@ -223,9 +223,51 @@ async function runDocumentAnalysis(docId, overrideDocType = null) {
         window.appState.analysisData = data;
         renderClarityActionMap(data.action_map);
         renderClauseRisks(data.clauses_and_risks);
+        renderFactsAndTimeline(data);
         showNotification("Document analysis completed successfully!");
     } catch (err) {
         showNotification("Analysis failed: " + err, true);
+    }
+}
+
+// Render Facts Grid and Event Timeline
+function renderFactsAndTimeline(data) {
+    if (!data) return;
+
+    const keyDatesEl = document.getElementById('factKeyDates');
+    const amountsEl = document.getElementById('factAmounts');
+    const partiesEl = document.getElementById('factParties');
+    const mandateEl = document.getElementById('factMandate');
+    const timelineEl = document.getElementById('timelineEventsContainer');
+
+    const datesAmounts = data.important_dates_and_amounts || [];
+    const parties = data.parties || [];
+    const obligations = data.key_obligations || [];
+
+    if (keyDatesEl && datesAmounts.length > 0) {
+        const datesText = datesAmounts.filter(d => /date|deadline|due|period|month|oct|nov|dec|jan|feb|mar|apr|may|jun|jul|aug|sep/i.test(d)).join('<br>') || datesAmounts.slice(0, 2).join('<br>');
+        keyDatesEl.innerHTML = datesText || keyDatesEl.innerHTML;
+    }
+
+    if (amountsEl && datesAmounts.length > 0) {
+        const amountsText = datesAmounts.filter(d => /₹|\$|rs|rent|amount|fee|deposit|claim|total/i.test(d)).join('<br>') || datesAmounts.slice(0, 2).join('<br>');
+        amountsEl.innerHTML = amountsText || amountsEl.innerHTML;
+    }
+
+    if (partiesEl && parties.length > 0) {
+        partiesEl.innerHTML = parties.map(p => `• ${p}`).join('<br>');
+    }
+
+    if (mandateEl && obligations.length > 0) {
+        mandateEl.innerHTML = obligations[0];
+    }
+
+    if (timelineEl && obligations.length > 0) {
+        timelineEl.innerHTML = obligations.map((ob, idx) => `
+            <div style="border-left: 3px solid ${idx === 0 ? '#3b82f6' : idx === 1 ? '#f59e0b' : '#ef4444'}; padding-left: 16px; margin-bottom: 16px;">
+                <strong>Timeline Event ${idx + 1}:</strong> ${ob}
+            </div>
+        `).join('');
     }
 }
 
