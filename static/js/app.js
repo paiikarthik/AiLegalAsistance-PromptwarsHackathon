@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         activeDocId: null,
         activeDocName: null,
         activeDocType: null,
-        selectedLanguage: 'kn', // Default to Kannada for demonstration
+        selectedLanguage: localStorage.getItem("lawbuddyLanguage") || 'kn', // Preferred language from localStorage or default to Kannada
         analysisData: null,
         compareDocIdB: null
     };
@@ -48,15 +48,23 @@ function switchTab(targetId) {
 // Language Selector Handler
 function initLanguageSelector() {
     const langSelect = document.getElementById('languageSelect');
-    langSelect.addEventListener('change', (e) => {
-        window.appState.selectedLanguage = e.target.value;
-        showNotification(`Language set to ${e.target.options[e.target.selectedIndex].text}`);
-        
-        // Re-analyze document in new language if active
-        if (window.appState.activeDocId) {
-            runDocumentAnalysis(window.appState.activeDocId);
+    if (langSelect) {
+        const savedLanguage = localStorage.getItem("lawbuddyLanguage");
+        if (savedLanguage) {
+            langSelect.value = savedLanguage;
+            window.appState.selectedLanguage = savedLanguage;
         }
-    });
+        langSelect.addEventListener('change', (e) => {
+            window.appState.selectedLanguage = e.target.value;
+            localStorage.setItem("lawbuddyLanguage", e.target.value);
+            showNotification(`Language set to ${e.target.options[e.target.selectedIndex].text}`);
+            
+            // Re-analyze document in new language if active
+            if (window.appState.activeDocId) {
+                runDocumentAnalysis(window.appState.activeDocId);
+            }
+        });
+    }
 }
 
 // Notification Banner Helper

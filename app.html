@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LawBuddy AI | Workspace Dashboard</title>
+    <title>LawBuddy AI | Responsible GenAI Legal Access Platform</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -18,22 +18,22 @@
                 <a href="index.html" class="logo">
                     <div class="logo-icon">⚖️</div>
                     <div>
-                        <h2>Law<span>Buddy</span></h2>
-                        <small>Understand • Compare • Navigate</small>
+                        <h2>Law<span>Buddy AI</span></h2>
+                        <small>Housing Legal Access & Case Preparation Platform</small>
                     </div>
                 </a>
             </div>
 
             <div class="header-controls">
-                <div class="demo-badge-btn" id="loadSampleDemoBtn" title="Click to instantly analyze pre-configured Indian Rental Agreement">
-                    ⚡ <span>Instant Demo Mode</span>
+                <div class="demo-badge-btn" id="loadSampleDemoBtn" title="Click to load pre-configured Eviction Notice / Rental Agreement Demo">
+                    ⚡ <span>1-Click Hackathon Demo</span>
                 </div>
 
                 <div class="language-selector-wrapper">
                     <label for="languageSelect">🌐 Language:</label>
-                    <select id="languageSelect" class="lang-select">
+                    <select id="languageSelect" class="lang-select" onchange="if(window.appState){window.appState.selectedLanguage=this.value;localStorage.setItem('lawbuddyLanguage',this.value);}">
                         <option value="en">English</option>
-                        <option value="kn" selected>Kannada (ಕನ್ನಡ)</option>
+                        <option value="kn">Kannada (ಕನ್ನಡ)</option>
                         <option value="hi">Hindi (हिंदी)</option>
                         <option value="ml">Malayalam (മലയാളം)</option>
                         <option value="te">Telugu (తెలుగు)</option>
@@ -41,12 +41,16 @@
                         <option value="bn">Bengali (বাংলা)</option>
                         <option value="gu">Gujarati (ગુજરાતી)</option>
                         <option value="tulu">Tulu (ತುಳು)</option>
+                        <option value="ta">Tamil (தமிழ்)</option>
                     </select>
                 </div>
 
                 <div class="user-profile">
+                    <span style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; margin-right: 6px;">
+                        🛡️ Responsible AI Active
+                    </span>
                     <div class="avatar">👤</div>
-                    <span id="userNameLabel">Indian User</span>
+                    <span id="userNameLabel">Housing User</span>
                     <a href="index.html" class="logout-link">Exit</a>
                 </div>
             </div>
@@ -59,24 +63,39 @@
         <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="document-session-card" id="docSessionCard">
-                <div class="doc-icon">📄</div>
+                <div class="doc-icon">📜</div>
                 <div class="doc-info">
                     <span class="doc-label">Active Document</span>
                     <h4 id="activeDocName">No Document Selected</h4>
-                    <span class="doc-badge" id="activeDocTypeBadge">Upload PDF/DOCX</span>
+                    <span class="doc-badge" id="activeDocTypeBadge">Eviction / Lease / Notice</span>
                 </div>
             </div>
 
             <nav class="nav-menu">
                 <button class="nav-tab active" data-target="uploadTab">
                     <span class="icon">📤</span>
-                    <span>Upload & Analyze</span>
+                    <span>Upload & Extract</span>
                 </button>
 
                 <button class="nav-tab" data-target="clarityMapTab">
                     <span class="icon">🗺️</span>
                     <span>Legal Clarity Map</span>
                     <span class="star-badge">MVP</span>
+                </button>
+
+                <button class="nav-tab" data-target="factsTimelineTab">
+                    <span class="icon">📊</span>
+                    <span>Facts & Event Timeline</span>
+                </button>
+
+                <button class="nav-tab" data-target="deadlinesTab">
+                    <span class="icon">⏰</span>
+                    <span>Deadline & Urgency Radar</span>
+                </button>
+
+                <button class="nav-tab" data-target="scenariosTab">
+                    <span class="icon">❓</span>
+                    <span>"What Would Change" Matrix</span>
                 </button>
 
                 <button class="nav-tab" data-target="riskExplorerTab">
@@ -91,23 +110,28 @@
 
                 <button class="nav-tab" data-target="chatTab">
                     <span class="icon">💬</span>
-                    <span>Document AI Chat</span>
-                </button>
-
-                <button class="nav-tab" data-target="sourcesTab">
-                    <span class="icon">🌐</span>
-                    <span>Indian Legal Sources</span>
+                    <span>Grounded AI Chat</span>
                 </button>
 
                 <button class="nav-tab" data-target="briefTab">
                     <span class="icon">📋</span>
-                    <span>Consultation Brief</span>
+                    <span>Lawyer Case Packet</span>
+                </button>
+
+                <button class="nav-tab" data-target="sourcesTab">
+                    <span class="icon">🌐</span>
+                    <span>Legal Sources Navigator</span>
+                </button>
+
+                <button class="nav-tab" data-target="safetyAuditTab">
+                    <span class="icon">🛡️</span>
+                    <span>Human Review & Audit</span>
                 </button>
             </nav>
 
             <div class="disclaimer-sidebar-box">
-                <p>⚠️ <strong>General Legal Information</strong><br>
-                LawBuddy AI provides document assistance, not binding legal advice. Always verify with an advocate.</p>
+                <p>⚠️ <strong>Legal Information Notice</strong><br>
+                LawBuddy AI provides preparation assistance, not legal advice or representation. Verify critical claims with legal aid or an advocate.</p>
             </div>
         </aside>
 
@@ -119,28 +143,28 @@
                 <span id="notificationMessage">Ready</span>
             </div>
 
-            <!-- TAB 1: UPLOAD & ANALYZE -->
+            <!-- TAB 1: UPLOAD & EXTRACT -->
             <section id="uploadTab" class="tab-pane active">
                 <div class="section-header">
-                    <h2>Upload Legal Document</h2>
-                    <p>Support PDF, DOCX, TXT, or scanned images. Text is extracted and categorized automatically.</p>
+                    <h2>Upload Housing Document</h2>
+                    <p>Designed for Eviction Notices, Rent Demand Notices, Lease Agreements, and Security Deposit Disputes.</p>
                 </div>
 
                 <div class="upload-grid">
                     <div class="upload-box" id="dropZone">
                         <div class="upload-icon">📁</div>
-                        <h3>Drag & Drop your document here</h3>
-                        <p>Supports PDF, DOCX, TXT, PNG, JPG (Max 16MB)</p>
+                        <h3>Drag & Drop Housing Document Here</h3>
+                        <p>Supports PDF, DOCX, TXT, PNG, JPG (Scanned Notice OCR Supported)</p>
                         <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.png,.jpg,.jpeg" class="hidden-file-input">
                         <div class="upload-buttons">
                             <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">Browse Files</button>
-                            <button class="btn btn-secondary" id="loadSampleBtn">⚡ Use Sample Indian Rental Agreement</button>
+                            <button class="btn btn-secondary" id="loadSampleBtn">⚡ Load Sample Eviction Notice Demo</button>
                         </div>
                     </div>
 
                     <div class="paste-text-box">
-                        <h3>...or Paste Document Text Directly</h3>
-                        <textarea id="pasteTextInput" placeholder="Paste agreement text, contract clauses, or notice text here..."></textarea>
+                        <h3>...or Paste Notice / Agreement Text</h3>
+                        <textarea id="pasteTextInput" placeholder="Paste eviction notice text, rent demand notice, lease clauses, or landlord communications here..."></textarea>
                         <button class="btn btn-secondary" id="analyzePastedTextBtn">Analyze Pasted Text</button>
                     </div>
                 </div>
@@ -150,22 +174,21 @@
                     <div class="meta-row">
                         <div>
                             <span class="label">Uploaded File:</span>
-                            <strong id="metaFileName">agreement.pdf</strong>
+                            <strong id="metaFileName">notice.pdf</strong>
                         </div>
                         <div>
-                            <span class="label">Detected Document Type:</span>
+                            <span class="label">Document Category:</span>
                             <select id="docTypeSelect" class="doc-type-select">
+                                <option value="Eviction Notice">Eviction Notice / Notice to Vacate</option>
+                                <option value="Rent Demand Notice">Rent Demand / Cure Notice</option>
                                 <option value="Rental Agreement">Rental Agreement / Lease</option>
-                                <option value="Employment Contract">Employment Contract / Offer Letter</option>
-                                <option value="Consumer Complaint">Consumer Complaint</option>
-                                <option value="Legal Notice">Legal Notice / Advocate Notice</option>
-                                <option value="Service Agreement">Service Agreement</option>
-                                <option value="Privacy Policy">Privacy Policy / Terms</option>
+                                <option value="Deposit Dispute Notice">Security Deposit Dispute</option>
+                                <option value="Legal Notice">General Legal Notice</option>
                                 <option value="Other Legal Document">Other Legal Document</option>
                             </select>
                         </div>
                         <div>
-                            <button class="btn btn-success" id="startAnalysisBtn">🚀 Analyze Document Now</button>
+                            <button class="btn btn-success" id="startAnalysisBtn">🚀 Analyze Document & Map Facts</button>
                         </div>
                     </div>
 
@@ -180,12 +203,12 @@
             <section id="clarityMapTab" class="tab-pane">
                 <div class="section-header">
                     <h2>Legal Clarity & Action Map</h2>
-                    <p>Hackathon Differentiator — Connecting static legal text into 4 actionable outputs.</p>
+                    <p>Connecting static legal text into 4 structured, actionable outputs for tenants and legal aid advocates.</p>
                 </div>
 
                 <div id="clarityMapLoading" class="loading-state hidden">
                     <div class="spinner"></div>
-                    <p>Generating Legal Clarity & Action Map in selected language...</p>
+                    <p>Extracting facts and generating Action Map in selected language...</p>
                 </div>
 
                 <div id="clarityMapContent" class="action-map-grid">
@@ -195,9 +218,9 @@
                             <span class="action-num">1</span>
                             <h3>💡 Understand</h3>
                         </div>
-                        <p class="action-desc">Plain-language explanation of main terms</p>
+                        <p class="action-desc">Plain-language summary of what this document demands</p>
                         <ul id="actionMapUnderstand" class="action-list">
-                            <li>Upload a document and run analysis to see insights.</li>
+                            <li>Upload a document or click '1-Click Hackathon Demo' to populate.</li>
                         </ul>
                     </div>
 
@@ -207,9 +230,9 @@
                             <span class="action-num">2</span>
                             <h3>⚠️ Identify</h3>
                         </div>
-                        <p class="action-desc">Obligations, potential concerns & ambiguities</p>
+                        <p class="action-desc">Deadlines, cure periods, monetary claims & obligations</p>
                         <ul id="actionMapIdentify" class="action-list">
-                            <li>Key obligations and missing details will appear here.</li>
+                            <li>Key obligations and flagged concerns will appear here.</li>
                         </ul>
                     </div>
 
@@ -219,17 +242,17 @@
                             <span class="action-num">3</span>
                             <h3>📝 Prepare</h3>
                         </div>
-                        <p class="action-desc">Questions for lawyer & evidence checklist</p>
+                        <p class="action-desc">Questions for a lawyer & evidence collection checklist</p>
                         <div class="sub-section">
-                            <strong>Questions to ask a lawyer:</strong>
+                            <strong>Questions to ask a lawyer / legal-aid advocate:</strong>
                             <ul id="actionMapQuestions" class="action-list">
-                                <li>Recommended questions for advocate consultation.</li>
+                                <li>Recommended questions for consultation.</li>
                             </ul>
                         </div>
                         <div class="sub-section">
-                            <strong>Checklist to collect:</strong>
+                            <strong>Evidence & records to collect:</strong>
                             <ul id="actionMapChecklist" class="action-list">
-                                <li>Evidence & title documents needed.</li>
+                                <li>Rent receipts, bank statements, photos, messages.</li>
                             </ul>
                         </div>
                     </div>
@@ -240,25 +263,109 @@
                             <span class="action-num">4</span>
                             <h3>🧭 Navigate</h3>
                         </div>
-                        <p class="action-desc">Next steps & official Indian legal sources</p>
+                        <p class="action-desc">Step-by-step non-advice plan & official legal resources</p>
                         <div class="sub-section">
-                            <strong>Suggested Next Steps:</strong>
+                            <strong>Suggested Immediate Next Steps:</strong>
                             <ul id="actionMapNextSteps" class="action-list">
-                                <li>Actionable steps for tenant / employee.</li>
+                                <li>Actionable steps for tenant / legal recipient.</li>
                             </ul>
                         </div>
                         <div class="sub-section">
-                            <strong>Official Indian Sources:</strong>
+                            <strong>Official Legal Sources & Portals:</strong>
                             <div id="actionMapSources" class="source-link-list">
-                                <a href="https://www.indiacode.nic.in" target="_blank" class="source-chip">🏛️ India Code Portal</a>
-                                <a href="https://ecourts.gov.in" target="_blank" class="source-chip">⚖️ e-Courts India</a>
+                                <a href="https://nalsa.gov.in" target="_blank" class="source-chip">🏛️ NALSA Legal Aid Portal</a>
+                                <a href="https://www.indiacode.nic.in" target="_blank" class="source-chip">⚖️ India Code Statutory Portal</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 3: CLAUSE & RISK EXPLORER -->
+            <!-- TAB 3: EXTRACTED FACTS & EVENT TIMELINE -->
+            <section id="factsTimelineTab" class="tab-pane">
+                <div class="section-header">
+                    <h2>Extracted Facts & Chronological Timeline</h2>
+                    <p>Automatic extraction of entities, amounts, obligations, and chronological timeline of events.</p>
+                </div>
+
+                <div class="facts-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+                    <div class="fact-card" style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                        <span style="font-size: 11px; color: #64748b; font-weight: bold;">KEY DATES & DEADLINES</span>
+                        <h4 style="margin-top: 6px; color: #1e293b;" id="factKeyDates">Notice Date: Oct 1, 2026<br>Cure Deadline: Oct 15, 2026</h4>
+                    </div>
+
+                    <div class="fact-card" style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                        <span style="font-size: 11px; color: #64748b; font-weight: bold;">AMOUNTS CLAIMED</span>
+                        <h4 style="margin-top: 6px; color: #991b1b;" id="factAmounts">Claimed Rent: ₹45,000<br>Late Fee: ₹2,500</h4>
+                    </div>
+
+                    <div class="fact-card" style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                        <span style="font-size: 11px; color: #64748b; font-weight: bold;">PARTIES & PROPERTY</span>
+                        <h4 style="margin-top: 6px; color: #1e293b;" id="factParties">Landlord: Rajesh Kumar<br>Tenant: Anish Sharma</h4>
+                    </div>
+
+                    <div class="fact-card" style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                        <span style="font-size: 11px; color: #64748b; font-weight: bold;">CURE / ACTION MANDATE</span>
+                        <h4 style="margin-top: 6px; color: #d97706;" id="factMandate">Pay ₹47,500 arrears or vacate within 15 days</h4>
+                    </div>
+                </div>
+
+                <div class="timeline-box" style="background: white; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <h3 style="margin-bottom: 16px;">📅 Chronological Fact & Dispute Timeline</h3>
+                    <div id="timelineEventsContainer">
+                        <div style="border-left: 3px solid #3b82f6; padding-left: 16px; margin-bottom: 16px;">
+                            <strong>Event 1 — Lease Agreement Commencement:</strong> Nov 1, 2025 (Monthly rent ₹15,000).
+                        </div>
+                        <div style="border-left: 3px solid #f59e0b; padding-left: 16px; margin-bottom: 16px;">
+                            <strong>Event 2 — Alleged Non-Payment Period:</strong> July 2026 – Sept 2026 (3 months).
+                        </div>
+                        <div style="border-left: 3px solid #ef4444; padding-left: 16px;">
+                            <strong>Event 3 — Eviction Notice Served:</strong> Oct 1, 2026 (Demanding possession by Oct 15).
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: DEADLINE & URGENCY RADAR -->
+            <section id="deadlinesTab" class="tab-pane">
+                <div class="section-header">
+                    <h2>Deadline & Urgency Radar</h2>
+                    <p>Calculates statutory response windows and flags emergency risks (e.g. 7-day cure window, lockouts).</p>
+                </div>
+
+                <div style="background: #fef2f2; border: 1px solid #fca5a5; border-radius: 14px; padding: 20px; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <span style="background: #ef4444; color: white; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: bold;">🔴 URGENT STATUTORY DEADLINE DETECTED</span>
+                            <h3 style="color: #7f1d1d; margin-top: 8px;">Notice Response / Payment Deadline: 14 Days Remaining</h3>
+                            <p style="color: #991b1b; font-size: 13px; margin-top: 4px;">Statutory cure notice period under Rent Control Regulations requires written response or payment proof before Oct 15, 2026.</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="switchTab('briefTab')">Generate Handoff Brief 🖨️</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: SCENARIO ANALYSIS ("WHAT WOULD CHANGE THE ANSWER") -->
+            <section id="scenariosTab" class="tab-pane">
+                <div class="section-header">
+                    <h2>"What Would Change the Answer?" Scenario Matrix</h2>
+                    <p>Evaluates how missing evidence, disputed facts, or counter-documents change tenant options.</p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px;">
+                        <h4>Situation A: Tenant Has Rent Receipts / Bank Transfer Proof</h4>
+                        <p style="color: #166534; font-size: 13px; margin-top: 8px;">🟢 <strong>Impact:</strong> Invalidates non-payment eviction claim. Demand notice can be countered with bank reference numbers.</p>
+                    </div>
+
+                    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px;">
+                        <h4>Situation B: Unregistered Lease Exceeding 11 Months</h4>
+                        <p style="color: #92400e; font-size: 13px; margin-top: 8px;">🟡 <strong>Impact:</strong> Tenancy treated as month-to-month tenancy under Registration Act S.17. 15-day termination notice applies.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: CLAUSE & RISK EXPLORER -->
             <section id="riskExplorerTab" class="tab-pane">
                 <div class="section-header">
                     <h2>Clause & Risk Explorer</h2>
@@ -274,25 +381,25 @@
 
                 <div id="riskListContainer" class="risk-cards-list">
                     <div class="empty-state">
-                        <p>No document analyzed yet. Please upload a document to view clause risk analysis.</p>
+                        <p>No document analyzed yet. Upload a document or click '1-Click Hackathon Demo' to view clause risk analysis.</p>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 4: CONTRACT COMPARISON -->
+            <!-- TAB 7: CONTRACT COMPARISON -->
             <section id="compareTab" class="tab-pane">
                 <div class="section-header">
-                    <h2>Contract Comparison (Side-by-Side)</h2>
-                    <p>Compare two versions of an agreement (e.g. Original Draft vs Revised Agreement) to track changes.</p>
+                    <h2>Contract & Notice Comparison (Side-by-Side)</h2>
+                    <p>Compare original lease vs renewal draft or initial demand notice vs revised demand notice.</p>
                 </div>
 
                 <div class="compare-selector-grid">
                     <div class="doc-select-card">
-                        <h3>Document A (Original Draft)</h3>
+                        <h3>Document A (Original Notice / Agreement)</h3>
                         <p id="docANameLabel">Using active uploaded document</p>
                     </div>
                     <div class="doc-select-card">
-                        <h3>Document B (Revised Draft)</h3>
+                        <h3>Document B (Revised Draft / Counter Notice)</h3>
                         <input type="file" id="compareFileInput" accept=".pdf,.docx,.txt" class="hidden-file-input">
                         <button class="btn btn-secondary" onclick="document.getElementById('compareFileInput').click()">Upload Revised Document B</button>
                         <span id="docBNameLabel" class="file-name-tag">No file selected</span>
@@ -312,18 +419,18 @@
                 </div>
             </section>
 
-            <!-- TAB 5: DOCUMENT AI CHAT (RAG) -->
+            <!-- TAB 8: DOCUMENT AI CHAT (RAG) -->
             <section id="chatTab" class="tab-pane">
                 <div class="section-header">
                     <h2>Document-Grounded AI Chat</h2>
-                    <p>Ask any question about your document. Answers are grounded strictly in the extracted clauses.</p>
+                    <p>Ask questions about your uploaded housing document. Answers are strictly grounded in extracted clauses.</p>
                 </div>
 
                 <div class="chat-wrapper">
                     <div id="chatMessages" class="chat-messages-box">
                         <div class="chat-bubble ai">
-                            <strong>⚖️ LawBuddy AI:</strong>
-                            <p>Hello! Ask me any question about your uploaded document (e.g., <em>"What is the notice period?"</em> or <em>"What are my payment deadlines?"</em>).</p>
+                            <strong>⚖️ LawBuddy AI Assistant:</strong>
+                            <p>Hello! Ask me any question about your uploaded document (e.g., <em>"What is the eviction cure period?"</em> or <em>"Are maintenance charges included in the rent arrears?"</em>).</p>
                         </div>
                     </div>
 
@@ -334,11 +441,30 @@
                 </div>
             </section>
 
-            <!-- TAB 6: INDIAN LEGAL SOURCES NAVIGATOR -->
+            <!-- TAB 9: LAWYER CASE PACKET GENERATOR -->
+            <section id="briefTab" class="tab-pane">
+                <div class="section-header">
+                    <h2>Lawyer & Legal-Aid Case Packet Generator</h2>
+                    <p>Generates a structured, printable brief with extracted facts, timeline, key questions, and evidence checklist.</p>
+                </div>
+
+                <div class="brief-builder-card">
+                    <h3>Add Personal Context / Advocate Consultation Notes</h3>
+                    <textarea id="briefNotesInput" placeholder="Add specific concerns, tenant backstory, or financial hardship details for the lawyer..."></textarea>
+                    
+                    <button class="btn btn-success" id="generateBriefBtn">🖨️ Generate & Export Lawyer Case Packet</button>
+                </div>
+
+                <div id="briefPreviewContainer" class="brief-preview-frame hidden">
+                    <iframe id="briefIframe" title="Consultation Brief Preview"></iframe>
+                </div>
+            </section>
+
+            <!-- TAB 10: LEGAL SOURCES NAVIGATOR -->
             <section id="sourcesTab" class="tab-pane">
                 <div class="section-header">
-                    <h2>Indian Legal Information Source Navigator</h2>
-                    <p>Verified, official legal portals and government legal aid resources across India.</p>
+                    <h2>Verified Legal Information Source Navigator</h2>
+                    <p>Official legal portals, statutory acts, and legal aid institutions across India.</p>
                 </div>
 
                 <div id="sourcesContainer" class="sources-grid">
@@ -346,22 +472,39 @@
                 </div>
             </section>
 
-            <!-- TAB 7: CONSULTATION BRIEF GENERATOR -->
-            <section id="briefTab" class="tab-pane">
+            <!-- TAB 11: RESPONSIBLE AI HUMAN REVIEW & SAFETY AUDIT -->
+            <section id="safetyAuditTab" class="tab-pane">
                 <div class="section-header">
-                    <h2>Lawyer Consultation Brief Generator</h2>
-                    <p>Generate a clean, printable PDF/HTML brief with extracted facts and questions to bring to your advocate.</p>
+                    <h2>Human-in-the-Loop & Responsible AI Safety Audit</h2>
+                    <p>Transparency controls, confidence scores, and human legal aid review triggers.</p>
                 </div>
 
-                <div class="brief-builder-card">
-                    <h3>Add Optional Personal Notes / Specific Concerns</h3>
-                    <textarea id="briefNotesInput" placeholder="Add any specific context or questions you want to discuss with your lawyer..."></textarea>
-                    
-                    <button class="btn btn-success" id="generateBriefBtn">🖨️ Generate & Export Consultation Brief</button>
-                </div>
-
-                <div id="briefPreviewContainer" class="brief-preview-frame hidden">
-                    <iframe id="briefIframe" title="Consultation Brief Preview"></iframe>
+                <div style="background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                    <h3>🛡️ Responsible AI Guardrails & Audit Log</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 13px;">
+                        <thead>
+                            <tr style="background: #f8fafc; text-align: left;">
+                                <th style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Module</th>
+                                <th style="padding: 10px; border-bottom: 1px solid #e2e8f0;">AI Extraction Task</th>
+                                <th style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Confidence Score</th>
+                                <th style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Human Review Required?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;">OCR & Date Extraction</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;">Notice Date & Cure Deadline</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;"><span style="color:#166534; font-weight:bold;">98% (Verified)</span></td>
+                                <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;">No</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;">Statutory Rent Control Check</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;">Eviction Ground Verification</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;"><span style="color:#92400e; font-weight:bold;">85% (Needs Jurisdiction Input)</span></td>
+                                <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;"><span style="background:#fef3c7; color:#92400e; padding:2px 8px; border-radius:6px; font-weight:bold;">Advocate Review Recommended</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </section>
 

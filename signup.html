@@ -1,4 +1,3 @@
-﻿
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,11 +8,12 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
     <style>
-      
-
         * {
             margin: 0;
             padding: 0;
@@ -33,11 +33,20 @@
         }
 
         button,
-        input {
+        input,
+        select {
             font: inherit;
         }
 
-      
+        button {
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .navbar {
             background: white;
             border-bottom: 1px solid #e3ebf6;
@@ -107,10 +116,6 @@
             letter-spacing: 0.7px;
         }
 
-        /* =========================
-           3. MAIN LAYOUT
-        ========================= */
-
         .page {
             min-height: calc(100vh - 82px);
             display: grid;
@@ -161,10 +166,6 @@
             color: #176de5;
             font-weight: bold;
         }
-
-        /* =========================
-           4. SIGNUP CARD
-        ========================= */
 
         .signup-card {
             background: white;
@@ -221,13 +222,22 @@
             border-color: #e4a1a1;
         }
 
-        button{
+        .signup-button {
+            width: 100%;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            background: #102b55;
             color: white;
-            background-color: #102b55;
-            padding: 10px 10px;
-            border: 2px solid black;
-            border-radius: 120px;
+            font-weight: 700;
+            transition: background 0.3s, transform 0.3s;
         }
+
+        .signup-button:hover {
+            background: #176de5;
+            transform: translateY(-2px);
+        }
+
         .password-hint {
             display: block;
             font-size: 11px;
@@ -295,7 +305,7 @@
 
         .divider::before,
         .divider::after {
-            content: '';
+            content: "";
             flex: 1;
             border-bottom: 1px solid #e1eaf5;
         }
@@ -335,8 +345,6 @@
             background: #fff0f0;
             color: #b42323;
         }
-
-    
 
         @media (max-width: 850px) {
             .page {
@@ -394,21 +402,22 @@
 </head>
 
 <body>
-
-
-
     <header class="navbar">
         <a href="index.html" class="logo">
             <div class="logo-icon">⚖</div>
 
             <div>
                 <h2>LawBuddy <span>AI</span></h2>
-                <small data-i18n="tagline">Understand • Compare • Navigate</small>
+                <small data-i18n="tagline">
+                    Understand • Compare • Navigate
+                </small>
             </div>
         </a>
 
         <div class="language-selector">
-            <label for="languageSelect" data-i18n="langLabel">Language</label>
+            <label for="languageSelect" data-i18n="langLabel">
+                Language
+            </label>
 
             <select id="languageSelect">
                 <option value="en">English</option>
@@ -425,17 +434,16 @@
         </div>
     </header>
 
-
     <main class="page">
-
-        <!-- LEFT INTRODUCTION -->
-
         <section class="intro">
-
             <h1>
-                <span data-i18n="signupTitle">Your Legal Assistant,</span>
+                <span data-i18n="signupTitle">
+                    Your Legal Assistant,
+                </span>
                 <br>
-                <span data-i18n="signupTitleHighlight">Always by Your Side.</span>
+                <span data-i18n="signupTitleHighlight">
+                    Always by Your Side.
+                </span>
             </h1>
 
             <p data-i18n="signupDesc">
@@ -446,27 +454,30 @@
 
             <div class="benefit">
                 <div class="benefit-icon">✓</div>
-                <span data-i18n="benefit1">Understand complex legal documents simply.</span>
+                <span data-i18n="benefit1">
+                    Understand complex legal documents simply.
+                </span>
             </div>
 
             <div class="benefit">
                 <div class="benefit-icon">✓</div>
-                <span data-i18n="benefit2">Compare agreements and identify important changes.</span>
+                <span data-i18n="benefit2">
+                    Compare agreements and identify important changes.
+                </span>
             </div>
 
             <div class="benefit">
                 <div class="benefit-icon">✓</div>
-                <span data-i18n="benefit3">Explore legal information in 9 languages.</span>
+                <span data-i18n="benefit3">
+                    Explore legal information in 10 languages.
+                </span>
             </div>
-
         </section>
 
-
-        <!-- SIGNUP FORM -->
-
         <section class="signup-card">
-
-            <h2 data-i18n="createAccount">Create Account</h2>
+            <h2 data-i18n="createAccount">
+                Create Account
+            </h2>
 
             <p class="subtitle" data-i18n="signupSubtitle">
                 Join LawBuddy and start understanding legal information.
@@ -474,14 +485,33 @@
 
             <div id="message" class="message" role="alert"></div>
 
-            <button type="button" class="google-button" id="googleSignupButton">
+            <button
+                type="button"
+                class="google-button"
+                id="googleSignupButton"
+            >
                 <svg class="google-icon" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    <path
+                        fill="#4285F4"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    />
+                    <path
+                        fill="#34A853"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                    />
+                    <path
+                        fill="#FBBC05"
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                    />
+                    <path
+                        fill="#EA4335"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                    />
                 </svg>
-                <span data-i18n="signupWithGoogle">Sign up with Google</span>
+
+                <span data-i18n="signupWithGoogle">
+                    Sign up with Google
+                </span>
             </button>
 
             <div class="divider">
@@ -489,9 +519,10 @@
             </div>
 
             <form id="signupForm">
-
                 <div class="form-group">
-                    <label for="fullName" data-i18n="fullNameLabel">Full Name</label>
+                    <label for="fullName" data-i18n="fullNameLabel">
+                        Full Name
+                    </label>
 
                     <input
                         type="text"
@@ -505,7 +536,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="email" data-i18n="emailLabel">Email Address</label>
+                    <label for="email" data-i18n="emailLabel">
+                        Email Address
+                    </label>
 
                     <input
                         type="email"
@@ -518,7 +551,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="password" data-i18n="passwordLabel">Password</label>
+                    <label for="password" data-i18n="passwordLabel">
+                        Password
+                    </label>
 
                     <input
                         type="password"
@@ -536,7 +571,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="confirmPassword" data-i18n="confirmPasswordLabel">Confirm Password</label>
+                    <label for="confirmPassword" data-i18n="confirmPasswordLabel">
+                        Confirm Password
+                    </label>
 
                     <input
                         type="password"
@@ -553,25 +590,33 @@
                     <input type="checkbox" id="terms" required>
 
                     <span data-i18n="termsLabel">
-                        I agree to the Terms of Use and understand that LawBuddy provides informational assistance, not professional legal advice.
+                        I agree to the Terms of Use and understand that
+                        LawBuddy provides informational assistance, not
+                        professional legal advice.
                     </span>
                 </label>
 
-                <button type="submit" class="signup-button" id="signupButton" data-i18n="createAccountBtn">
+                <button
+                    type="submit"
+                    class="signup-button"
+                    id="signupButton"
+                    data-i18n="createAccountBtn"
+                >
                     Create Account →
                 </button>
-
             </form>
 
             <p class="login-link">
-                <span data-i18n="alreadyHaveAccount">Already have an account?</span>
-                <a href="login.html" data-i18n="loginText">Log in</a>
+                <span data-i18n="alreadyHaveAccount">
+                    Already have an account?
+                </span>
+
+                <a href="login.html" data-i18n="loginText">
+                    Log in
+                </a>
             </p>
-
         </section>
-
     </main>
-
 
     <script type="module">
         import { initializeApp } from
@@ -602,7 +647,8 @@
 
         const signupForm = document.getElementById("signupForm");
         const signupButton = document.getElementById("signupButton");
-        const googleSignupButton = document.getElementById("googleSignupButton");
+        const googleSignupButton =
+            document.getElementById("googleSignupButton");
         const message = document.getElementById("message");
 
         function showMessage(text, type) {
@@ -613,13 +659,13 @@
         function getFirebaseErrorMessage(error) {
             switch (error.code) {
                 case "auth/unauthorized-domain":
-                    return "This website domain is not authorized in Firebase. Add localhost and 127.0.0.1 in Firebase Authentication → Settings → Authorized domains.";
+                    return "This website domain is not authorized in Firebase. Add your domain in Firebase Authentication → Settings → Authorized domains.";
 
                 case "auth/operation-not-allowed":
-                    return "Google Sign-In is disabled. Enable Google under Firebase Authentication → Sign-in method.";
+                    return "Email/Password or Google sign-in is disabled. Enable it in Firebase Authentication → Sign-in method.";
 
                 case "auth/popup-blocked":
-                    return "The browser blocked the Google sign-in popup. Allow popups for localhost.";
+                    return "The browser blocked the Google sign-in popup. Allow popups for this website.";
 
                 case "auth/popup-closed-by-user":
                     return "The Google sign-in popup was closed before completion.";
@@ -633,631 +679,543 @@
                 case "auth/email-already-in-use":
                     return "This email is already registered. Please log in instead.";
 
+                case "auth/invalid-email":
+                    return "Please enter a valid email address.";
+
+                case "auth/weak-password":
+                    return "Password must contain at least 6 characters.";
+
                 default:
-                    return `${error.code || "Unknown error"}: ${error.message || "Please try again."}`;
+                    return `${error.code || "Unknown error"}: ${
+                        error.message || "Please try again."
+                    }`;
             }
         }
 
-        if (googleSignupButton) {
-            googleSignupButton.addEventListener("click", async () => {
-                googleSignupButton.disabled = true;
+        googleSignupButton.addEventListener("click", async () => {
+            googleSignupButton.disabled = true;
 
-                try {
-                    const result = await signInWithPopup(auth, googleProvider);
-                    const user = result.user;
+            try {
+                const result = await signInWithPopup(auth, googleProvider);
+                const user = result.user;
 
-                    localStorage.setItem("lawbuddyUser", JSON.stringify({
+                localStorage.setItem(
+                    "lawbuddyUser",
+                    JSON.stringify({
                         uid: user.uid,
                         name: user.displayName || "",
                         email: user.email || "",
                         photoURL: user.photoURL || ""
-                    }));
+                    })
+                );
 
-                    showMessage(
-                        "Signed in successfully as " +
-                        (user.displayName || user.email) + "!",
-                        "success"
-                    );
+                showMessage(
+                    "Signed in successfully as " +
+                        (user.displayName || user.email) +
+                        "!",
+                    "success"
+                );
 
-                    setTimeout(() => {
-                        window.location.href = "app.html";
-                    }, 800);
-
-                } catch (error) {
-                    console.error("Google sign-in error code:", error.code);
-                    console.error("Google sign-in error message:", error.message);
-                    showMessage(getFirebaseErrorMessage(error), "error");
-
-                } finally {
-                    googleSignupButton.disabled = false;
-                }
-            });
-        }
-
-        if (signupForm) {
-            signupForm.addEventListener("submit", async (event) => {
-                event.preventDefault();
-
-                const fullName = document.getElementById("fullName").value.trim();
-                const email = document.getElementById("email").value.trim();
-                const password = document.getElementById("password").value;
-                const confirmPassword =
-                    document.getElementById("confirmPassword").value;
-
-                if (password !== confirmPassword) {
-                    showMessage("Passwords do not match.", "error");
-                    return;
-                }
-
-                if (password.length < 6) {
-                    showMessage("Password must contain at least 6 characters.", "error");
-                    return;
-                }
-
-                signupButton.disabled = true;
-                signupButton.textContent = "Creating Account...";
-
-                try {
-                    const userCredential =
-                        await createUserWithEmailAndPassword(auth, email, password);
-
-                    await updateProfile(userCredential.user, {
-                        displayName: fullName
-                    });
-
-                    await sendEmailVerification(userCredential.user);
-
-                    showMessage(
-                        "Account created successfully! A verification email has been sent to " +
-                        email + ". Please verify your email before logging in.",
-                        "success"
-                    );
-
-                    signupForm.reset();
-
-                } catch (error) {
-                    console.error("Email signup error code:", error.code);
-                    console.error("Email signup error message:", error.message);
-                    showMessage(getFirebaseErrorMessage(error), "error");
-
-                } finally {
-                    signupButton.disabled = false;
-                    signupButtconst signupTranslations = {
-    en: {
-        tagline: "Understand • Compare • Navigate",
-        langLabel: "Language",
-        signupTitle: "Your Legal Assistant,",
-        signupTitleHighlight: "Always by Your Side.",
-        signupDesc: "Create your LawBuddy account and make legal information easier to understand. Explore documents, identify important clauses, and get AI-powered assistance in your preferred language.",
-        benefit1: "Understand complex legal documents simply.",
-        benefit2: "Compare agreements and identify important changes.",
-        benefit3: "Explore legal information in 9 languages.",
-        signupWithGoogle: "Sign up with Google",
-        orDivider: "OR",
-        createAccount: "Create Account",
-        signupSubtitle: "Join LawBuddy and start understanding legal information.",
-        fullNameLabel: "Full Name",
-        fullNamePlaceholder: "Enter your full name",
-        emailLabel: "Email Address",
-        emailPlaceholder: "Enter your email",
-        passwordLabel: "Password",
-        passwordPlaceholder: "Create a password",
-        passwordHint: "Use at least 6 characters.",
-        confirmPasswordLabel: "Confirm Password",
-        confirmPasswordPlaceholder: "Re-enter your password",
-        createAccountBtn: "Create Account →",
-        alreadyHaveAccount: "Already have an account?",
-        loginText: "Log in",
-        termsLabel: "I agree to the Terms of Use and understand that LawBuddy provides informational assistance, not professional legal advice."
-    },
-    kn: {
-        tagline: "ಅರ್ಥಮಾಡಿ • ಹೋಲಿಸಿ • ಮುಂದುವರಿಸಿ",
-        langLabel: "ಭಾಷೆ",
-        signupTitle: "ನಿಮ್ಮ ಕಾನೂನು ಸಹಾಯಕ,",
-        signupTitleHighlight: "ಎಂದಿಗೂ ನಿಮ್ಮೊಂದಿಗೆ.",
-        signupDesc: "ನಿಮ್ಮ LawBuddy ಖಾತೆಯನ್ನು ರಚಿಸಿ ಮತ್ತು ಕಾನೂನು ಮಾಹಿತಿಯನ್ನು ಸುಲಭವಾಗಿ ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ.",
-        benefit1: "ಸಂಕೀರ್ಣ ಕಾನೂನು ದಾಖಲೆಗಳನ್ನು ಸರಳವಾಗಿ ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ.",
-        benefit2: "ಒಪ್ಪಂದಗಳನ್ನು ಹೋಲಿಸಿ ಮತ್ತು ಪ್ರಮುಖ ಬದಲಾವಣೆಗಳನ್ನು ಗುರುತಿಸಿ.",
-        benefit3: "9 ಭಾಷೆಗಳಲ್ಲಿ ಕಾನೂನು ಮಾಹಿತಿಯನ್ನು ನೋಡಿ.",
-        signupWithGoogle: "Google ನೊಂದಿಗೆ ಸೈನ್ ಅಪ್ ಮಾಡಿ",
-        orDivider: "ಅಥವಾ",
-        createAccount: "ಖಾತೆ ರಚಿಸಿ",
-        signupSubtitle: "LawBuddyಗೆ ಸೇರಿ ಮತ್ತು ಕಾನೂನು ಮಾಹಿತಿಯನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ.",
-        fullNameLabel: "ಪೂರ್ಣ ಹೆಸರು",
-        fullNamePlaceholder: "ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರನ್ನು ನಮೂದಿಸಿ",
-        emailLabel: "ಇಮೇಲ್ ವಿಳಾಸ",
-        emailPlaceholder: "ನಿಮ್ಮ ಇಮೇಲ್ ನಮೂದಿಸಿ",
-        passwordLabel: "ಪಾಸ್‌ವರ್ಡ್",
-        passwordPlaceholder: "ಪಾಸ್‌ವರ್ಡ್ ಸೃಷ್ಟಿಸಿ",
-        passwordHint: "ಕನಿಷ್ಠ 6 ಅಕ್ಷರಗಳನ್ನು ಬಳಸಿ.",
-        confirmPasswordLabel: "ಪಾಸ್‌ವರ್ಡ್ ದೃಢೀಕರಿಸಿ",
-        confirmPasswordPlaceholder: "ಪಾಸ್‌ವರ್ಡ್ ಮತ್ತೆ ನಮೂದಿಸಿ",
-        createAccountBtn: "ಖಾತೆ ರಚಿಸಿ →",
-        alreadyHaveAccount: "ಈಗಾಗಲೇ ಖಾತೆ ಇದೆಯೇ?",
-        loginText: "ಲಾಗಿನ್ ಮಾಡಿ",
-        termsLabel: "ನಾನು ಬಳಕೆಯ ನಿಯಮಗಳನ್ನು ಒಪ್ಪುತ್ತೇನೆ ಮತ್ತು LawBuddy ಮಾಹಿತಿ ಸಹಾಯವನ್ನು ನೀಡುತ್ತದೆ ಎಂದು ಅರ್ಥಮಾಡಿಕೊಂಡಿದ್ದೇನೆ."
-    },
-    hi: {
-        tagline: "समझें • तुलना करें • आगे बढ़ें",
-        langLabel: "भाषा",
-        signupTitle: "आपका कानूनी सहायक,",
-        signupTitleHighlight: "हमेशा आपके साथ।",
-        signupDesc: "अपना LawBuddy खाता बनाएँ और कानूनी जानकारी आसानी से समझें।",
-        benefit1: "जटिल कानूनी दस्तावेज़ों को सरलता से समझें।",
-        benefit2: "समझौतों की तुलना करें और महत्वपूर्ण बदलाव पहचानें।",
-        benefit3: "9 भाषाओं में कानूनी जानकारी देखें।",
-        signupWithGoogle: "Google के साथ साइन अप करें",
-        orDivider: "या",
-        createAccount: "खाता बनाएँ",
-        signupSubtitle: "LawBuddy से जुड़ें और कानूनी जानकारी समझना शुरू करें।",
-        fullNameLabel: "पूरा नाम",
-        fullNamePlaceholder: "अपना पूरा नाम दर्ज करें",
-        emailLabel: "ईमेल पता",
-        emailPlaceholder: "अपना ईमेल दर्ज करें",
-        passwordLabel: "पासवर्ड",
-        passwordPlaceholder: "पासवर्ड बनाएँ",
-        passwordHint: "कम से कम 6 अक्षरों का उपयोग करें।",
-        confirmPasswordLabel: "पासवर्ड की पुष्टि करें",
-        confirmPasswordPlaceholder: "पासवर्ड दोबारा दर्ज करें",
-        createAccountBtn: "खाता बनाएँ →",
-        alreadyHaveAccount: "पहले से खाता है?",
-        loginText: "लॉग इन करें",
-        termsLabel: "मैं उपयोग की शर्तों से सहमत हूँ और समझता/समझती हूँ कि LawBuddy केवल सूचनात्मक सहायता प्रदान करता है।"
-    },
-    ml: {
-        tagline: "മനസ്സിലാക്കുക • താരതമ്യം ചെയ്യുക • മുന്നോട്ട് പോകുക",
-        langLabel: "ഭാഷ",
-        signupTitle: "നിങ്ങളുടെ നിയമ സഹായി,",
-        signupTitleHighlight: "എപ്പോഴും നിങ്ങളുടെ ഒപ്പം.",
-        signupDesc: "നിങ്ങളുടെ LawBuddy അക്കൗണ്ട് സൃഷ്ടിച്ച് നിയമ വിവരങ്ങൾ എളുപ്പത്തിൽ മനസ്സിലാക്കുക.",
-        benefit1: "സങ്കീർണ്ണമായ നിയമ രേഖകൾ ലളിതമായി മനസ്സിലാക്കുക.",
-        benefit2: "കരാറുകൾ താരതമ്യം ചെയ്ത് പ്രധാന മാറ്റങ്ങൾ കണ്ടെത്തുക.",
-        benefit3: "9 ഭാഷകളിൽ നിയമ വിവരങ്ങൾ കാണുക.",
-        signupWithGoogle: "Google ഉപയോഗിച്ച് സൈൻ അപ്പ് ചെയ്യുക",
-        orDivider: "അല്ലെങ്കിൽ",
-        createAccount: "അക്കൗണ്ട് സൃഷ്ടിക്കുക",
-        signupSubtitle: "LawBuddyയിൽ ചേരുക, നിയമ വിവരങ്ങൾ മനസ്സിലാക്കാൻ ആരംഭിക്കുക.",
-        fullNameLabel: "പൂർണ്ണ നാമം",
-        fullNamePlaceholder: "നിങ്ങളുടെ പൂർണ്ണ നാമം നൽകുക",
-        emailLabel: "ഇമെയിൽ വിലാസം",
-        emailPlaceholder: "നിങ്ങളുടെ ഇമെയിൽ നൽകുക",
-        passwordLabel: "പാസ്‌വേഡ്",
-        passwordPlaceholder: "പാസ്‌വേഡ് സൃഷ്ടിക്കുക",
-        passwordHint: "കുറഞ്ഞത് 6 അക്ഷരങ്ങൾ ഉപയോഗിക്കുക.",
-        confirmPasswordLabel: "പാസ്‌വേഡ് സ്ഥിരീകരിക്കുക",
-        confirmPasswordPlaceholder: "പാസ്‌വേഡ് വീണ്ടും നൽകുക",
-        createAccountBtn: "അക്കൗണ്ട് സൃഷ്ടിക്കുക →",
-        alreadyHaveAccount: "നേരത്തെ അക്കൗണ്ട് ഉണ്ടോ?",
-        loginText: "ലോഗിൻ ചെയ്യുക",
-        termsLabel: "ഉപയോഗ നിബന്ധനകൾ ഞാൻ അംഗീകരിക്കുന്നു, LawBuddy വിവര സഹായം മാത്രമാണ് നൽകുന്നത് എന്ന് മനസ്സിലാക്കുന്നു."
-    },
-    te: {
-        tagline: "అర్థం చేసుకోండి • పోల్చండి • ముందుకు సాగండి",
-        langLabel: "భాష",
-        signupTitle: "మీ న్యాయ సహాయకుడు,",
-        signupTitleHighlight: "ఎల్లప్పుడూ మీ వెంట.",
-        signupDesc: "మీ LawBuddy ఖాతాను సృష్టించండి మరియు న్యాయ సమాచారాన్ని సులభంగా అర్థం చేసుకోండి.",
-        benefit1: "సంక్లిష్టమైన న్యాయ పత్రాలను సరళంగా అర్థం చేసుకోండి.",
-        benefit2: "ఒప్పందాలను పోల్చి ముఖ్యమైన మార్పులను గుర్తించండి.",
-        benefit3: "9 భాషల్లో న్యాయ సమాచారాన్ని చూడండి.",
-        signupWithGoogle: "Google తో సైన్ అప్ చేయండి",
-        orDivider: "లేదా",
-        createAccount: "ఖాతాను సృష్టించండి",
-        signupSubtitle: "LawBuddyలో చేరి న్యాయ సమాచారాన్ని అర్థం చేసుకోవడం ప్రారంభించండి.",
-        fullNameLabel: "పూర్తి పేరు",
-        fullNamePlaceholder: "మీ పూర్తి పేరు నమోదు చేయండి",
-        emailLabel: "ఇమెయిల్ చిరునామా",
-        emailPlaceholder: "మీ ఇమెయిల్ నమోదు చేయండి",
-        passwordLabel: "పాస్‌వర్డ్",
-        passwordPlaceholder: "పాస్‌వర్డ్ సృష్టించండి",
-        passwordHint: "కనీసం 6 అక్షరాలను ఉపయోగించండి.",
-        confirmPasswordLabel: "పాస్‌వర్డ్ ధృవీకరించండి",
-        confirmPasswordPlaceholder: "పాస్‌వర్డ్ మళ్లీ నమోదు చేయండి",
-        createAccountBtn: "ఖాతాను సృష్టించండి →",
-        alreadyHaveAccount: "ఇప్పటికే ఖాతా ఉందా?",
-        loginText: "లాగిన్ చేయండి",
-        termsLabel: "నేను ఉపయోగ నిబంధనలను అంగీకరిస్తున్నాను మరియు LawBuddy సమాచార సహాయాన్ని మాత్రమే అందిస్తుందని అర్థం చేసుకున్నాను."
-    },
-    tulu: {
-        tagline: "ಅರ್ಥ ಮಲ್ಪುಲೆ • ಹೋಲಿಕೆ ಮಲ್ಪುಲೆ • ಮುಂದು ಪೋಲೆ",
-        langLabel: "ಬಾಸೆ",
-        signupTitle: "ಈರೆನ ಕಾನೂನು ಸಹಾಯಕೆ,",
-        signupTitleHighlight: "ಎಪೊಲ ಈರೆನೊಟ್ಟುಗು.",
-        signupDesc: "ಈರೆನ LawBuddy ಖಾತೆನ್ ಸುರು ಮಲ್ಪುಲೆ ಬೊಕ್ಕ ಕಾನೂನು ಮಾಹಿತಿನ್ ಸುಲಭವಾದ್ ಅರ್ಥ ಮಲ್ಪುಲೆ.",
-        benefit1: "ಕಠಿಣ ಕಾನೂನು ದಾಖಲೆಲೆನ್ ಸುಲಭವಾದ್ ಅರ್ಥ ಮಲ್ಪುಲೆ.",
-        benefit2: "ಒಪ್ಪಂದೊಲೆನ್ ಹೋಲಿಕೆ ಮಲ್ತ್‌ದ್ ಮುಖ್ಯ ಬದಲಾವಣೆ ಗುರುತು ಮಲ್ಪುಲೆ.",
-        benefit3: "9 ಬಾಸೆಡ್ ಕಾನೂನು ಮಾಹಿತಿ ತೂಲೆ.",
-        signupWithGoogle: "Google ಡ್ ಸೈನ್ ಅಪ್ ಆಲೆ",
-        orDivider: "ಅತ್ತ್ಂಡ",
-        createAccount: "ಖಾತೆ ಸುರು ಮಲ್ಪುಲೆ",
-        signupSubtitle: "LawBuddyಗ್ ಸೇರ್ದ್ ಕಾನೂನು ಮಾಹಿತಿ ಅರ್ಥ ಮಲ್ಪೆರೆ ಸುರು ಮಲ್ಪುಲೆ.",
-        fullNameLabel: "ಪೂರ್ತಿ ಪುದರ್",
-        fullNamePlaceholder: "ಈರೆನ ಪೂರ್ತಿ ಪುದರ್ ಪಾಡುಲೆ",
-        emailLabel: "ಇಮೇಲ್ ವಿಳಾಸ",
-        emailPlaceholder: "ಈರೆನ ಇಮೇಲ್ ಪಾಡುಲೆ",
-        passwordLabel: "ಪಾಸ್‌ವರ್ಡ್",
-        passwordPlaceholder: "ಪಾಸ್‌ವರ್ಡ್ ತಯಾರ್ ಮಲ್ಪುಲೆ",
-        passwordHint: "ಕನಿಷ್ಠ 6 ಅಕ್ಷರೊಲೆನ್ ಗಳಸುಲೆ.",
-        confirmPasswordLabel: "ಪಾಸ್‌ವರ್ಡ್ ಖಾತರಿ ಮಲ್ಪುಲೆ",
-        confirmPasswordPlaceholder: "ಪಾಸ್‌ವರ್ಡ್ ಪಿರೊರ ಪಾಡುಲೆ",
-        createAccountBtn: "ಖಾತೆ ಸುರು ಮಲ್ಪುಲೆ →",
-        alreadyHaveAccount: "ದುಂಬೇ ಖಾತೆ ಉಂಡಾ?",
-        loginText: "ಲಾಗಿನ್ ಆಲೆ",
-        termsLabel: "ಯಾನ್ ಬಳಕೆದ ನಿಯಮೊಲೆನ್ ಒಪ್ಪುವೆ ಬೊಕ್ಕ LawBuddy ಮಾಹಿತಿ ಸಹಾಯ ಮಾತ್ರ ಕೊರ್ಪುಂಡು ಎಂದು ತೆರಿಯೊಂಡೆ."
-    },
-    mr: {
-        tagline: "समजा • तुलना करा • पुढे जा",
-        langLabel: "भाषा",
-        signupTitle: "तुमचा कायदेशीर सहाय्यक,",
-        signupTitleHighlight: "नेहमी तुमच्या सोबत.",
-        signupDesc: "तुमचे LawBuddy खाते तयार करा आणि कायदेशीर माहिती सहज समजा.",
-        benefit1: "गुंतागुंतीची कायदेशीर कागदपत्रे सोप्या पद्धतीने समजा.",
-        benefit2: "करारांची तुलना करा आणि महत्त्वाचे बदल ओळखा.",
-        benefit3: "9 भाषांमध्ये कायदेशीर माहिती पहा.",
-        signupWithGoogle: "Google সহ साइन अप करा",
-        orDivider: "किंवा",
-        createAccount: "खाते तयार करा",
-        signupSubtitle: "LawBuddy मध्ये सामील व्हा आणि कायदेशीर माहिती समजून घेणे सुरू करा.",
-        fullNameLabel: "पूर्ण नाव",
-        fullNamePlaceholder: "तुमचे पूर्ण नाव प्रविष्ट करा",
-        emailLabel: "ईमेल पत्ता",
-        emailPlaceholder: "तुमचा ईमेल प्रविष्ट करा",
-        passwordLabel: "पासवर्ड",
-        passwordPlaceholder: "पासवर्ड तयार करा",
-        passwordHint: "कमीत कमी 6 अक्षरे वापरा.",
-        confirmPasswordLabel: "पासवर्डची पुष्टी करा",
-        confirmPasswordPlaceholder: "पासवर्ड पुन्हा प्रविष्ट करा",
-        createAccountBtn: "खाते तयार करा →",
-        alreadyHaveAccount: "आधीच खाते आहे?",
-        loginText: "लॉगिन करा",
-        termsLabel: "मी वापर अटींशी सहमत आहे आणि हे समजतो/समजते की LawBuddy केवळ माहितीपर मदत प्रदान करते."
-    },
-    gu: {
-        tagline: "સમજો • તુલના કરો • આગળ વધો",
-        langLabel: "ભાષા",
-        signupTitle: "તમારો કાનૂની સહાયક,",
-        signupTitleHighlight: "હમેશાં તમારી સાથે.",
-        signupDesc: "તમારું LawBuddy એકાઉન્ટ બનાવો અને કાનૂની માહિતી સરળતાથી સમજો.",
-        benefit1: "જટિલ કાનૂની દસ્તાવેજો સરળતાથી સમજો.",
-        benefit2: "કરારની તુલના કરો અને મહત્વના ફેરફારો ઓળખો.",
-        benefit3: "9 ભાષાઓમાં કાનૂની માહિતી જુઓ.",
-        signupWithGoogle: "Google સાથે સાઇન અપ કરો",
-        orDivider: "અથવા",
-        createAccount: "એકાઉન્ટ બનાવો",
-        signupSubtitle: "LawBuddy સાથે જોડાઓ અને કાનૂની માહિતી સમજવાનું શરૂ કરો.",
-        fullNameLabel: "પૂરું નામ",
-        fullNamePlaceholder: "તમારું પૂરું નામ દાખલ કરો",
-        emailLabel: "ઈમેઈલ સરનામું",
-        emailPlaceholder: "તમારું ઈમેઈલ દાખલ કરો",
-        passwordLabel: "પાસવર્ડ",
-        passwordPlaceholder: "પાસવર્ડ બનાવો",
-        passwordHint: "ઓછામાં ઓછા 6 અક્ષરો વાપરો.",
-        confirmPasswordLabel: "પાસવર્ડની પુષ્ટિ કરો",
-        confirmPasswordPlaceholder: "પાસવર્ડ ફરી દાખલ કરો",
-        createAccountBtn: "એકાઉન્ટ બનાવો →",
-        alreadyHaveAccount: "પહેલેથી એકાઉન્ટ છે?",
-        loginText: "લોગ ઈન કરો",
-        termsLabel: "હું ઉપયોગની શરતો સાથે સંમત છું અને સમજું છું કે LawBuddy માત્ર માહિતીપ્રદ સહાય પૂરી પાડે છે."
-    },
-    bn: {
-        tagline: "বুঝুন • তুলনা করুন • এগিয়ে যান",
-        langLabel: "ভাষা",
-        signupTitle: "আপনার আইনি সহকারী,",
-        signupTitleHighlight: "সবসময় আপনার পাশে।",
-        signupDesc: "আপনার LawBuddy অ্যাকাউন্ট তৈরি করুন এবং আইনি তথ্য সহজে বুঝুন।",
-        benefit1: "জটিল আইনি নথি সহজে বুঝুন।",
-        benefit2: "চুক্তি তুলনা করুন এবং গুরুত্বপূর্ণ পরিবর্তন চিহ্নিত করুন।",
-        benefit3: "৯টি ভাষায় আইনি তথ্য দেখুন।",
-        signupWithGoogle: "Google দিয়ে সাইন আপ করুন",
-        orDivider: "অথবা",
-        createAccount: "অ্যাকাউন্ট তৈরি করুন",
-        signupSubtitle: "LawBuddy-তে যোগ দিন এবং আইনি তথ্য বোঝা শুরু করুন।",
-        fullNameLabel: "পূর্ণ নাম",
-        fullNamePlaceholder: "আপনার পূর্ণ নাম লিখুন",
-        emailLabel: "ইমেল ঠিকানা",
-        emailPlaceholder: "আপনার ইমেল লিখুন",
-        passwordLabel: "পાસওয়ার্ড",
-        passwordPlaceholder: "পাসওয়ার্ড তৈরি করুন",
-        passwordHint: "কমপক্ষে ৬টি অক্ষর ব্যবহার করুন।",
-        confirmPasswordLabel: "পাসওয়ার্ড নিশ্চিত করুন",
-        confirmPasswordPlaceholder: "পাসওয়ার্ড পুনরায় লিখুন",
-        createAccountBtn: "অ্যাকাউন্ট তৈরি করুন →",
-        alreadyHaveAccount: "ইতিমধ্যেই অ্যাকাউন্ট আছে?",
-        loginText: "লগ ইন করুন",
-        termsLabel: "আমি ব্যবহারের শর্তাবলীতে সম্মত এবং বুঝতে পারছি যে LawBuddy কেবল তথ্যমূলক সহায়তা প্রদান করে।"
-    },
-    ta: {
-        tagline: "புரிந்துகொள்ளுங்கள் • ஒப்பிடுங்கள் • பயன்படுத்துங்கள்",
-        langLabel: "மொழி",
-        signupTitle: "உங்கள் சட்ட உதவியாளர்,",
-        signupTitleHighlight: "எப்போதும் உங்களுடன்.",
-        signupDesc: "உங்கள் LawBuddy கணக்கை உருவாக்கி சட்டத் தகவல்களை எளிதாகப் புரிந்துகொள்ளுங்கள். ஆவணங்களை ஆராயுங்கள், முக்கிய விதிகளை அடையாளம் காணுங்கள், மற்றும் உங்கள் விருப்பமான மொழியில் AI உதவியைப் பெறுங்கள்.",
-        benefit1: "சிக்கலான சட்ட ஆவணங்களை எளிமையாகப் புரிந்துகொள்ளுங்கள்.",
-        benefit2: "ஒப்பந்தங்களை ஒப்பிட்டு முக்கியமான மாற்றங்களை அடையாளம் காணுங்கள்.",
-        benefit3: "10 மொழிகளில் சட்டத் தகவல்களை ஆராயுங்கள்.",
-        signupWithGoogle: "Google மூலம் பதிவு செய்யவும்",
-        orDivider: "அல்லது",
-        createAccount: "கணக்கை உருவாக்குங்கள்",
-        signupSubtitle: "LawBuddy இல் இணைந்து சட்டத் தகவல்களைப் புரிந்துகொள்ளத் தொடங்குங்கள்.",
-        fullNameLabel: "முழு பெயர்",
-        fullNamePlaceholder: "உங்கள் முழு பெயரை உள்ளிடுங்கள்",
-        emailLabel: "மின்னஞ்சல் முகவரி",
-        emailPlaceholder: "உங்கள் மின்னஞ்சலை உள்ளிடுங்கள்",
-        passwordLabel: "கடவுச்சொல்",
-        passwordPlaceholder: "கடவுச்சொல்லை உருவாக்குங்கள்",
-        passwordHint: "குறைந்தது 6 எழுத்துகளைப் பயன்படுத்தவும்.",
-        confirmPasswordLabel: "கடவுச்சொல்லை உறுதிப்படுத்தவும்",
-        confirmPasswordPlaceholder: "கடவுச்சொல்லை மீண்டும் உள்ளிடுங்கள்",
-        createAccountBtn: "கணக்கை உருவாக்குங்கள் →",
-        alreadyHaveAccount: "ஏற்கனவே கணக்கு உள்ளதா?",
-        loginText: "உள்நுழையவும்",
-        termsLabel: "பயன்பாட்டு விதிகளை நான் ஒப்புக்கொள்கிறேன் மற்றும் LawBuddy தகவல்களை மட்டுமே வழங்குகிறது என்பதைப் புரிந்துகொள்கிறேன்."
-    }
-};��ಾಗಿನ್ ಆಲೆ",
-        termsLabel: "ಯಾನ್ ಬಳಕೆದ ನಿಯಮೊಲೆನ್ ಒಪ್ಪುವೆ ಬೊಕ್ಕ LawBuddy ಮಾಹಿತಿ ಸಹಾಯ ಮಾತ್ರ ಕೊರ್ಪುಂಡು ಎಂದು ತೆರಿಯೊಂಡೆ."
-    },
-    mr: {
-        tagline: "समजा • तुलना करा • पुढे जा",
-        langLabel: "भाषा",
-        signupTitle: "तुमचा कायदेशीर सहाय्यक,",
-        signupTitleHighlight: "नेहमी तुमच्या सोबत.",
-        signupDesc: "तुमचे LawBuddy खाते तयार करा आणि कायदेशीर माहिती सहज समजा.",
-        benefit1: "गुंतागुंतीची कायदेशीर कागदपत्रे सोप्या पद्धतीने समजा.",
-        benefit2: "करारांची तुलना करा आणि महत्त्वाचे बदल ओळखा.",
-        benefit3: "9 भाषांमध्ये कायदेशीर माहिती पहा.",
-        signupWithGoogle: "Google সহ साइन अप करा",
-        orDivider: "किंवा",
-        createAccount: "खाते तयार करा",
-        signupSubtitle: "LawBuddy मध्ये सामील व्हा आणि कायदेशीर माहिती समजून घेणे सुरू करा.",
-        fullNameLabel: "पूर्ण नाव",
-        fullNamePlaceholder: "तुमचे पूर्ण नाव प्रविष्ट करा",
-        emailLabel: "ईमेल पत्ता",
-        emailPlaceholder: "तुमचा ईमेल प्रविष्ट करा",
-        passwordLabel: "पासवर्ड",
-        passwordPlaceholder: "पासवर्ड तयार करा",
-        passwordHint: "कमीत कमी 6 अक्षरे वापरा.",
-        confirmPasswordLabel: "पासवर्डची पुष्टी करा",
-        confirmPasswordPlaceholder: "पासवर्ड पुन्हा प्रविष्ट करा",
-        createAccountBtn: "खाते तयार करा →",
-        alreadyHaveAccount: "आधीच खाते आहे?",
-        loginText: "लॉगिन करा",
-        termsLabel: "मी वापर अटींशी सहमत आहे आणि हे समजतो/समजते की LawBuddy केवळ माहितीपर मदत प्रदान करते."
-    },
-    gu: {
-        tagline: "સમજો • તુલના કરો • આગળ વધો",
-        langLabel: "ભાષા",
-        signupTitle: "તમારો કાનૂની સહાયક,",
-        signupTitleHighlight: "હમેશાં તમારી સાથે.",
-        signupDesc: "તમારું LawBuddy એકાઉન્ટ બનાવો અને કાનૂની માહિતી સરળતાથી સમજો.",
-        benefit1: "જટિલ કાનૂની દસ્તાવેજો સરળતાથી સમજો.",
-        benefit2: "કરારની તુલના કરો અને મહત્વના ફેરફારો ઓળખો.",
-        benefit3: "9 ભાષાઓમાં કાનૂની માહિતી જુઓ.",
-        signupWithGoogle: "Google સાથે સાઇન અપ કરો",
-        orDivider: "અથવા",
-        createAccount: "એકાઉન્ટ બનાવો",
-        signupSubtitle: "LawBuddy સાથે જોડાઓ અને કાનૂની માહિતી સમજવાનું શરૂ કરો.",
-        fullNameLabel: "પૂરું નામ",
-        fullNamePlaceholder: "તમારું પૂરું નામ દાખલ કરો",
-        emailLabel: "ઈમેઈલ સરનામું",
-        emailPlaceholder: "તમારું ઈમેઈલ દાખલ કરો",
-        passwordLabel: "પાસવર્ડ",
-        passwordPlaceholder: "પાસવર્ડ બનાવો",
-        passwordHint: "ઓછામાં ઓછા 6 અક્ષરો વાપરો.",
-        confirmPasswordLabel: "પાસવર્ડની પુષ્ટિ કરો",
-        confirmPasswordPlaceholder: "પાસવર્ડ ફરી દાખલ કરો",
-        createAccountBtn: "એકાઉન્ટ બનાવો →",
-        alreadyHaveAccount: "પહેલેથી એકાઉન્ટ છે?",
-        loginText: "લોગ ઈન કરો",
-        termsLabel: "હું ઉપયોગની શરતો સાથે સંમત છું અને સમજું છું કે LawBuddy માત્ર માહિતીપ્રદ સહાય પૂરી પાડે છે."
-    },
-    bn: {
-        tagline: "বুঝুন • তুলনা করুন • এগিয়ে যান",
-        langLabel: "ভাষা",
-        signupTitle: "আপনার আইনি সহকারী,",
-        signupTitleHighlight: "সবসময় আপনার পাশে।",
-        signupDesc: "আপনার LawBuddy অ্যাকাউন্ট তৈরি করুন এবং আইনি তথ্য সহজে বুঝুন।",
-        benefit1: "জটিল আইনি নথি সহজে বুঝুন।",
-        benefit2: "চুক্তি তুলনা করুন এবং গুরুত্বপূর্ণ পরিবর্তন চিহ্নিত করুন।",
-        benefit3: "৯টি ভাষায় আইনি তথ্য দেখুন।",
-        signupWithGoogle: "Google দিয়ে সাইন আপ করুন",
-        orDivider: "অথবা",
-        createAccount: "অ্যাকাউন্ট তৈরি করুন",
-        signupSubtitle: "LawBuddy-তে যোগ দিন এবং আইনি তথ্য বোঝা শুরু করুন।",
-        fullNameLabel: "পূর্ণ নাম",
-        fullNamePlaceholder: "আপনার পূর্ণ নাম লিখুন",
-        emailLabel: "ইমেল ঠিকানা",
-        emailPlaceholder: "আপনার ইমেল লিখুন",
-        passwordLabel: "পাসওয়ার্ড",
-        passwordPlaceholder: "পাসওয়ার্ড তৈরি করুন",
-        passwordHint: "কমপক্ষে ৬টি অক্ষর ব্যবহার করুন।",
-        confirmPasswordLabel: "পাসওয়ার্ড নিশ্চিত করুন",
-        confirmPasswordPlaceholder: "পাসওয়ার্ড পুনরায় লিখুন",
-        createAccountBtn: "অ্যাকাউন্ট তৈরি করুন →",
-        alreadyHaveAccount: "ইতিমধ্যেই অ্যাকাউন্ট আছে?",
-        loginText: "লগ ইন করুন",
-        termsLabel: "আমি ব্যবহারের শর্তাবলীতে সম্মত এবং বুঝতে পারছি যে LawBuddy কেবল তথ্যমূলক সহায়তা প্রদান করে।"
-    },
-    ta: {
-        tagline: "புரிந்துகொள்ளுங்கள் • ஒப்பிடுங்கள் • பயன்படுத்துங்கள்",
-        langLabel: "மொழி",
-        signupTitle: "உங்கள் சட்ட உதவியாளர்,",
-        signupTitleHighlight: "எப்போதும் உங்களுடன்.",
-        signupDesc: "உங்கள் LawBuddy கணக்கை உருவாக்கி சட்டத் தகவல்களை எளிதாகப் புரிந்துகொள்ளுங்கள். ஆவணங்களை ஆராயுங்கள், முக்கிய விதிகளை அடையாளம் காணுங்கள், மற்றும் உங்கள் விருப்பமான மொழியில் AI உதவியைப் பெறுங்கள்.",
-        benefit1: "சிக்கலான சட்ட ஆவணங்களை எளிமையாகப் புரிந்துகொள்ளுங்கள்.",
-        benefit2: "ஒப்பந்தங்களை ஒப்பிட்டு முக்கியமான மாற்றங்களை அடையாளம் காணுங்கள்.",
-        benefit3: "10 மொழிகளில் சட்டத் தகவல்களை ஆராயுங்கள்.",
-        signupWithGoogle: "Google மூலம் பதிவு செய்யவும்",
-        orDivider: "அல்லது",
-        createAccount: "கணக்கை உருவாக்குங்கள்",
-        signupSubtitle: "LawBuddy இல் இணைந்து சட்டத் தகவல்களைப் புரிந்துகொள்ளத் தொடங்குங்கள்.",
-        fullNameLabel: "முழு பெயர்",
-        fullNamePlaceholder: "உங்கள் முழு பெயரை உள்ளிடுங்கள்",
-        emailLabel: "மின்னஞ்சல் முகவரி",
-        emailPlaceholder: "உங்கள் மின்னஞ்சலை உள்ளிடுங்கள்",
-        passwordLabel: "கடவுச்சொல்",
-        passwordPlaceholder: "கடவுச்சொல்லை உருவாக்குங்கள்",
-        passwordHint: "குறைந்தது 6 எழுத்துகளைப் பயன்படுத்தவும்.",
-        confirmPasswordLabel: "கடவுச்சொல்லை உறுதிப்படுத்தவும்",
-        confirmPasswordPlaceholder: "கடவுச்சொல்லை மீண்டும் உள்ளிடுங்கள்",
-        createAccountBtn: "கணக்கை உருவாக்குங்கள் →",
-        alreadyHaveAccount: "ஏற்கனவே கணக்கு உள்ளதா?",
-        loginText: "உள்நுழையவும்",
-        termsLabel: "பயன்பாட்டு விதிகளை நான் ஒப்புக்கொள்கிறேன் மற்றும் LawBuddy தகவல்களை மட்டுமே வழங்குகிறது என்பதைப் புரிந்துகொள்கிறேன்."
-    }agline: "समजा • तुलना करा • पुढे जा",
-        langLabel: "भाषा",
-        signupTitle: "तुमचा कायदेशीर सहाय्यक,",
-        signupTitleHighlight: "नेहमी तुमच्या सोबत.",
-        signupDesc: "तुमचे LawBuddy खाते तयार करा आणि कायदेशीर माहिती सहज समजा.",
-        benefit1: "गुंतागुंतीची कायदेशीर कागदपत्रे सोप्या पद्धतीने समजा.",
-        benefit2: "करारांची तुलना करा आणि महत्त्वाचे बदल ओळखा.",
-        benefit3: "9 भाषांमध्ये कायदेशीर माहिती पहा.",
-        signupWithGoogle: "Google সহ साइन अप करा",
-        orDivider: "किंवा",
-        createAccount: "खाते तयार करा",
-        signupSubtitle: "LawBuddy मध्ये सामील व्हा आणि कायदेशीर माहिती समजून घेणे सुरू करा.",
-        fullNameLabel: "पूर्ण नाव",
-        fullNamePlaceholder: "तुमचे पूर्ण नाव प्रविष्ट करा",
-        emailLabel: "ईमेल पत्ता",
-        emailPlaceholder: "तुमचा ईमेल प्रविष्ट करा",
-        passwordLabel: "पासवर्ड",
-        passwordPlaceholder: "पासवर्ड तयार करा",
-        passwordHint: "कमीत कमी 6 अक्षरे वापरा.",
-        confirmPasswordLabel: "पासवर्डची पुष्टी करा",
-        confirmPasswordPlaceholder: "पासवर्ड पुन्हा प्रविष्ट करा",
-        createAccountBtn: "खाते तयार करा →",
-        alreadyHaveAccount: "आधीच खाते आहे?",
-        loginText: "लॉगिन करा"
-    },
-    gu: {
-        tagline: "સમજો • તુલના કરો • આગળ વધો",
-        langLabel: "ભાષા",
-        signupTitle: "તમારો કાનૂની સહાયક,",
-        signupTitleHighlight: "હંમેશાં તમારી સાથે.",
-        signupDesc: "તમારું LawBuddy એકાઉન્ટ બનાવો અને કાનૂની માહિતી સરળતાથી સમજો.",
-        benefit1: "જટિલ કાનૂની દસ્તાવેજો સરળતાથી સમજો.",
-        benefit2: "કરારની તુલના કરો અને મહત્વના ફેરફારો ઓળખો.",
-        benefit3: "9 ભાષાઓમાં કાનૂની માહિતી જુઓ.",
-        signupWithGoogle: "Google સાથે સાઇન અપ કરો",
-        orDivider: "અથવા",
-        createAccount: "એકાઉન્ટ બનાવો",
-        signupSubtitle: "LawBuddy સાથે જોડાઓ અને કાનૂની માહિતી સમજવાનું શરૂ કરો.",
-        fullNameLabel: "પૂરું નામ",
-        fullNamePlaceholder: "તમારું પૂરું નામ દાખલ કરો",
-        emailLabel: "ઈમેઈલ સરનામું",
-        emailPlaceholder: "તમારું ઈમેઈલ દાખલ કરો",
-        passwordLabel: "પાસવર્ડ",
-        passwordPlaceholder: "પાસવર્ડ બનાવો",
-        passwordHint: "ઓછામાં ઓછા 6 અક્ષરો વાપરો.",
-        confirmPasswordLabel: "પાસવર્ડની પુષ્ટિ કરો",
-        confirmPasswordPlaceholder: "પાસવર્ડ ફરી દાખલ કરો",
-        createAccountBtn: "એકાઉન્ટ બનાવો →",
-        alreadyHaveAccount: "પહેલેથી એકાઉન્ટ છે?",
-        loginText: "લોગ ઈન કરો"
-    },
-    bn: {
-        tagline: "বুঝুন • তুলনা করুন • এগিয়ে যান",
-        langLabel: "ভাষা",
-        signupTitle: "আপনার আইনি সহকারী,",
-        signupTitleHighlight: "সবসময় আপনার পাশে।",
-        signupDesc: "আপনার LawBuddy অ্যাকাউন্ট তৈরি করুন এবং আইনি তথ্য সহজে বুঝুন।",
-        benefit1: "জটিল আইনি নথি সহজে বুঝুন।",
-        benefit2: "চুক্তি তুলনা করুন এবং গুরুত্বপূর্ণ পরিবর্তন চিহ্নিত করুন।",
-        benefit3: "৯টি ভাষায় আইনি তথ্য দেখুন।",
-        signupWithGoogle: "Google দিয়ে সাইন আপ করুন",
-        orDivider: "অথবা",
-        createAccount: "অ্যাকাউন্ট তৈরি করুন",
-        signupSubtitle: "LawBuddy-তে যোগ দিন এবং আইনি তথ্য বোঝা শুরু করুন।",
-        fullNameLabel: "পূর্ণ নাম",
-        fullNamePlaceholder: "আপনার পূর্ণ নাম লিখুন",
-        emailLabel: "ইমেল ঠিকানা",
-        emailPlaceholder: "আপনার ইমেল লিখুন",
-        passwordLabel: "পাসওয়ার্ড",
-        passwordPlaceholder: "পাসওয়ার্ড তৈরি করুন",
-        passwordHint: "কমপক্ষে ৬টি অক্ষর ব্যবহার করুন।",
-        confirmPasswordLabel: "পাসওয়ার্ড নিশ্চিত করুন",
-        confirmPasswordPlaceholder: "পাসওয়ার্ড পুনরায় লিখুন",
-        createAccountBtn: "অ্যাকাউন্ট তৈরি করুন →",
-        alreadyHaveAccount: "ইতিমধ্যেই অ্যাকাউন্ট আছে?",
-        loginText: "লগ ইন করুন"
-    },
-    ta: {
-        tagline: "புரிந்துகொள்ளுங்கள் • ஒப்பிடுங்கள் • பயன்படுத்துங்கள்",
-        langLabel: "மொழி",
-        signupTitle: "உங்கள் சட்ட உதவியாளர்,",
-        signupTitleHighlight: "எப்போதும் உங்களுடன்.",
-        signupDesc: "உங்கள் LawBuddy கணக்கை உருவாக்கி சட்டத் தகவல்களை எளிதாகப் புரிந்துகொள்ளுங்கள். ஆவணங்களை ஆராயுங்கள், முக்கிய விதிகளை அடையாளம் காணுங்கள், மற்றும் உங்கள் விருப்பமான மொழியில் AI உதவியைப் பெறுங்கள்.",
-        benefit1: "சிக்கலான சட்ட ஆவணங்களை எளிமையாகப் புரிந்துகொள்ளுங்கள்.",
-        benefit2: "ஒப்பந்தங்களை ஒப்பிட்டு முக்கியமான மாற்றங்களை அடையாளம் காணுங்கள்.",
-        benefit3: "10 மொழிகளில் சட்டத் தகவல்களை ஆராயுங்கள்.",
-        signupWithGoogle: "Google மூலம் பதிவு செய்யவும்",
-        orDivider: "அல்லது",
-        createAccount: "கணக்கை உருவாக்குங்கள்",
-        signupSubtitle: "LawBuddy இல் இணைந்து சட்டத் தகவல்களைப் புரிந்துகொள்ளத் தொடங்குங்கள்.",
-        fullNameLabel: "முழு பெயர்",
-        fullNamePlaceholder: "உங்கள் முழு பெயரை உள்ளிடுங்கள்",
-        emailLabel: "மின்னஞ்சல் முகவரி",
-        emailPlaceholder: "உங்கள் மின்னஞ்சலை உள்ளிடுங்கள்",
-        passwordLabel: "கடவுச்சொல்",
-        passwordPlaceholder: "கடவுச்சொல்லை உருவாக்குங்கள்",
-        passwordHint: "குறைந்தது 6 எழுத்துகளைப் பயன்படுத்தவும்.",
-        confirmPasswordLabel: "கடவுச்சொல்லை உறுதிப்படுத்தவும்",
-        confirmPasswordPlaceholder: "கடவுச்சொல்லை மீண்டும் உள்ளிடுங்கள்",
-        createAccountBtn: "கணக்கை உருவாக்குங்கள் →",
-        alreadyHaveAccount: "ஏற்கனவே கணக்கு உள்ளதா?",
-        loginText: "உள்நுழையவும்"
-    }
-};
-
-function changeSignupLanguage(language) {
-    const selectedLanguage = signupTranslations[language] || signupTranslations.en;
-
-    document.querySelectorAll("[data-i18n]").forEach((element) => {
-        const key = element.getAttribute("data-i18n");
-        const text = selectedLanguage[key] || signupTranslations.en[key];
-
-        if (text) {
-            element.textContent = text;
-        }
-    });
-
-    document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
-        const key = element.getAttribute("data-i18n-placeholder");
-        const text = selectedLanguage[key] || signupTranslations.en[key];
-
-        if (text) {
-            element.placeholder = text;
-        }
-    });
-
-    const languageSelect = document.getElementById("languageSelect");
-    if (languageSelect && languageSelect.value !== language) {
-        languageSelect.value = language;
-    }
-
-    localStorage.setItem("lawbuddyLanguage", language);
-    document.documentElement.lang = language === "tulu" ? "tcy" : language;
-}
-
-function initSignupTranslation() {
-    const languageSelect = document.getElementById("languageSelect");
-    const savedLanguage = localStorage.getItem("lawbuddyLanguage") || "en";
-
-    if (languageSelect) {
-        languageSelect.value = savedLanguage;
-        languageSelect.addEventListener("change", function () {
-            changeSignupLanguage(this.value);
+                setTimeout(() => {
+                    window.location.href = "app.html";
+                }, 800);
+            } catch (error) {
+                console.error("Google sign-in error:", error);
+                showMessage(getFirebaseErrorMessage(error), "error");
+            } finally {
+                googleSignupButton.disabled = false;
+            }
         });
-    }
 
-    changeSignupLanguage(savedLanguage);
-}
+        signupForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
 
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initSignupTranslation);
-} else {
-    initSignupTranslation();
-}
+            const fullName = document
+                .getElementById("fullName")
+                .value
+                .trim();
+
+            const email = document
+                .getElementById("email")
+                .value
+                .trim();
+
+            const password = document.getElementById("password").value;
+
+            const confirmPassword =
+                document.getElementById("confirmPassword").value;
+
+            if (password !== confirmPassword) {
+                showMessage("Passwords do not match.", "error");
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage(
+                    "Password must contain at least 6 characters.",
+                    "error"
+                );
+                return;
+            }
+
+            signupButton.disabled = true;
+            signupButton.textContent = "Creating Account...";
+
+            try {
+                const userCredential =
+                    await createUserWithEmailAndPassword(
+                        auth,
+                        email,
+                        password
+                    );
+
+                await updateProfile(userCredential.user, {
+                    displayName: fullName
+                });
+
+                await sendEmailVerification(userCredential.user);
+
+                showMessage(
+                    "Account created successfully! A verification email has been sent to " +
+                        email +
+                        ". Please verify your email before logging in.",
+                    "success"
+                );
+
+                signupForm.reset();
+            } catch (error) {
+                console.error("Email signup error:", error);
+                showMessage(getFirebaseErrorMessage(error), "error");
+            } finally {
+                signupButton.disabled = false;
+
+                const currentLanguage =
+                    localStorage.getItem("lawbuddyLanguage") || "en";
+
+                signupButton.textContent =
+                    window.signupTranslations?.[currentLanguage]
+                        ?.createAccountBtn ||
+                    window.signupTranslations?.en?.createAccountBtn ||
+                    "Create Account →";
+            }
+        });
     </script>
 
+    <script>
+        window.signupTranslations = {
+            en: {
+                tagline: "Understand • Compare • Navigate",
+                langLabel: "Language",
+                signupTitle: "Your Legal Assistant,",
+                signupTitleHighlight: "Always by Your Side.",
+                signupDesc:
+                    "Create your LawBuddy account and make legal information easier to understand. Explore documents, identify important clauses, and get AI-powered assistance in your preferred language.",
+                benefit1:
+                    "Understand complex legal documents simply.",
+                benefit2:
+                    "Compare agreements and identify important changes.",
+                benefit3:
+                    "Explore legal information in 10 languages.",
+                signupWithGoogle: "Sign up with Google",
+                orDivider: "OR",
+                createAccount: "Create Account",
+                signupSubtitle:
+                    "Join LawBuddy and start understanding legal information.",
+                fullNameLabel: "Full Name",
+                fullNamePlaceholder: "Enter your full name",
+                emailLabel: "Email Address",
+                emailPlaceholder: "Enter your email",
+                passwordLabel: "Password",
+                passwordPlaceholder: "Create a password",
+                passwordHint: "Use at least 6 characters.",
+                confirmPasswordLabel: "Confirm Password",
+                confirmPasswordPlaceholder: "Re-enter your password",
+                createAccountBtn: "Create Account →",
+                alreadyHaveAccount: "Already have an account?",
+                loginText: "Log in",
+                termsLabel:
+                    "I agree to the Terms of Use and understand that LawBuddy provides informational assistance, not professional legal advice."
+            },
+
+            kn: {
+                tagline: "ಅರ್ಥಮಾಡಿ • ಹೋಲಿಸಿ • ಮುಂದುವರಿಸಿ",
+                langLabel: "ಭಾಷೆ",
+                signupTitle: "ನಿಮ್ಮ ಕಾನೂನು ಸಹಾಯಕ,",
+                signupTitleHighlight: "ಎಂದಿಗೂ ನಿಮ್ಮೊಂದಿಗೆ.",
+                signupDesc:
+                    "ನಿಮ್ಮ LawBuddy ಖಾತೆಯನ್ನು ರಚಿಸಿ ಮತ್ತು ಕಾನೂನು ಮಾಹಿತಿಯನ್ನು ಸುಲಭವಾಗಿ ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ.",
+                benefit1:
+                    "ಸಂಕೀರ್ಣ ಕಾನೂನು ದಾಖಲೆಗಳನ್ನು ಸರಳವಾಗಿ ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ.",
+                benefit2:
+                    "ಒಪ್ಪಂದಗಳನ್ನು ಹೋಲಿಸಿ ಮತ್ತು ಪ್ರಮುಖ ಬದಲಾವಣೆಗಳನ್ನು ಗುರುತಿಸಿ.",
+                benefit3:
+                    "10 ಭಾಷೆಗಳಲ್ಲಿ ಕಾನೂನು ಮಾಹಿತಿಯನ್ನು ನೋಡಿ.",
+                signupWithGoogle: "Google ನೊಂದಿಗೆ ಸೈನ್ ಅಪ್ ಮಾಡಿ",
+                orDivider: "ಅಥವಾ",
+                createAccount: "ಖಾತೆ ರಚಿಸಿ",
+                signupSubtitle:
+                    "LawBuddyಗೆ ಸೇರಿ ಮತ್ತು ಕಾನೂನು ಮಾಹಿತಿಯನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ.",
+                fullNameLabel: "ಪೂರ್ಣ ಹೆಸರು",
+                fullNamePlaceholder: "ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರನ್ನು ನಮೂದಿಸಿ",
+                emailLabel: "ಇಮೇಲ್ ವಿಳಾಸ",
+                emailPlaceholder: "ನಿಮ್ಮ ಇಮೇಲ್ ನಮೂದಿಸಿ",
+                passwordLabel: "ಪಾಸ್‌ವರ್ಡ್",
+                passwordPlaceholder: "ಪಾಸ್‌ವರ್ಡ್ ಸೃಷ್ಟಿಸಿ",
+                passwordHint: "ಕನಿಷ್ಠ 6 ಅಕ್ಷರಗಳನ್ನು ಬಳಸಿ.",
+                confirmPasswordLabel: "ಪಾಸ್‌ವರ್ಡ್ ದೃಢೀಕರಿಸಿ",
+                confirmPasswordPlaceholder: "ಪಾಸ್‌ವರ್ಡ್ ಮತ್ತೆ ನಮೂದಿಸಿ",
+                createAccountBtn: "ಖಾತೆ ರಚಿಸಿ →",
+                alreadyHaveAccount: "ಈಗಾಗಲೇ ಖಾತೆ ಇದೆಯೇ?",
+                loginText: "ಲಾಗಿನ್ ಮಾಡಿ",
+                termsLabel:
+                    "ನಾನು ಬಳಕೆಯ ನಿಯಮಗಳನ್ನು ಒಪ್ಪುತ್ತೇನೆ ಮತ್ತು LawBuddy ಮಾಹಿತಿ ಸಹಾಯವನ್ನು ನೀಡುತ್ತದೆ ಎಂದು ಅರ್ಥಮಾಡಿಕೊಂಡಿದ್ದೇನೆ."
+            },
+
+            hi: {
+                tagline: "समझें • तुलना करें • आगे बढ़ें",
+                langLabel: "भाषा",
+                signupTitle: "आपका कानूनी सहायक,",
+                signupTitleHighlight: "हमेशा आपके साथ।",
+                signupDesc:
+                    "अपना LawBuddy खाता बनाएँ और कानूनी जानकारी आसानी से समझें।",
+                benefit1:
+                    "जटिल कानूनी दस्तावेज़ों को सरलता से समझें।",
+                benefit2:
+                    "समझौतों की तुलना करें और महत्वपूर्ण बदलाव पहचानें।",
+                benefit3:
+                    "10 भाषाओं में कानूनी जानकारी देखें।",
+                signupWithGoogle: "Google के साथ साइन अप करें",
+                orDivider: "या",
+                createAccount: "खाता बनाएँ",
+                signupSubtitle:
+                    "LawBuddy से जुड़ें और कानूनी जानकारी समझना शुरू करें।",
+                fullNameLabel: "पूरा नाम",
+                fullNamePlaceholder: "अपना पूरा नाम दर्ज करें",
+                emailLabel: "ईमेल पता",
+                emailPlaceholder: "अपना ईमेल दर्ज करें",
+                passwordLabel: "पासवर्ड",
+                passwordPlaceholder: "पासवर्ड बनाएँ",
+                passwordHint: "कम से कम 6 अक्षरों का उपयोग करें।",
+                confirmPasswordLabel: "पासवर्ड की पुष्टि करें",
+                confirmPasswordPlaceholder: "पासवर्ड दोबारा दर्ज करें",
+                createAccountBtn: "खाता बनाएँ →",
+                alreadyHaveAccount: "पहले से खाता है?",
+                loginText: "लॉग इन करें",
+                termsLabel:
+                    "मैं उपयोग की शर्तों से सहमत हूँ और समझता/समझती हूँ कि LawBuddy केवल सूचनात्मक सहायता प्रदान करता है।"
+            },
+
+            ml: {
+                tagline: "മനസ്സിലാക്കുക • താരതമ്യം ചെയ്യുക • മുന്നോട്ട് പോകുക",
+                langLabel: "ഭാഷ",
+                signupTitle: "നിങ്ങളുടെ നിയമ സഹായി,",
+                signupTitleHighlight: "എപ്പോഴും നിങ്ങളുടെ ഒപ്പം.",
+                signupDesc:
+                    "നിങ്ങളുടെ LawBuddy അക്കൗണ്ട് സൃഷ്ടിച്ച് നിയമ വിവരങ്ങൾ എളുപ്പത്തിൽ മനസ്സിലാക്കുക.",
+                benefit1:
+                    "സങ്കീർണ്ണമായ നിയമ രേഖകൾ ലളിതമായി മനസ്സിലാക്കുക.",
+                benefit2:
+                    "കരാറുകൾ താരതമ്യം ചെയ്ത് പ്രധാന മാറ്റങ്ങൾ കണ്ടെത്തുക.",
+                benefit3:
+                    "10 ഭാഷകളിൽ നിയമ വിവരങ്ങൾ കാണുക.",
+                signupWithGoogle: "Google ഉപയോഗിച്ച് സൈൻ അപ്പ് ചെയ്യുക",
+                orDivider: "അല്ലെങ്കിൽ",
+                createAccount: "അക്കൗണ്ട് സൃഷ്ടിക്കുക",
+                signupSubtitle:
+                    "LawBuddyയിൽ ചേരുക, നിയമ വിവരങ്ങൾ മനസ്സിലാക്കാൻ ആരംഭിക്കുക.",
+                fullNameLabel: "പൂർണ്ണ നാമം",
+                fullNamePlaceholder: "നിങ്ങളുടെ പൂർണ്ണ നാമം നൽകുക",
+                emailLabel: "ഇമെയിൽ വിലാസം",
+                emailPlaceholder: "നിങ്ങളുടെ ഇമെയിൽ നൽകുക",
+                passwordLabel: "പാസ്‌വേഡ്",
+                passwordPlaceholder: "പാസ്‌വേഡ് സൃഷ്ടിക്കുക",
+                passwordHint: "കുറഞ്ഞത് 6 അക്ഷരങ്ങൾ ഉപയോഗിക്കുക.",
+                confirmPasswordLabel: "പാസ്‌വേഡ് സ്ഥിരീകരിക്കുക",
+                confirmPasswordPlaceholder: "പാസ്‌വേഡ് വീണ്ടും നൽകുക",
+                createAccountBtn: "അക്കൗണ്ട് സൃഷ്ടിക്കുക →",
+                alreadyHaveAccount: "നേരത്തെ അക്കൗണ്ട് ഉണ്ടോ?",
+                loginText: "ലോഗിൻ ചെയ്യുക",
+                termsLabel:
+                    "ഉപയോഗ നിബന്ധനകൾ ഞാൻ അംഗീകരിക്കുന്നു, LawBuddy വിവര സഹായം മാത്രമാണ് നൽകുന്നത് എന്ന് മനസ്സിലാക്കുന്നു."
+            },
+
+            te: {
+                tagline: "అర్థం చేసుకోండి • పోల్చండి • ముందుకు సాగండి",
+                langLabel: "భాష",
+                signupTitle: "మీ న్యాయ సహాయకుడు,",
+                signupTitleHighlight: "ఎల్లప్పుడూ మీ వెంట.",
+                signupDesc:
+                    "మీ LawBuddy ఖాతాను సృష్టించండి మరియు న్యాయ సమాచారాన్ని సులభంగా అర్థం చేసుకోండి.",
+                benefit1:
+                    "సంక్లిష్టమైన న్యాయ పత్రాలను సరళంగా అర్థం చేసుకోండి.",
+                benefit2:
+                    "ఒప్పందాలను పోల్చి ముఖ్యమైన మార్పులను గుర్తించండి.",
+                benefit3:
+                    "10 భాషల్లో న్యాయ సమాచారాన్ని చూడండి.",
+                signupWithGoogle: "Google తో సైన్ అప్ చేయండి",
+                orDivider: "లేదా",
+                createAccount: "ఖాతాను సృష్టించండి",
+                signupSubtitle:
+                    "LawBuddyలో చేరి న్యాయ సమాచారాన్ని అర్థం చేసుకోవడం ప్రారంభించండి.",
+                fullNameLabel: "పూర్తి పేరు",
+                fullNamePlaceholder: "మీ పూర్తి పేరు నమోదు చేయండి",
+                emailLabel: "ఇమెయిల్ చిరునామా",
+                emailPlaceholder: "మీ ఇమెయిల్ నమోదు చేయండి",
+                passwordLabel: "పాస్‌వర్డ్",
+                passwordPlaceholder: "పాస్‌వర్డ్ సృష్టించండి",
+                passwordHint: "కనీసం 6 అక్షరాలను ఉపయోగించండి.",
+                confirmPasswordLabel: "పాస్‌వర్డ్ ధృవీకరించండి",
+                confirmPasswordPlaceholder: "పాస్‌వర్డ్ మళ్లీ నమోదు చేయండి",
+                createAccountBtn: "ఖాతాను సృష్టించండి →",
+                alreadyHaveAccount: "ఇప్పటికే ఖాతా ఉందా?",
+                loginText: "లాగిన్ చేయండి",
+                termsLabel:
+                    "నేను ఉపయోగ నిబంధనలను అంగీకరిస్తున్నాను మరియు LawBuddy సమాచార సహాయాన్ని మాత్రమే అందిస్తుందని అర్థం చేసుకున్నాను."
+            },
+
+            tulu: {
+                tagline: "ಅರ್ಥ ಮಲ್ಪುಲೆ • ಹೋಲಿಕೆ ಮಲ್ಪುಲೆ • ಮುಂದು ಪೋಲೆ",
+                langLabel: "ಬಾಸೆ",
+                signupTitle: "ಈರೆನ ಕಾನೂನು ಸಹಾಯಕೆ,",
+                signupTitleHighlight: "ಎಪೊಲ ಈರೆನೊಟ್ಟುಗು.",
+                signupDesc:
+                    "ಈರೆನ LawBuddy ಖಾತೆನ್ ಸುರು ಮಲ್ಪುಲೆ ಬೊಕ್ಕ ಕಾನೂನು ಮಾಹಿತಿನ್ ಸುಲಭವಾದ್ ಅರ್ಥ ಮಲ್ಪುಲೆ.",
+                benefit1:
+                    "ಕಠಿಣ ಕಾನೂನು ದಾಖಲೆಲೆನ್ ಸುಲಭವಾದ್ ಅರ್ಥ ಮಲ್ಪುಲೆ.",
+                benefit2:
+                    "ಒಪ್ಪಂದೊಲೆನ್ ಹೋಲಿಕೆ ಮಲ್ತ್‌ದ್ ಮುಖ್ಯ ಬದಲಾವಣೆ ಗುರುತು ಮಲ್ಪುಲೆ.",
+                benefit3:
+                    "10 ಬಾಸೆಡ್ ಕಾನೂನು ಮಾಹಿತಿ ತೂಲೆ.",
+                signupWithGoogle: "Google ಡ್ ಸೈನ್ ಅಪ್ ಆಲೆ",
+                orDivider: "ಅತ್ತ್ಂಡ",
+                createAccount: "ಖಾತೆ ಸುರು ಮಲ್ಪುಲೆ",
+                signupSubtitle:
+                    "LawBuddyಗ್ ಸೇರ್ದ್ ಕಾನೂನು ಮಾಹಿತಿ ಅರ್ಥ ಮಲ್ಪೆರೆ ಸುರು ಮಲ್ಪುಲೆ.",
+                fullNameLabel: "ಪೂರ್ತಿ ಪುದರ್",
+                fullNamePlaceholder: "ಈರೆನ ಪೂರ್ತಿ ಪುದರ್ ಪಾಡುಲೆ",
+                emailLabel: "ಇಮೇಲ್ ವಿಳಾಸ",
+                emailPlaceholder: "ಈರೆನ ಇಮೇಲ್ ಪಾಡುಲೆ",
+                passwordLabel: "ಪಾಸ್‌ವರ್ಡ್",
+                passwordPlaceholder: "ಪಾಸ್‌ವರ್ಡ್ ತಯಾರ್ ಮಲ್ಪುಲೆ",
+                passwordHint: "ಕನಿಷ್ಠ 6 ಅಕ್ಷರೊಲೆನ್ ಗಳಸುಲೆ.",
+                confirmPasswordLabel: "ಪಾಸ್‌ವರ್ಡ್ ಖಾತರಿ ಮಲ್ಪುಲೆ",
+                confirmPasswordPlaceholder: "ಪಾಸ್‌ವರ್ಡ್ ಪಿರೊರ ಪಾಡುಲೆ",
+                createAccountBtn: "ಖಾತೆ ಸುರು ಮಲ್ಪುಲೆ →",
+                alreadyHaveAccount: "ದುಂಬೇ ಖಾತೆ ಉಂಡಾ?",
+                loginText: "ಲಾಗಿನ್ ಆಲೆ",
+                termsLabel:
+                    "ಯಾನ್ ಬಳಕೆದ ನಿಯಮೊಲೆನ್ ಒಪ್ಪುವೆ ಬೊಕ್ಕ LawBuddy ಮಾಹಿತಿ ಸಹಾಯ ಮಾತ್ರ ಕೊರ್ಪುಂಡು ಎಂದು ತೆರಿಯೊಂಡೆ."
+            },
+
+            mr: {
+                tagline: "समजा • तुलना करा • पुढे जा",
+                langLabel: "भाषा",
+                signupTitle: "तुमचा कायदेशीर सहाय्यक,",
+                signupTitleHighlight: "नेहमी तुमच्या सोबत.",
+                signupDesc:
+                    "तुमचे LawBuddy खाते तयार करा आणि कायदेशीर माहिती सहज समजा.",
+                benefit1:
+                    "गुंतागुंतीची कायदेशीर कागदपत्रे सोप्या पद्धतीने समजा.",
+                benefit2:
+                    "करारांची तुलना करा आणि महत्त्वाचे बदल ओळखा.",
+                benefit3:
+                    "10 भाषांमध्ये कायदेशीर माहिती पहा.",
+                signupWithGoogle: "Google सह साइन अप करा",
+                orDivider: "किंवा",
+                createAccount: "खाते तयार करा",
+                signupSubtitle:
+                    "LawBuddy मध्ये सामील व्हा आणि कायदेशीर माहिती समजून घेणे सुरू करा.",
+                fullNameLabel: "पूर्ण नाव",
+                fullNamePlaceholder: "तुमचे पूर्ण नाव प्रविष्ट करा",
+                emailLabel: "ईमेल पत्ता",
+                emailPlaceholder: "तुमचा ईमेल प्रविष्ट करा",
+                passwordLabel: "पासवर्ड",
+                passwordPlaceholder: "पासवर्ड तयार करा",
+                passwordHint: "कमीत कमी 6 अक्षरे वापरा.",
+                confirmPasswordLabel: "पासवर्डची पुष्टी करा",
+                confirmPasswordPlaceholder: "पासवर्ड पुन्हा प्रविष्ट करा",
+                createAccountBtn: "खाते तयार करा →",
+                alreadyHaveAccount: "आधीच खाते आहे?",
+                loginText: "लॉगिन करा",
+                termsLabel:
+                    "मी वापर अटींशी सहमत आहे आणि हे समजतो/समजते की LawBuddy केवळ माहितीपर मदत प्रदान करते."
+            },
+
+            gu: {
+                tagline: "સમજો • તુલના કરો • આગળ વધો",
+                langLabel: "ભાષા",
+                signupTitle: "તમારો કાનૂની સહાયક,",
+                signupTitleHighlight: "હંમેશાં તમારી સાથે.",
+                signupDesc:
+                    "તમારું LawBuddy એકાઉન્ટ બનાવો અને કાનૂની માહિતી સરળતાથી સમજો.",
+                benefit1:
+                    "જટિલ કાનૂની દસ્તાવેજો સરળતાથી સમજો.",
+                benefit2:
+                    "કરારની તુલના કરો અને મહત્વના ફેરફારો ઓળખો.",
+                benefit3:
+                    "10 ભાષાઓમાં કાનૂની માહિતી જુઓ.",
+                signupWithGoogle: "Google સાથે સાઇન અપ કરો",
+                orDivider: "અથવા",
+                createAccount: "એકાઉન્ટ બનાવો",
+                signupSubtitle:
+                    "LawBuddy સાથે જોડાઓ અને કાનૂની માહિતી સમજવાનું શરૂ કરો.",
+                fullNameLabel: "પૂરું નામ",
+                fullNamePlaceholder: "તમારું પૂરું નામ દાખલ કરો",
+                emailLabel: "ઈમેઈલ સરનામું",
+                emailPlaceholder: "તમારું ઈમેઈલ દાખલ કરો",
+                passwordLabel: "પાસવર્ડ",
+                passwordPlaceholder: "પાસવર્ડ બનાવો",
+                passwordHint: "ઓછામાં ઓછા 6 અક્ષરો વાપરો.",
+                confirmPasswordLabel: "પાસવર્ડની પુષ્ટિ કરો",
+                confirmPasswordPlaceholder: "પાસવર્ડ ફરી દાખલ કરો",
+                createAccountBtn: "એકાઉન્ટ બનાવો →",
+                alreadyHaveAccount: "પહેલેથી એકાઉન્ટ છે?",
+                loginText: "લોગ ઈન કરો",
+                termsLabel:
+                    "હું ઉપયોગની શરતો સાથે સંમત છું અને સમજું છું કે LawBuddy માત્ર માહિતીપ્રદ સહાય પૂરી પાડે છે."
+            },
+
+            bn: {
+                tagline: "বুঝুন • তুলনা করুন • এগিয়ে যান",
+                langLabel: "ভাষা",
+                signupTitle: "আপনার আইনি সহকারী,",
+                signupTitleHighlight: "সবসময় আপনার পাশে।",
+                signupDesc:
+                    "আপনার LawBuddy অ্যাকাউন্ট তৈরি করুন এবং আইনি তথ্য সহজে বুঝুন।",
+                benefit1: "জটিল আইনি নথি সহজে বুঝুন।",
+                benefit2:
+                    "চুক্তি তুলনা করুন এবং গুরুত্বপূর্ণ পরিবর্তন চিহ্নিত করুন।",
+                benefit3: "১০টি ভাষায় আইনি তথ্য দেখুন।",
+                signupWithGoogle: "Google দিয়ে সাইন আপ করুন",
+                orDivider: "অথবা",
+                createAccount: "অ্যাকাউন্ট তৈরি করুন",
+                signupSubtitle:
+                    "LawBuddy-তে যোগ দিন এবং আইনি তথ্য বোঝা শুরু করুন।",
+                fullNameLabel: "পূর্ণ নাম",
+                fullNamePlaceholder: "আপনার পূর্ণ নাম লিখুন",
+                emailLabel: "ইমেল ঠিকানা",
+                emailPlaceholder: "আপনার ইমেল লিখুন",
+                passwordLabel: "পাসওয়ার্ড",
+                passwordPlaceholder: "পাসওয়ার্ড তৈরি করুন",
+                passwordHint: "কমপক্ষে ৬টি অক্ষর ব্যবহার করুন।",
+                confirmPasswordLabel: "পাসওয়ার্ড নিশ্চিত করুন",
+                confirmPasswordPlaceholder: "পাসওয়ার্ড পুনরায় লিখুন",
+                createAccountBtn: "অ্যাকাউন্ট তৈরি করুন →",
+                alreadyHaveAccount: "ইতিমধ্যেই অ্যাকাউন্ট আছে?",
+                loginText: "লগ ইন করুন",
+                termsLabel:
+                    "আমি ব্যবহারের শর্তাবলীতে সম্মত এবং বুঝতে পারছি যে LawBuddy কেবল তথ্যমূলক সহায়তা প্রদান করে।"
+            },
+
+            ta: {
+                tagline: "புரிந்துகொள்ளுங்கள் • ஒப்பிடுங்கள் • பயன்படுத்துங்கள்",
+                langLabel: "மொழி",
+                signupTitle: "உங்கள் சட்ட உதவியாளர்,",
+                signupTitleHighlight: "எப்போதும் உங்களுடன்.",
+                signupDesc:
+                    "உங்கள் LawBuddy கணக்கை உருவாக்கி சட்டத் தகவல்களை எளிதாகப் புரிந்துகொள்ளுங்கள்.",
+                benefit1:
+                    "சிக்கலான சட்ட ஆவணங்களை எளிமையாகப் புரிந்துகொள்ளுங்கள்.",
+                benefit2:
+                    "ஒப்பந்தங்களை ஒப்பிட்டு முக்கியமான மாற்றங்களை அடையாளம் காணுங்கள்.",
+                benefit3:
+                    "10 மொழிகளில் சட்டத் தகவல்களை ஆராயுங்கள்.",
+                signupWithGoogle: "Google மூலம் பதிவு செய்யவும்",
+                orDivider: "அல்லது",
+                createAccount: "கணக்கை உருவாக்குங்கள்",
+                signupSubtitle:
+                    "LawBuddy இல் இணைந்து சட்டத் தகவல்களைப் புரிந்துகொள்ளத் தொடங்குங்கள்.",
+                fullNameLabel: "முழு பெயர்",
+                fullNamePlaceholder: "உங்கள் முழு பெயரை உள்ளிடுங்கள்",
+                emailLabel: "மின்னஞ்சல் முகவரி",
+                emailPlaceholder: "உங்கள் மின்னஞ்சலை உள்ளிடுங்கள்",
+                passwordLabel: "கடவுச்சொல்",
+                passwordPlaceholder: "கடவுச்சொல்லை உருவாக்குங்கள்",
+                passwordHint: "குறைந்தது 6 எழுத்துகளைப் பயன்படுத்தவும்.",
+                confirmPasswordLabel: "கடவுச்சொல்லை உறுதிப்படுத்தவும்",
+                confirmPasswordPlaceholder:
+                    "கடவுச்சொல்லை மீண்டும் உள்ளிடுங்கள்",
+                createAccountBtn: "கணக்கை உருவாக்குங்கள் →",
+                alreadyHaveAccount: "ஏற்கனவே கணக்கு உள்ளதா?",
+                loginText: "உள்நுழையவும்",
+                termsLabel:
+                    "பயன்பாட்டு விதிகளை நான் ஒப்புக்கொள்கிறேன் மற்றும் LawBuddy தகவல்களை மட்டுமே வழங்குகிறது என்பதைப் புரிந்துகொள்கிறேன்."
+            }
+        };
+
+        function changeSignupLanguage(language) {
+            const translations = window.signupTranslations || {};
+            const selectedLanguage =
+                translations[language] || translations.en || {};
+
+            document.querySelectorAll("[data-i18n]").forEach((element) => {
+                const key = element.getAttribute("data-i18n");
+
+                const text =
+                    selectedLanguage[key] ||
+                    translations.en?.[key];
+
+                if (text) {
+                    element.textContent = text;
+                }
+            });
+
+            document
+                .querySelectorAll("[data-i18n-placeholder]")
+                .forEach((element) => {
+                    const key =
+                        element.getAttribute("data-i18n-placeholder");
+
+                    const text =
+                        selectedLanguage[key] ||
+                        translations.en?.[key];
+
+                    if (text) {
+                        element.placeholder = text;
+                    }
+                });
+
+            const languageSelect =
+                document.getElementById("languageSelect");
+
+            if (languageSelect) {
+                languageSelect.value = language;
+            }
+
+            localStorage.setItem("lawbuddyLanguage", language);
+
+            document.documentElement.lang =
+                language === "tulu" ? "tcy" : language;
+        }
+
+        window.changeSignupLanguage = changeSignupLanguage;
+
+        function initSignupTranslation() {
+            const languageSelect =
+                document.getElementById("languageSelect");
+
+            const savedLanguage =
+                localStorage.getItem("lawbuddyLanguage") || "en";
+
+            if (languageSelect) {
+                languageSelect.value = savedLanguage;
+
+                languageSelect.addEventListener("change", () => {
+                    changeSignupLanguage(languageSelect.value);
+                });
+            }
+
+            changeSignupLanguage(savedLanguage);
+        }
+
+        if (document.readyState === "loading") {
+            document.addEventListener(
+                "DOMContentLoaded",
+                initSignupTranslation
+            );
+        } else {
+            initSignupTranslation();
+        }
+    </script>
 </body>
 </html>
