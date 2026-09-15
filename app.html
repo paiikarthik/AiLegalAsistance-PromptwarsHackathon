@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LawBuddy AI | Workspace Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body class="app-body">
+
+    <!-- Top Navigation Header -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand">
+                <a href="index.html" class="logo">
+                    <div class="logo-icon">⚖️</div>
+                    <div>
+                        <h2>Law<span>Buddy</span></h2>
+                        <small>Understand • Compare • Navigate</small>
+                    </div>
+                </a>
+            </div>
+
+            <div class="header-controls">
+                <div class="demo-badge-btn" id="loadSampleDemoBtn" title="Click to instantly analyze pre-configured Indian Rental Agreement">
+                    ⚡ <span>Instant Demo Mode</span>
+                </div>
+
+                <div class="language-selector-wrapper">
+                    <label for="languageSelect">🌐 Language:</label>
+                    <select id="languageSelect" class="lang-select">
+                        <option value="en">English</option>
+                        <option value="kn" selected>Kannada (ಕನ್ನಡ)</option>
+                        <option value="hi">Hindi (हिंदी)</option>
+                        <option value="ml">Malayalam (മലയാളം)</option>
+                        <option value="te">Telugu (తెలుగు)</option>
+                        <option value="mr">Marathi (मराठी)</option>
+                        <option value="bn">Bengali (বাংলা)</option>
+                        <option value="gu">Gujarati (ગુજરાતી)</option>
+                        <option value="tulu">Tulu (ತುಳು)</option>
+                    </select>
+                </div>
+
+                <div class="user-profile">
+                    <div class="avatar">👤</div>
+                    <span id="userNameLabel">Indian User</span>
+                    <a href="index.html" class="logout-link">Exit</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace Layout -->
+    <div class="workspace-container">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="document-session-card" id="docSessionCard">
+                <div class="doc-icon">📄</div>
+                <div class="doc-info">
+                    <span class="doc-label">Active Document</span>
+                    <h4 id="activeDocName">No Document Selected</h4>
+                    <span class="doc-badge" id="activeDocTypeBadge">Upload PDF/DOCX</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-tab active" data-target="uploadTab">
+                    <span class="icon">📤</span>
+                    <span>Upload & Analyze</span>
+                </button>
+
+                <button class="nav-tab" data-target="clarityMapTab">
+                    <span class="icon">🗺️</span>
+                    <span>Legal Clarity Map</span>
+                    <span class="star-badge">MVP</span>
+                </button>
+
+                <button class="nav-tab" data-target="riskExplorerTab">
+                    <span class="icon">🔍</span>
+                    <span>Clause & Risk Explorer</span>
+                </button>
+
+                <button class="nav-tab" data-target="compareTab">
+                    <span class="icon">⚔️</span>
+                    <span>Contract Comparison</span>
+                </button>
+
+                <button class="nav-tab" data-target="chatTab">
+                    <span class="icon">💬</span>
+                    <span>Document AI Chat</span>
+                </button>
+
+                <button class="nav-tab" data-target="sourcesTab">
+                    <span class="icon">🌐</span>
+                    <span>Indian Legal Sources</span>
+                </button>
+
+                <button class="nav-tab" data-target="briefTab">
+                    <span class="icon">📋</span>
+                    <span>Consultation Brief</span>
+                </button>
+            </nav>
+
+            <div class="disclaimer-sidebar-box">
+                <p>⚠️ <strong>General Legal Information</strong><br>
+                LawBuddy AI provides document assistance, not binding legal advice. Always verify with an advocate.</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <!-- Banner Notification -->
+            <div id="statusNotification" class="notification hidden">
+                <span id="notificationMessage">Ready</span>
+            </div>
+
+            <!-- TAB 1: UPLOAD & ANALYZE -->
+            <section id="uploadTab" class="tab-pane active">
+                <div class="section-header">
+                    <h2>Upload Legal Document</h2>
+                    <p>Support PDF, DOCX, TXT, or scanned images. Text is extracted and categorized automatically.</p>
+                </div>
+
+                <div class="upload-grid">
+                    <div class="upload-box" id="dropZone">
+                        <div class="upload-icon">📁</div>
+                        <h3>Drag & Drop your document here</h3>
+                        <p>Supports PDF, DOCX, TXT, PNG, JPG (Max 16MB)</p>
+                        <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.png,.jpg,.jpeg" class="hidden-file-input">
+                        <div class="upload-buttons">
+                            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">Browse Files</button>
+                            <button class="btn btn-secondary" id="loadSampleBtn">⚡ Use Sample Indian Rental Agreement</button>
+                        </div>
+                    </div>
+
+                    <div class="paste-text-box">
+                        <h3>...or Paste Document Text Directly</h3>
+                        <textarea id="pasteTextInput" placeholder="Paste agreement text, contract clauses, or notice text here..."></textarea>
+                        <button class="btn btn-secondary" id="analyzePastedTextBtn">Analyze Pasted Text</button>
+                    </div>
+                </div>
+
+                <!-- Document Metadata & Confirmation Panel -->
+                <div id="docMetadataPanel" class="doc-meta-card hidden">
+                    <div class="meta-row">
+                        <div>
+                            <span class="label">Uploaded File:</span>
+                            <strong id="metaFileName">agreement.pdf</strong>
+                        </div>
+                        <div>
+                            <span class="label">Detected Document Type:</span>
+                            <select id="docTypeSelect" class="doc-type-select">
+                                <option value="Rental Agreement">Rental Agreement / Lease</option>
+                                <option value="Employment Contract">Employment Contract / Offer Letter</option>
+                                <option value="Consumer Complaint">Consumer Complaint</option>
+                                <option value="Legal Notice">Legal Notice / Advocate Notice</option>
+                                <option value="Service Agreement">Service Agreement</option>
+                                <option value="Privacy Policy">Privacy Policy / Terms</option>
+                                <option value="Other Legal Document">Other Legal Document</option>
+                            </select>
+                        </div>
+                        <div>
+                            <button class="btn btn-success" id="startAnalysisBtn">🚀 Analyze Document Now</button>
+                        </div>
+                    </div>
+
+                    <div class="text-preview-box">
+                        <label>Extracted Text Preview:</label>
+                        <pre id="textPreviewContent">Text preview will appear here...</pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: LEGAL CLARITY & ACTION MAP -->
+            <section id="clarityMapTab" class="tab-pane">
+                <div class="section-header">
+                    <h2>Legal Clarity & Action Map</h2>
+                    <p>Hackathon Differentiator — Connecting static legal text into 4 actionable outputs.</p>
+                </div>
+
+                <div id="clarityMapLoading" class="loading-state hidden">
+                    <div class="spinner"></div>
+                    <p>Generating Legal Clarity & Action Map in selected language...</p>
+                </div>
+
+                <div id="clarityMapContent" class="action-map-grid">
+                    <!-- 1. Understand -->
+                    <div class="action-card card-understand">
+                        <div class="action-header">
+                            <span class="action-num">1</span>
+                            <h3>💡 Understand</h3>
+                        </div>
+                        <p class="action-desc">Plain-language explanation of main terms</p>
+                        <ul id="actionMapUnderstand" class="action-list">
+                            <li>Upload a document and run analysis to see insights.</li>
+                        </ul>
+                    </div>
+
+                    <!-- 2. Identify -->
+                    <div class="action-card card-identify">
+                        <div class="action-header">
+                            <span class="action-num">2</span>
+                            <h3>⚠️ Identify</h3>
+                        </div>
+                        <p class="action-desc">Obligations, potential concerns & ambiguities</p>
+                        <ul id="actionMapIdentify" class="action-list">
+                            <li>Key obligations and missing details will appear here.</li>
+                        </ul>
+                    </div>
+
+                    <!-- 3. Prepare -->
+                    <div class="action-card card-prepare">
+                        <div class="action-header">
+                            <span class="action-num">3</span>
+                            <h3>📝 Prepare</h3>
+                        </div>
+                        <p class="action-desc">Questions for lawyer & evidence checklist</p>
+                        <div class="sub-section">
+                            <strong>Questions to ask a lawyer:</strong>
+                            <ul id="actionMapQuestions" class="action-list">
+                                <li>Recommended questions for advocate consultation.</li>
+                            </ul>
+                        </div>
+                        <div class="sub-section">
+                            <strong>Checklist to collect:</strong>
+                            <ul id="actionMapChecklist" class="action-list">
+                                <li>Evidence & title documents needed.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 4. Navigate -->
+                    <div class="action-card card-navigate">
+                        <div class="action-header">
+                            <span class="action-num">4</span>
+                            <h3>🧭 Navigate</h3>
+                        </div>
+                        <p class="action-desc">Next steps & official Indian legal sources</p>
+                        <div class="sub-section">
+                            <strong>Suggested Next Steps:</strong>
+                            <ul id="actionMapNextSteps" class="action-list">
+                                <li>Actionable steps for tenant / employee.</li>
+                            </ul>
+                        </div>
+                        <div class="sub-section">
+                            <strong>Official Indian Sources:</strong>
+                            <div id="actionMapSources" class="source-link-list">
+                                <a href="https://www.indiacode.nic.in" target="_blank" class="source-chip">🏛️ India Code Portal</a>
+                                <a href="https://ecourts.gov.in" target="_blank" class="source-chip">⚖️ e-Courts India</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: CLAUSE & RISK EXPLORER -->
+            <section id="riskExplorerTab" class="tab-pane">
+                <div class="section-header">
+                    <h2>Clause & Risk Explorer</h2>
+                    <p>Categorized risk breakdown (High, Medium, Low) for fees, penalties, lock-in, and indemnities.</p>
+                </div>
+
+                <div class="risk-filter-bar">
+                    <button class="filter-btn active" data-risk="all">All Clauses</button>
+                    <button class="filter-btn high" data-risk="High Risk">🔴 High Risk</button>
+                    <button class="filter-btn medium" data-risk="Medium Risk">🟡 Medium Concern</button>
+                    <button class="filter-btn low" data-risk="Low Risk">🟢 Low Risk / Informational</button>
+                </div>
+
+                <div id="riskListContainer" class="risk-cards-list">
+                    <div class="empty-state">
+                        <p>No document analyzed yet. Please upload a document to view clause risk analysis.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: CONTRACT COMPARISON -->
+            <section id="compareTab" class="tab-pane">
+                <div class="section-header">
+                    <h2>Contract Comparison (Side-by-Side)</h2>
+                    <p>Compare two versions of an agreement (e.g. Original Draft vs Revised Agreement) to track changes.</p>
+                </div>
+
+                <div class="compare-selector-grid">
+                    <div class="doc-select-card">
+                        <h3>Document A (Original Draft)</h3>
+                        <p id="docANameLabel">Using active uploaded document</p>
+                    </div>
+                    <div class="doc-select-card">
+                        <h3>Document B (Revised Draft)</h3>
+                        <input type="file" id="compareFileInput" accept=".pdf,.docx,.txt" class="hidden-file-input">
+                        <button class="btn btn-secondary" onclick="document.getElementById('compareFileInput').click()">Upload Revised Document B</button>
+                        <span id="docBNameLabel" class="file-name-tag">No file selected</span>
+                    </div>
+                </div>
+
+                <div class="center-btn-row">
+                    <button class="btn btn-primary" id="runCompareBtn">⚡ Run Side-by-Side Comparison</button>
+                </div>
+
+                <div id="compareResultsContainer" class="compare-results hidden">
+                    <div class="diff-summary-card">
+                        <h3>Comparison Summary</h3>
+                        <p id="diffSummaryText">Diff analysis details will appear here.</p>
+                    </div>
+                    <div id="diffDetailsContainer" class="diff-list"></div>
+                </div>
+            </section>
+
+            <!-- TAB 5: DOCUMENT AI CHAT (RAG) -->
+            <section id="chatTab" class="tab-pane">
+                <div class="section-header">
+                    <h2>Document-Grounded AI Chat</h2>
+                    <p>Ask any question about your document. Answers are grounded strictly in the extracted clauses.</p>
+                </div>
+
+                <div class="chat-wrapper">
+                    <div id="chatMessages" class="chat-messages-box">
+                        <div class="chat-bubble ai">
+                            <strong>⚖️ LawBuddy AI:</strong>
+                            <p>Hello! Ask me any question about your uploaded document (e.g., <em>"What is the notice period?"</em> or <em>"What are my payment deadlines?"</em>).</p>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-row">
+                        <input type="text" id="chatInput" placeholder="Ask a question about your uploaded legal document..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+                        <button class="btn btn-primary" onclick="sendChatMessage()">Send 📤</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: INDIAN LEGAL SOURCES NAVIGATOR -->
+            <section id="sourcesTab" class="tab-pane">
+                <div class="section-header">
+                    <h2>Indian Legal Information Source Navigator</h2>
+                    <p>Verified, official legal portals and government legal aid resources across India.</p>
+                </div>
+
+                <div id="sourcesContainer" class="sources-grid">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </section>
+
+            <!-- TAB 7: CONSULTATION BRIEF GENERATOR -->
+            <section id="briefTab" class="tab-pane">
+                <div class="section-header">
+                    <h2>Lawyer Consultation Brief Generator</h2>
+                    <p>Generate a clean, printable PDF/HTML brief with extracted facts and questions to bring to your advocate.</p>
+                </div>
+
+                <div class="brief-builder-card">
+                    <h3>Add Optional Personal Notes / Specific Concerns</h3>
+                    <textarea id="briefNotesInput" placeholder="Add any specific context or questions you want to discuss with your lawyer..."></textarea>
+                    
+                    <button class="btn btn-success" id="generateBriefBtn">🖨️ Generate & Export Consultation Brief</button>
+                </div>
+
+                <div id="briefPreviewContainer" class="brief-preview-frame hidden">
+                    <iframe id="briefIframe" title="Consultation Brief Preview"></iframe>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="static/js/app.js"></script>
+</body>
+</html>
