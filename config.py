@@ -7,6 +7,7 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent
 
 class Config:
+    BASE_DIR = BASE_DIR
     SECRET_KEY = os.environ.get('SECRET_KEY', 'lawbuddy-hackathon-secret-key-2026')
     GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY') or os.environ.get('GOOGLE_API_KEY', '')
     
