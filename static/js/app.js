@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     initNavigation();
+    initUserProfile();
     initUploadHandlers();
     initDemoHandler();
     initLanguageSelector();
@@ -22,6 +23,53 @@ document.addEventListener('DOMContentLoaded', () => {
     initBriefHandler();
     loadOfficialSources();
 });
+
+// Authentication state is stored by login.html and signup.html.  Read it when
+// the workspace opens so the signed-in person's name is visible in the header.
+function initUserProfile() {
+    const userNameLabel = document.getElementById('userNameLabel');
+    if (!userNameLabel) return;
+
+    try {
+        const user = JSON.parse(localStorage.getItem('lawbuddyUser') || 'null');
+        const name = user && (user.name || (user.email || '').split('@')[0]);
+        if (name) {
+            userNameLabel.textContent = name;
+            userNameLabel.title = user.email || name;
+        }
+    } catch (error) {
+        // A bad/stale localStorage value must not prevent the app from loading.
+        console.warn('Could not read saved user profile:', error);
+    }
+
+    const logoutLink = document.querySelector('.logout-link');
+    if (logoutLink) {
+        logoutLink.addEventListener('click', () => localStorage.removeItem('lawbuddyUser'));
+    }
+}
+
+// Flask can return an HTML error page for proxies or unexpected failures. Do
+// not call response.json() blindly: turn it into an actionable user message.
+async function readApiJson(response) {
+    const contentType = response.headers.get('content-type') || '';
+    let data;
+
+    if (contentType.includes('application/json')) {
+        data = await response.json();
+    } else {
+        const text = await response.text();
+        data = {
+            error: text
+                ? `Server returned an unexpected response (${response.status}).`
+                : `Request failed (${response.status}).`
+        };
+    }
+
+    if (!response.ok && !data.error) {
+        data.error = `Request failed (${response.status}).`;
+    }
+    return data;
+}
 
 // Navigation & Tab Switching
 function initNavigation() {
@@ -54,9 +102,11 @@ function initLanguageSelector() {
             langSelect.value = savedLanguage;
             window.appState.selectedLanguage = savedLanguage;
         }
+        applyAppLanguage(window.appState.selectedLanguage);
         langSelect.addEventListener('change', (e) => {
             window.appState.selectedLanguage = e.target.value;
             localStorage.setItem("lawbuddyLanguage", e.target.value);
+            applyAppLanguage(e.target.value);
             showNotification(`Language set to ${e.target.options[e.target.selectedIndex].text}`);
             
             // Re-analyze document in new language if active
@@ -65,6 +115,34 @@ function initLanguageSelector() {
             }
         });
     }
+}
+
+// The selector controls both UI labels and the language sent to the AI API.
+// English is the complete fallback so incomplete translations never blank text.
+const APP_TRANSLATIONS = {
+    en: { tagline: 'Housing Legal Access & Case Preparation Platform', language: 'Language', demo: '1-Click Eviction Notice Demo', aiActive: 'Responsible AI Active', exit: 'Exit', activeDocument: 'Active Document', uploadTitle: 'Upload Housing Document', uploadDescription: 'Designed for Eviction Notices, Rent Demand Notices, Lease Agreements, and Security Deposit Disputes.', dropTitle: 'Drag & Drop Housing Document Here', fileSupport: 'Supports PDF, DOCX, TXT, PNG, JPG (Scanned Notice OCR Supported)', browse: 'Browse Files', loadDemo: '⚡ Load Sample Eviction Notice Demo', pasteTitle: '...or Paste Notice / Agreement Text', pastePlaceholder: 'Paste eviction notice text, rent demand notice, lease clauses, or landlord communications here...', analyzePasted: 'Analyze Pasted Text' },
+    kn: { language: 'ಭಾಷೆ', demo: 'ಒಂದು ಕ್ಲಿಕ್ ಮಾದರಿ ನೋಟಿಸ್', aiActive: 'ಜವಾಬ್ದಾರಿಯುತ AI ಸಕ್ರಿಯ', exit: 'ನಿರ್ಗಮಿಸಿ', activeDocument: 'ಸಕ್ರಿಯ ದಾಖಲೆ', uploadTitle: 'ವಸತಿ ದಾಖಲೆ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ', dropTitle: 'ವಸತಿ ದಾಖಲೆಯನ್ನು ಇಲ್ಲಿ ಎಳೆಯಿರಿ ಮತ್ತು ಬಿಡಿ', browse: 'ಫೈಲ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ', loadDemo: '⚡ ಮಾದರಿ ನೋಟಿಸ್ ಡೆಮೊ ಲೋಡ್ ಮಾಡಿ', pasteTitle: '...ಅಥವಾ ನೋಟಿಸ್ / ಒಪ್ಪಂದದ ಪಠ್ಯ ಅಂಟಿಸಿ', analyzePasted: 'ಅಂಟಿಸಿದ ಪಠ್ಯವನ್ನು ವಿಶ್ಲೇಷಿಸಿ' },
+    hi: { language: 'भाषा', demo: 'एक क्लिक नमूना बेदखली नोटिस', aiActive: 'जिम्मेदार AI सक्रिय', exit: 'बाहर निकलें', activeDocument: 'सक्रिय दस्तावेज़', uploadTitle: 'आवास दस्तावेज़ अपलोड करें', dropTitle: 'आवास दस्तावेज़ यहाँ खींचें और छोड़ें', browse: 'फ़ाइलें चुनें', loadDemo: '⚡ नमूना नोटिस डेमो लोड करें', pasteTitle: '...या नोटिस / समझौते का पाठ चिपकाएँ', analyzePasted: 'चिपकाए गए पाठ का विश्लेषण करें' },
+    ml: { language: 'ഭാഷ', demo: 'ഒറ്റ ക്ലിക്കിൽ മാതൃക നോട്ടീസ്', aiActive: 'ഉത്തരവാദിത്ത AI സജീവം', exit: 'പുറത്തുകടക്കുക', activeDocument: 'സജീവ പ്രമാണം', uploadTitle: 'ഭവന പ്രമാണം അപ്‌ലോഡ് ചെയ്യുക', dropTitle: 'ഭവന പ്രമാണം ഇവിടെ വലിച്ചിടുക', browse: 'ഫയലുകൾ തിരഞ്ഞെടുക്കുക', loadDemo: '⚡ മാതൃക നോട്ടീസ് ഡെമോ', pasteTitle: '...അല്ലെങ്കിൽ നോട്ടീസ് / കരാർ പാഠം ഒട്ടിക്കുക', analyzePasted: 'ഒട്ടിച്ച പാഠം വിശകലനം ചെയ്യുക' },
+    te: { language: 'భాష', demo: 'ఒక క్లిక్ నమూనా నోటీసు', aiActive: 'బాధ్యతాయుత AI సక్రియం', exit: 'నిష్క్రమించు', activeDocument: 'క్రియాశీల పత్రం', uploadTitle: 'హౌసింగ్ పత్రాన్ని అప్‌లోడ్ చేయండి', dropTitle: 'హౌసింగ్ పత్రాన్ని ఇక్కడ లాగి వదలండి', browse: 'ఫైల్‌లను ఎంచుకోండి', loadDemo: '⚡ నమూనా నోటీసు డెమో', pasteTitle: '...లేదా నోటీసు / ఒప్పంద పాఠ్యాన్ని అతికించండి', analyzePasted: 'అతికించిన పాఠ్యాన్ని విశ్లేషించండి' },
+    mr: { language: 'भाषा', demo: 'एका क्लिकमध्ये नमुना सूचना', aiActive: 'जबाबदार AI सक्रिय', exit: 'बाहेर पडा', activeDocument: 'सक्रिय दस्तऐवज', uploadTitle: 'गृहनिर्माण दस्तऐवज अपलोड करा', dropTitle: 'दस्तऐवज येथे ड्रॅग आणि ड्रॉप करा', browse: 'फाइल निवडा', loadDemo: '⚡ नमुना सूचना डेमो', pasteTitle: '...किंवा सूचना / कराराचा मजकूर पेस्ट करा', analyzePasted: 'पेस्ट केलेल्या मजकुराचे विश्लेषण करा' },
+    bn: { language: 'ভাষা', demo: 'এক ক্লিকে নমুনা উচ্ছেদ নোটিস', aiActive: 'দায়িত্বশীল AI সক্রিয়', exit: 'প্রস্থান', activeDocument: 'সক্রিয় নথি', uploadTitle: 'আবাসন নথি আপলোড করুন', dropTitle: 'আবাসন নথি এখানে টেনে আনুন', browse: 'ফাইল নির্বাচন করুন', loadDemo: '⚡ নমুনা নোটিস ডেমো', pasteTitle: '...অথবা নোটিস / চুক্তির লেখা পেস্ট করুন', analyzePasted: 'পেস্ট করা লেখা বিশ্লেষণ করুন' },
+    gu: { language: 'ભાષા', demo: 'એક ક્લિકમાં નમૂના નોટિસ', aiActive: 'જવાબદાર AI સક્રિય', exit: 'બહાર નીકળો', activeDocument: 'સક્રિય દસ્તાવેજ', uploadTitle: 'હાઉસિંગ દસ્તાવેજ અપલોડ કરો', dropTitle: 'હાઉસિંગ દસ્તાવેજ અહીં ખેંચીને મૂકો', browse: 'ફાઇલો પસંદ કરો', loadDemo: '⚡ નમૂના નોટિસ ડેમો', pasteTitle: '...અથવા નોટિસ / કરારનો ટેક્સ્ટ પેસ્ટ કરો', analyzePasted: 'પેસ્ટ કરેલા ટેક્સ્ટનું વિશ્લેષણ કરો' },
+    tulu: { language: 'ಬಾಸೆ', demo: 'ಒಂಜಿ ಕ್ಲಿಕ್ ಮಾದರಿ ನೋಟಿಸ್', aiActive: 'ಜವಾಬ್ದಾರಿ AI ಸಕ್ರಿಯ', exit: 'ಪೊರ್ಲೆ', activeDocument: 'ಸಕ್ರಿಯ ದಾಖಲೆ', uploadTitle: 'ವಸತಿ ದಾಖಲೆ ಅಪ್‌ಲೋಡ್ ಮಲ್ಪುಲೆ', dropTitle: 'ವಸತಿ ದಾಖಲೆ ಇತ್ತೆ ಎಳೆದು ಮಲ್ಪುಲೆ', browse: 'ಫೈಲ್ ಆಯ್ಕೆ ಮಲ್ಪುಲೆ', loadDemo: '⚡ ಮಾದರಿ ನೋಟಿಸ್ ಡೆಮೊ', pasteTitle: '...ಅಥವಾ ನೋಟಿಸ್ / ಒಪ್ಪಂದದ ಪಠ್ಯ ಅಂಟಿಸುಲೆ', analyzePasted: 'ಅಂಟಿಸಿದ ಪಠ್ಯ ವಿಶ್ಲೇಷಿಸುಲೆ' },
+    ta: { language: 'மொழி', demo: 'ஒரே கிளிக்கில் மாதிரி அறிவிப்பு', aiActive: 'பொறுப்பான AI செயல்பாட்டில் உள்ளது', exit: 'வெளியேறு', activeDocument: 'செயலில் உள்ள ஆவணம்', uploadTitle: 'வீட்டு ஆவணத்தைப் பதிவேற்றவும்', dropTitle: 'வீட்டு ஆவணத்தை இங்கே இழுத்து விடவும்', browse: 'கோப்புகளைத் தேர்ந்தெடுக்கவும்', loadDemo: '⚡ மாதிரி அறிவிப்பு டெமோ', pasteTitle: '...அல்லது அறிவிப்பு / ஒப்பந்த உரையை ஒட்டவும்', analyzePasted: 'ஒட்டிய உரையைப் பகுப்பாய்வு செய்யவும்' }
+};
+
+function applyAppLanguage(language) {
+    const translations = { ...APP_TRANSLATIONS.en, ...(APP_TRANSLATIONS[language] || {}) };
+    document.querySelectorAll('[data-i18n]').forEach((element) => {
+        const value = translations[element.dataset.i18n];
+        if (value) element.textContent = value;
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach((element) => {
+        const value = translations[element.dataset.i18nPlaceholder];
+        if (value) element.placeholder = value;
+    });
+    document.documentElement.lang = language === 'tulu' ? 'tcy' : language;
 }
 
 // Notification Banner Helper
@@ -91,7 +169,11 @@ function initDemoHandler() {
         showNotification("⚡ Loading pre-loaded Indian Rental Agreement Demo...");
         try {
             const res = await fetch('/api/sample-demo');
-            const data = await res.json();
+            const data = await readApiJson(res);
+            if (data.error) {
+                showNotification(data.error, true);
+                return;
+            }
             if (data.doc_id) {
                 updateActiveDocSession(data);
                 switchTab('uploadTab');
@@ -126,7 +208,7 @@ function initUploadHandlers() {
                     method: 'POST',
                     body: formData
                 });
-                const data = await res.json();
+                const data = await readApiJson(res);
                 if (data.error) {
                     showNotification(data.error, true);
                 } else {
@@ -154,7 +236,7 @@ function initUploadHandlers() {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ text: pastedText, filename: "Pasted_Agreement_Text.txt" })
                 });
-                const data = await res.json();
+                const data = await readApiJson(res);
                 if (data.error) {
                     showNotification(data.error, true);
                 } else {
@@ -214,7 +296,7 @@ async function runDocumentAnalysis(docId, overrideDocType = null) {
             })
         });
 
-        const data = await res.json();
+        const data = await readApiJson(res);
         if (data.error) {
             showNotification(data.error, true);
             return;
@@ -397,7 +479,10 @@ function initChatHandler() {
                 })
             });
 
-            const data = await res.json();
+            const data = await readApiJson(res);
+            if (data.error) {
+                throw new Error(data.error);
+            }
             
             let sourcesHtml = '';
             if (data.sources && data.sources.length > 0) {
@@ -441,7 +526,11 @@ function initComparisonHandler() {
                     method: 'POST',
                     body: formData
                 });
-                const data = await res.json();
+                const data = await readApiJson(res);
+                if (data.error) {
+                    showNotification(data.error, true);
+                    return;
+                }
                 window.appState.compareDocIdB = data.doc_id;
                 document.getElementById('docBNameLabel').innerText = data.filename;
                 showNotification("Doc B uploaded successfully!");
@@ -470,7 +559,11 @@ function initComparisonHandler() {
                     })
                 });
 
-                const data = await res.json();
+                const data = await readApiJson(res);
+                if (data.error) {
+                    showNotification(data.error, true);
+                    return;
+                }
                 renderComparisonResults(data);
                 showNotification("Comparison completed!");
             } catch (err) {
@@ -556,7 +649,8 @@ function initBriefHandler() {
 async function loadOfficialSources() {
     try {
         const res = await fetch('/api/official-sources');
-        const sources = await res.json();
+        const sources = await readApiJson(res);
+        if (sources.error) throw new Error(sources.error);
         const container = document.getElementById('sourcesContainer');
         if (container && sources) {
             container.innerHTML = sources.map(s => `

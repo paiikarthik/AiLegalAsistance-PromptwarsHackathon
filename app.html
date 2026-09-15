@@ -34,19 +34,19 @@
                     <div class="logo-icon">⚖️</div>
                     <div>
                         <h2>Law<span>Buddy AI</span></h2>
-                        <small>Housing Legal Access & Case Preparation Platform</small>
+                        <small data-i18n="tagline">Housing Legal Access & Case Preparation Platform</small>
                     </div>
                 </a>
             </div>
 
             <div class="header-controls">
                 <div class="demo-badge-btn" id="loadSampleDemoBtn" title="Click to load pre-configured Eviction Notice / Rental Agreement Demo">
-                    ⚡ <span>1-Click Eviction Notice Demo</span>
+                    ⚡ <span data-i18n="demo">1-Click Eviction Notice Demo</span>
                 </div>
 
                 <div class="language-selector-wrapper">
-                    <label for="languageSelect">🌐 Language:</label>
-                    <select id="languageSelect" class="lang-select" onchange="if(window.appState){window.appState.selectedLanguage=this.value;localStorage.setItem('lawbuddyLanguage',this.value);}">
+                    <label for="languageSelect">🌐 <span data-i18n="language">Language</span>:</label>
+                    <select id="languageSelect" class="lang-select">
                         <option value="en">English</option>
                         <option value="kn">Kannada (ಕನ್ನಡ)</option>
                         <option value="hi">Hindi (हिंदी)</option>
@@ -61,10 +61,10 @@
                 </div>
 
                 <div class="user-profile">
-                    <span class="badge-pill bg-info">🛡️ Responsible AI Active</span>
+                    <span class="badge-pill bg-info">🛡️ <span data-i18n="aiActive">Responsible AI Active</span></span>
                     <div class="avatar">👤</div>
                     <span id="userNameLabel">Housing User</span>
-                    <a href="index.html" class="logout-link">Exit</a>
+                    <a href="index.html" class="logout-link" data-i18n="exit">Exit</a>
                 </div>
             </div>
         </div>
@@ -78,7 +78,7 @@
             <div class="document-session-card" id="docSessionCard">
                 <div class="doc-icon">📜</div>
                 <div class="doc-info">
-                    <span class="doc-label">Active Document</span>
+                    <span class="doc-label" data-i18n="activeDocument">Active Document</span>
                     <h4 id="activeDocName">Eviction_Notice_Sample.pdf</h4>
                     <span class="doc-badge" id="activeDocTypeBadge">Eviction Notice</span>
                 </div>
@@ -87,58 +87,38 @@
             <nav class="nav-menu">
                 <button class="nav-tab active" data-target="uploadTab">
                     <span class="icon">📤</span>
-                    <span>1. Upload & Extract</span>
+                    <span>Upload document</span>
                 </button>
 
                 <button class="nav-tab" data-target="clarityMapTab">
                     <span class="icon">🗺️</span>
-                    <span>2. Legal Clarity Map</span>
+                    <span>Document overview</span>
                     <span class="star-badge">MVP</span>
                 </button>
 
                 <button class="nav-tab" data-target="factsTimelineTab">
                     <span class="icon">📊</span>
-                    <span>3. Extracted Facts & Timeline</span>
-                </button>
-
-                <button class="nav-tab" data-target="deadlinesTab">
-                    <span class="icon">⏰</span>
-                    <span>4. Deadline & Urgency Radar</span>
-                </button>
-
-                <button class="nav-tab" data-target="scenariosTab">
-                    <span class="icon">❓</span>
-                    <span>5. "What Would Change" Matrix</span>
+                    <span>Key facts & timeline</span>
                 </button>
 
                 <button class="nav-tab" data-target="riskExplorerTab">
                     <span class="icon">🔍</span>
-                    <span>6. Clause & Risk Explorer</span>
+                    <span>Clause risks</span>
                 </button>
 
                 <button class="nav-tab" data-target="compareTab">
                     <span class="icon">⚔️</span>
-                    <span>7. Contract Comparison</span>
+                    <span>Compare documents</span>
                 </button>
 
                 <button class="nav-tab" data-target="chatTab">
                     <span class="icon">💬</span>
-                    <span>8. Grounded AI Chat</span>
+                    <span>Ask the document</span>
                 </button>
 
                 <button class="nav-tab" data-target="briefTab">
                     <span class="icon">📋</span>
-                    <span>9. Lawyer Case Packet</span>
-                </button>
-
-                <button class="nav-tab" data-target="safetyAuditTab">
-                    <span class="icon">🛡️</span>
-                    <span>10. Human Review & Safety</span>
-                </button>
-
-                <button class="nav-tab" data-target="designArchTab">
-                    <span class="icon">🏛️</span>
-                    <span>11. Architecture & Design</span>
+                    <span>Case packet</span>
                 </button>
             </nav>
 
@@ -159,26 +139,26 @@
             <!-- TAB 1: UPLOAD & EXTRACT -->
             <section id="uploadTab" class="tab-pane active">
                 <div class="section-header">
-                    <h2>Upload Housing Document</h2>
-                    <p>Designed for Eviction Notices, Rent Demand Notices, Lease Agreements, and Security Deposit Disputes.</p>
+                    <h2 data-i18n="uploadTitle">Upload Housing Document</h2>
+                    <p data-i18n="uploadDescription">Designed for Eviction Notices, Rent Demand Notices, Lease Agreements, and Security Deposit Disputes.</p>
                 </div>
 
                 <div class="upload-grid">
                     <div class="upload-box" id="dropZone">
                         <div class="upload-icon">📁</div>
-                        <h3>Drag & Drop Housing Document Here</h3>
-                        <p>Supports PDF, DOCX, TXT, PNG, JPG (Scanned Notice OCR Supported)</p>
+                        <h3 data-i18n="dropTitle">Drag & Drop Housing Document Here</h3>
+                        <p data-i18n="fileSupport">Supports PDF, DOCX, TXT, PNG, JPG (Scanned Notice OCR Supported)</p>
                         <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.png,.jpg,.jpeg" class="hidden-file-input">
                         <div class="upload-buttons">
-                            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">Browse Files</button>
-                            <button class="btn btn-secondary" id="loadSampleBtn">⚡ Load Sample Eviction Notice Demo</button>
+                            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()" data-i18n="browse">Browse Files</button>
+                            <button class="btn btn-secondary" id="loadSampleBtn" data-i18n="loadDemo">⚡ Load Sample Eviction Notice Demo</button>
                         </div>
                     </div>
 
                     <div class="paste-text-box">
-                        <h3>...or Paste Notice / Agreement Text</h3>
-                        <textarea id="pasteTextInput" placeholder="Paste eviction notice text, rent demand notice, lease clauses, or landlord communications here..."></textarea>
-                        <button class="btn btn-secondary" id="analyzePastedTextBtn">Analyze Pasted Text</button>
+                        <h3 data-i18n="pasteTitle">...or Paste Notice / Agreement Text</h3>
+                        <textarea id="pasteTextInput" data-i18n-placeholder="pastePlaceholder" placeholder="Paste eviction notice text, rent demand notice, lease clauses, or landlord communications here..."></textarea>
+                        <button class="btn btn-secondary" id="analyzePastedTextBtn" data-i18n="analyzePasted">Analyze Pasted Text</button>
                     </div>
                 </div>
 

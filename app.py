@@ -1,8 +1,10 @@
 import os
 import uuid
 import logging
-from flask import Flask, request, jsonify, render_template, send_from_directory, Response
+from flask import Flask, request, jsonify, send_from_directory, Response
 from flask_cors import CORS
+from werkzeug.exceptions import HTTPException, RequestEntityTooLarge
+from werkzeug.utils import secure_filename
 
 from config import Config
 from services.ocr_service import OCRService
@@ -18,6 +20,27 @@ app = Flask(__name__, static_folder="static", template_folder=".")
 app.config.from_object(Config)
 CORS(app)
 
+
+@app.errorhandler(RequestEntityTooLarge)
+def handle_file_too_large(error):
+    """Keep API failures JSON so the browser can show a useful upload message."""
+    return jsonify({"error": "File is too large. Maximum upload size is 16 MB."}), 413
+
+
+@app.errorhandler(HTTPException)
+def handle_http_error(error):
+    if request.path.startswith('/api/'):
+        return jsonify({"error": error.description}), error.code
+    return error
+
+
+@app.errorhandler(Exception)
+def handle_unexpected_error(error):
+    logger.exception("Unhandled request error")
+    if request.path.startswith('/api/'):
+        return jsonify({"error": "The server could not complete this request. Please try again."}), 500
+    return "An unexpected server error occurred.", 500
+
 # In-memory document session cache
 DOCUMENT_CACHE = {}
 gemini_service = GeminiService()
@@ -28,6 +51,10 @@ def root():
 
 @app.route('/<path:filename>')
 def serve_static_pages(filename):
+    # Do not let the HTML-app fallback mask a misspelled API route.  Doing so
+    # used to return index.html to fetch(), which then surfaced as a JSON error.
+    if filename.startswith('api/'):
+        return jsonify({"error": "API endpoint not found"}), 404
     if os.path.exists(filename) and filename.endswith(('.html', '.js', '.css', '.png', '.jpg', '.svg', '.txt')):
         return send_from_directory('.', filename)
     return send_from_directory('.', 'index.html')
@@ -101,7 +128,9 @@ def upload_document():
         if file.filename == '':
             return jsonify({"error": "Selected file is empty"}), 400
             
-        filename = file.filename
+        filename = secure_filename(file.filename)
+        if not filename:
+            return jsonify({"error": "Please choose a file with a valid name."}), 400
         ext = filename.rsplit('.', 1)[-1].lower() if '.' in filename else ''
         if ext not in Config.ALLOWED_EXTENSIONS:
             return jsonify({"error": f"File type '.{ext}' is not supported. Upload PDF, DOCX, TXT, or PNG/JPG."}), 400

@@ -158,13 +158,19 @@ body.app-body {
 }
 
 .sidebar {
-    width: 280px;
+    width: 250px;
+    min-width: 250px;
     background: #ffffff;
     border-right: 1px solid var(--border-color);
-    padding: 20px 16px;
+    padding: 18px 14px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 14px;
+    align-self: flex-start;
+    position: sticky;
+    top: 73px;
+    height: calc(100vh - 73px);
+    overflow-y: auto;
 }
 
 .document-session-card {
@@ -216,7 +222,7 @@ body.app-body {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 14px;
+    padding: 10px 12px;
     background: transparent;
     border: none;
     border-radius: 10px;
@@ -673,6 +679,16 @@ body.app-body {
 /* Responsive adjustments */
 @media (max-width: 900px) {
     .workspace-container { flex-direction: column; }
-    .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-color); }
+    .sidebar {
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        position: static;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .nav-menu { flex-direction: row; overflow-x: auto; padding-bottom: 2px; }
+    .nav-tab { flex: 0 0 auto; white-space: nowrap; }
+    .disclaimer-sidebar-box { display: none; }
     .action-map-grid, .upload-grid, .sources-grid { grid-template-columns: 1fr; }
 }

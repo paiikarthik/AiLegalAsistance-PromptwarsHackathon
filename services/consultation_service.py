@@ -22,8 +22,16 @@ class ConsultationService:
         risks = analysis_data.get("clauses_and_risks", [])
         action_map = analysis_data.get("action_map", {})
         
-        parties_html = "".join([f"<li><strong>{html.escape(str(p.get('role')))}:</strong> {html.escape(str(p.get('name')))}</li>" for p in parties])
-        dates_html = "".join([f"<li><strong>{html.escape(str(d.get('item')))}:</strong> {html.escape(str(d.get('details')))}</li>" for d in dates_amounts])
+        parties_html = "".join([
+            f"<li>{html.escape(str(p))}</li>" if isinstance(p, str) else
+            f"<li><strong>{html.escape(str(p.get('role', 'Party')))}:</strong> {html.escape(str(p.get('name', p)))}</li>"
+            for p in parties
+        ])
+        dates_html = "".join([
+            f"<li>{html.escape(str(d))}</li>" if isinstance(d, str) else
+            f"<li><strong>{html.escape(str(d.get('item', 'Item')))}:</strong> {html.escape(str(d.get('details', d)))}</li>"
+            for d in dates_amounts
+        ])
         obligations_html = "".join([f"<li>{html.escape(str(o))}</li>" for o in obligations])
         
         questions = action_map.get("prepare", {}).get("questions_for_lawyer", [])
