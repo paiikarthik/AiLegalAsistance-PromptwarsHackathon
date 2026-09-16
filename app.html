@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LawBuddy AI | GenAI Housing Legal Access & Case Preparation Platform</title>
+    <title>LawBuddy AI | GenAI Legal Access & Case Preparation Platform</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -34,7 +34,7 @@
                     <div class="logo-icon">⚖️</div>
                     <div>
                         <h2>Law<span>Buddy AI</span></h2>
-                        <small data-i18n="tagline">Housing Legal Access & Case Preparation Platform</small>
+                        <small data-i18n="tagline">Legal Access & Case Preparation Platform</small>
                     </div>
                 </a>
             </div>
@@ -63,7 +63,7 @@
                 <div class="user-profile">
                     <span class="badge-pill bg-info">🛡️ <span data-i18n="aiActive">Responsible AI Active</span></span>
                     <div class="avatar">👤</div>
-                    <span id="userNameLabel">Housing User</span>
+                    <span id="userNameLabel">Legal User</span>
                     <a href="index.html" class="logout-link" data-i18n="exit">Exit</a>
                 </div>
             </div>
@@ -79,8 +79,8 @@
                 <div class="doc-icon">📜</div>
                 <div class="doc-info">
                     <span class="doc-label" data-i18n="activeDocument">Active Document</span>
-                    <h4 id="activeDocName">Eviction_Notice_Sample.pdf</h4>
-                    <span class="doc-badge" id="activeDocTypeBadge">Eviction Notice</span>
+                    <h4 id="activeDocName">No document loaded</h4>
+                    <span class="doc-badge" id="activeDocTypeBadge">Pending Upload</span>
                 </div>
             </div>
 
@@ -139,25 +139,25 @@
             <!-- TAB 1: UPLOAD & EXTRACT -->
             <section id="uploadTab" class="tab-pane active">
                 <div class="section-header">
-                    <h2 data-i18n="uploadTitle">Upload Housing Document</h2>
-                    <p data-i18n="uploadDescription">Designed for Eviction Notices, Rent Demand Notices, Lease Agreements, and Security Deposit Disputes.</p>
+                    <h2 data-i18n="uploadTitle">Upload Legal Document</h2>
+                    <p data-i18n="uploadDescription">Supports Legal Notices, Rental Agreements, Employment Contracts, Consumer Complaints, NDAs, Service Contracts, and more.</p>
                 </div>
 
                 <div class="upload-grid">
                     <div class="upload-box" id="dropZone">
                         <div class="upload-icon">📁</div>
-                        <h3 data-i18n="dropTitle">Drag & Drop Housing Document Here</h3>
-                        <p data-i18n="fileSupport">Supports PDF, DOCX, TXT, PNG, JPG (Scanned Notice OCR Supported)</p>
+                        <h3 data-i18n="dropTitle">Drag & Drop Legal Document Here</h3>
+                        <p data-i18n="fileSupport">Supports PDF, DOCX, TXT, PNG, JPG (Scanned Notice & Document OCR Supported)</p>
                         <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.png,.jpg,.jpeg" class="hidden-file-input">
                         <div class="upload-buttons">
                             <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()" data-i18n="browse">Browse Files</button>
-                            <button class="btn btn-secondary" id="loadSampleBtn" data-i18n="loadDemo">⚡ Load Sample Eviction Notice Demo</button>
+                            <button class="btn btn-secondary" id="loadSampleBtn" data-i18n="loadDemo">⚡ Load Sample Rental Agreement Demo</button>
                         </div>
                     </div>
 
                     <div class="paste-text-box">
-                        <h3 data-i18n="pasteTitle">...or Paste Notice / Agreement Text</h3>
-                        <textarea id="pasteTextInput" data-i18n-placeholder="pastePlaceholder" placeholder="Paste eviction notice text, rent demand notice, lease clauses, or landlord communications here..."></textarea>
+                        <h3 data-i18n="pasteTitle">...or Paste Legal Text</h3>
+                        <textarea id="pasteTextInput" data-i18n-placeholder="pastePlaceholder" placeholder="Paste legal notice text, agreement clauses, employment contract text, or communication here..."></textarea>
                         <button class="btn btn-secondary" id="analyzePastedTextBtn" data-i18n="analyzePasted">Analyze Pasted Text</button>
                     </div>
                 </div>
@@ -172,11 +172,17 @@
                         <div>
                             <span class="label">Document Category:</span>
                             <select id="docTypeSelect" class="doc-type-select">
+                                <option value="Rental Agreement">Rental Agreement / Lease Deed</option>
                                 <option value="Eviction Notice">Eviction Notice / Notice to Vacate</option>
                                 <option value="Rent Demand Notice">Rent Demand / Cure Notice</option>
-                                <option value="Rental Agreement">Rental Agreement / Lease</option>
                                 <option value="Deposit Dispute Notice">Security Deposit Dispute</option>
-                                <option value="Legal Notice">General Legal Notice</option>
+                                <option value="Employment Contract">Employment Contract / Offer Letter</option>
+                                <option value="Legal Notice">Legal Notice / Cease & Desist</option>
+                                <option value="Consumer Complaint">Consumer Complaint / Forum Dispute</option>
+                                <option value="Service Agreement">Service Agreement / Master Contract</option>
+                                <option value="Non-Disclosure Agreement (NDA)">Non-Disclosure Agreement (NDA)</option>
+                                <option value="Loan / Financial Agreement">Loan / Financial Agreement</option>
+                                <option value="Court Order / Summons">Court Order / Summons / Pleading</option>
                                 <option value="Other Legal Document">Other Legal Document</option>
                             </select>
                         </div>
@@ -195,13 +201,22 @@
             <!-- TAB 2: LEGAL CLARITY & ACTION MAP -->
             <section id="clarityMapTab" class="tab-pane">
                 <div class="section-header">
-                    <h2>Legal Clarity & Action Map</h2>
-                    <p>Connecting static legal text into 4 structured, actionable outputs for tenants and legal aid advocates.</p>
+                    <h2>Legal Clarity & Document Overview Action Map</h2>
+                    <p>Connecting complex legal text into 4 structured, actionable outputs for citizens and legal aid advocates.</p>
                 </div>
 
                 <div id="clarityMapLoading" class="loading-state hidden">
                     <div class="spinner"></div>
                     <p>Extracting facts and generating Action Map in selected language...</p>
+                </div>
+
+                <div id="clarityMapError" class="empty-state hidden" role="alert"></div>
+
+                <div class="card-box" style="margin-bottom: 20px;">
+                    <h3>📄 Executive Document Summary</h3>
+                    <p id="docOverviewSummary" style="font-size: 14px; line-height: 1.6; color: #334155; margin-top: 6px;">
+                        Upload a document and click 'Analyze Document & Map Facts' to generate an instant plain-language summary.
+                    </p>
                 </div>
 
                 <div id="clarityMapContent" class="action-map-grid">
@@ -213,8 +228,7 @@
                         </div>
                         <p class="action-desc">Plain-language summary of what this document demands</p>
                         <ul id="actionMapUnderstand" class="action-list">
-                            <li>Landlord Rajesh Kumar demands ₹45,000 rent arrears + ₹2,500 late fee for July–Sept 2026.</li>
-                            <li>Demands payment or premise surrender within 15 days of notice date (Oct 1, 2026).</li>
+                            <li>Upload a document to extract key rules and summary points.</li>
                         </ul>
                     </div>
 
@@ -226,8 +240,7 @@
                         </div>
                         <p class="action-desc">Deadlines, cure periods, monetary claims & obligations</p>
                         <ul id="actionMapIdentify" class="action-list">
-                            <li><strong>Response Deadline:</strong> October 16, 2026 (15-Day Statutory Cure Period).</li>
-                            <li><strong>Unenforceable Late Fee:</strong> ₹2,500 late fee not specified in standard 11-month lease.</li>
+                            <li>Upload a document to identify obligations, deadlines, and potential concerns.</li>
                         </ul>
                     </div>
 
@@ -241,15 +254,13 @@
                         <div class="sub-section">
                             <strong>Questions to ask a lawyer / legal-aid advocate:</strong>
                             <ul id="actionMapQuestions" class="action-list">
-                                <li>Does a 15-day eviction notice satisfy statutory requirements under Karnataka Rent Control Act?</li>
-                                <li>Can rent receipts or UPI payment screenshots invalidate non-payment eviction claims?</li>
+                                <li>Upload a document to generate specific questions for legal counsel.</li>
                             </ul>
                         </div>
                         <div class="sub-section">
                             <strong>Evidence & records to collect:</strong>
                             <ul id="actionMapChecklist" class="action-list">
-                                <li>Bank statements & UPI transaction references for July – Sept 2026.</li>
-                                <li>Original signed rental agreement & WhatsApp chat exports.</li>
+                                <li>Upload a document to view evidence collection checklist.</li>
                             </ul>
                         </div>
                     </div>
@@ -264,8 +275,7 @@
                         <div class="sub-section">
                             <strong>Suggested Immediate Next Steps:</strong>
                             <ul id="actionMapNextSteps" class="action-list">
-                                <li>Do not panic or move out immediately; statutory notice period allows formal response.</li>
-                                <li>Export Case Packet and consult District Legal Services Authority (DLSA / NALSA).</li>
+                                <li>Upload a document to view step-by-step guidance.</li>
                             </ul>
                         </div>
                         <div class="sub-section">
@@ -289,22 +299,22 @@
                 <div class="grid-4" style="margin-bottom: 24px;">
                     <div class="card-box">
                         <span class="badge-pill bg-info">KEY DATES & DEADLINES</span>
-                        <h4 style="margin-top: 8px;" id="factKeyDates">Notice Date: Oct 1, 2026<br>Cure Deadline: Oct 16, 2026</h4>
+                        <h4 style="margin-top: 8px;" id="factKeyDates">Upload a document to extract dates & deadlines</h4>
                     </div>
 
                     <div class="card-box">
-                        <span class="badge-pill bg-urgent">AMOUNTS CLAIMED</span>
-                        <h4 style="margin-top: 8px; color: #991b1b;" id="factAmounts">Claimed Rent: ₹45,000<br>Late Fee: ₹2,500</h4>
+                        <span class="badge-pill bg-urgent">AMOUNTS & FINANCIALS</span>
+                        <h4 style="margin-top: 8px; color: #991b1b;" id="factAmounts">Upload a document to extract amounts</h4>
                     </div>
 
                     <div class="card-box">
-                        <span class="badge-pill bg-info">PARTIES & PROPERTY</span>
-                        <h4 style="margin-top: 8px;" id="factParties">Landlord: Rajesh Kumar<br>Tenant: Anish Sharma</h4>
+                        <span class="badge-pill bg-info">PARTIES & ENTITIES</span>
+                        <h4 style="margin-top: 8px;" id="factParties">Upload a document to extract parties</h4>
                     </div>
 
                     <div class="card-box">
-                        <span class="badge-pill bg-warning">CURE MANDATE</span>
-                        <h4 style="margin-top: 8px; color: #92400e;" id="factMandate">Pay ₹47,500 or vacate in 15 days</h4>
+                        <span class="badge-pill bg-warning">KEY MANDATE / OBLIGATIONS</span>
+                        <h4 style="margin-top: 8px; color: #92400e;" id="factMandate">Upload a document to extract obligations</h4>
                     </div>
                 </div>
 
@@ -312,13 +322,7 @@
                     <h3 style="margin-bottom: 16px;">📅 Chronological Fact & Dispute Timeline</h3>
                     <div id="timelineEventsContainer">
                         <div style="border-left: 3px solid #3b82f6; padding-left: 16px; margin-bottom: 16px;">
-                            <strong>Event 1 — Lease Commencement:</strong> Nov 1, 2025 (Monthly rent agreed at ₹15,000).
-                        </div>
-                        <div style="border-left: 3px solid #f59e0b; padding-left: 16px; margin-bottom: 16px;">
-                            <strong>Event 2 — Alleged Non-Payment Period:</strong> July 2026 – Sept 2026 (3 Months Arrears Claimed).
-                        </div>
-                        <div style="border-left: 3px solid #ef4444; padding-left: 16px;">
-                            <strong>Event 3 — Eviction Notice Served:</strong> Oct 1, 2026 (Demanding ₹47,500 or surrender of possession by Oct 16).
+                            Upload a document and click 'Analyze Document' to automatically extract event timeline.
                         </div>
                     </div>
                 </div>

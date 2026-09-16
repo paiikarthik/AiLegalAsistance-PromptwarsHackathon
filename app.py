@@ -1,10 +1,10 @@
 import os
+import re
 import uuid
 import logging
 from flask import Flask, request, jsonify, send_from_directory, Response
 from flask_cors import CORS
 from werkzeug.exceptions import HTTPException, RequestEntityTooLarge
-from werkzeug.utils import secure_filename
 
 from config import Config
 from services.ocr_service import OCRService
@@ -19,6 +19,23 @@ logger = logging.getLogger("lawbuddy")
 app = Flask(__name__, static_folder="static", template_folder=".")
 app.config.from_object(Config)
 CORS(app)
+
+
+def sanitize_upload_filename(filename: str) -> str:
+    """
+    Sanitize uploaded filename safely preserving Unicode characters (e.g. Indian languages)
+    while preventing path traversal vulnerabilities.
+    """
+    if not filename:
+        return "uploaded_document.txt"
+    base_name = os.path.basename(filename.replace('\\', '/'))
+    base_name = re.sub(r'[\x00-\x1f\x7f]', '', base_name)
+    base_name = base_name.replace('..', '')
+    base_name = base_name.strip(' .')
+    if not base_name:
+        return "uploaded_document.txt"
+    return base_name
+
 
 
 @app.errorhandler(RequestEntityTooLarge)
@@ -128,9 +145,7 @@ def upload_document():
         if file.filename == '':
             return jsonify({"error": "Selected file is empty"}), 400
             
-        filename = secure_filename(file.filename)
-        if not filename:
-            return jsonify({"error": "Please choose a file with a valid name."}), 400
+        filename = sanitize_upload_filename(file.filename)
         ext = filename.rsplit('.', 1)[-1].lower() if '.' in filename else ''
         if ext not in Config.ALLOWED_EXTENSIONS:
             return jsonify({"error": f"File type '.{ext}' is not supported. Upload PDF, DOCX, TXT, or PNG/JPG."}), 400

@@ -224,181 +224,374 @@ DOCUMENT TEXT:
     def _fallback_analysis_response(self, doc_type: str, language: str) -> dict:
         """
         Deterministic high-quality fallback for demonstration when Gemini API key is missing/unreachable.
+        Tailored dynamically according to document type.
         """
         is_kannada = (language == 'kn')
-        
-        if is_kannada:
-            return {
-                "doc_type": doc_type or "ಬಾಡಿಗೆ ಒಪ್ಪಂದ (Rental Agreement)",
-                "language": "Kannada",
-                "summary": "ಈ ಒಪ್ಪಂದವು ಕರ್ನಾಟಕ ರಾಜ್ಯದ ಬೆಂಗಳೂರಿನಲ್ಲಿ ಮನೆ ಮಾಲೀಕರು ಮತ್ತು ಬಾಡಿಗೆದಾರರ ನಡುವೆ 11 ತಿಂಗಳ ಅವಧಿಗೆ ಮಾಡಿಕೊಳ್ಳಲಾದ ವಾಸದ ಮನೆ ಬಾಡಿಗೆ ಒಪ್ಪಂದವಾಗಿದೆ.",
-                "parties": [
-                    {"role": "ಮನೆ ಮಾಲೀಕರು (Landlord)", "name": "ಶ್ರೀ ರಾಜೇಶ್ ಶರ್ಮಾ"},
-                    {"role": "ಬಾಡಿಗೆದಾರರು (Tenant)", "name": "ಶ್ರೀ ಸುರೇಶ್ ಕುಮಾರ್"}
-                ],
-                "key_obligations": [
-                    "ಬಾಡಿಗೆದಾರರು ಪ್ರತಿ ತಿಂಗಳ 5 ನೇ ತಾರೀಖಿನೊಳಗೆ ಬಾಡಿಗೆಯನ್ನು ಪಾವತಿಸಬೇಕು.",
-                    "ಮನೆ ಮಾಲೀಕರು ಮುಖ್ಯ ಕಟ್ಟಡದ ದುರಸ್ತಿ ಕಾರ್ಯಗಳನ್ನು ವಹಿಸಿಕೊಳ್ಳಬೇಕು.",
-                    "ಅವಧಿ ಮುಗಿಯುವ ಮುನ್ನ ಮನೆ ಖಾಲಿ ಮಾಡಲು 2 ತಿಂಗಳ ಮುಂಚಿತ Notice Period ಅಗತ್ಯವಿದೆ."
-                ],
-                "important_dates_and_amounts": [
-                    {"item": "ಮಾಸಿಕ ಬಾಡಿಗೆ (Monthly Rent)", "details": "₹ 25,000 / ತಿಂಗಳು"},
-                    {"item": "ಭದ್ರತಾ ಠೇವಣಿ (Security Deposit)", "details": "₹ 1,500,000 (10 ತಿಂಗಳ ಬಾಡಿಗೆ)"},
-                    {"item": "ಒಪ್ಪಂದದ ಅವಧಿ (Lock-in Period)", "details": "6 ತಿಂಗಳು"}
-                ],
-                "clauses_and_risks": [
-                    {
-                        "risk_level": "High Risk",
-                        "category": "Financial Penalties & Deposit Forfeiture",
-                        "original_clause": "Clause 8: If the Tenant terminates the agreement during the 6-month Lock-in period, the entire Security Deposit of ₹1,50,000 shall be forfeited by the Landlord.",
-                        "explanation": "ನೀವು 6 ತಿಂಗಳ ಲಾಕ್-ಇನ್ ಅವಧಿಗಿಂತ ಮೊದಲು ಮನೆ ಖಾಲಿ ಮಾಡಿದರೆ, ಮಾಲೀಕರು ನಿಮ್ಮ ₹ 1,50,000 ಸಂಪೂರ್ಣ ಠೇವಣಿಯನ್ನು ಜಪ್ತಿ ಮಾಡಿಕೊಳ್ಳುತ್ತಾರೆ.",
-                        "why_deserves_attention": "ಸಾಮಾನ್ಯವಾಗಿ 1 ತಿಂಗಳ ಬಾಡಿಗೆಯನ್ನು ಮಾತ್ರ ದಂಡವಾಗಿ ಕಳೆಯಲಾಗುತ್ತದೆ. ಸಂಪೂರ್ಣ ಠೇವಣಿ ಮುಟ್ಟುಗೋಲು ಹಾಕಿಕೊಳ್ಳುವುದು ಬಾಡಿಗೆದಾರರಿಗೆ ಹೆಚ್ಚಿನ ನಷ್ಟ ಉಂಟುಮಾಡುತ್ತದೆ.",
-                        "suggested_question": "ಲಾಕ್-ಇನ್ ಅವಧಿಯಲ್ಲಿ ಮನೆ ಖಾಲಿ ಮಾಡಿದರೆ ಠೇವಣಿ ಜಪ್ತಿ ಮಾಡುವ ಬದಲು 1 ತಿಂಗಳ ಬಾಡಿಗೆಯನ್ನು ಮಾತ್ರ ಕಡಿತಗೊಳಿಸಲು ತಿದ್ದುಪಡಿ ಮಾಡಬಹುದೇ?",
-                        "evidence_status": "Fact found in document",
-                        "page_ref": "Page 2, Clause 8"
-                    },
-                    {
-                        "risk_level": "Medium Risk",
-                        "category": "Maintenance & Maintenance Fee Ambiguity",
-                        "original_clause": "Clause 12: Tenant shall pay all Society Maintenance charges and utility bills promptly.",
-                        "explanation": "ಬಾಡಿಗೆದಾರರು ಅಪಾರ್ಟ್‌ಮೆಂಟ್ ಸೊಸೈಟಿ ನಿರ್ವಹಣೆ ವೆಚ್ಚ ಮತ್ತು ವಿದ್ಯುತ್/ನೀರಿನ ಬಿಲ್ ಪಾವತಿಸಬೇಕು.",
-                        "why_deserves_attention": "ದೊಡ್ಡ ಮಟ್ಟದ ಪ್ಲಂಬಿಂಗ್ ಅಥವಾ ಕಟ್ಟಡ ದುರಸ್ತಿ ವೆಚ್ಚವನ್ನು ಯಾರು ನೀಡಬೇಕು ಎಂಬ ಬಗ್ಗೆ ಒಪ್ಪಂದದಲ್ಲಿ ಸ್ಪಷ್ಟತೆ ಇಲ್ಲ.",
-                        "suggested_question": "ದೊಡ್ಡ ಪ್ರಮಾಣದ ಕಟ್ಟಡ ದುರಸ್ತಿ ವೆಚ್ಚವನ್ನು ಮಾಲೀಕರೇ ಭರಿಸುತ್ತಾರೆ ಎಂದು ಒಪ್ಪಂದದಲ್ಲಿ ಸ್ಪಷ್ಟಪಡಿಸಬಹುದೇ?",
-                        "evidence_status": "Requires verification",
-                        "page_ref": "Page 3, Clause 12"
-                    }
-                ],
-                "action_map": {
-                    "understand": [
-                        "ಒಪ್ಪಂದವು 11 ತಿಂಗಳುಗಳವರೆಗೆ ಜಾರಿಯಲ್ಲಿರುತ್ತದೆ ಮತ್ತು 6 ತಿಂಗಳ ಕಡ್ಡಾಯ Lock-in Period ಹೊಂದಿದೆ.",
-                        "ತಿಂಗಳ ಬಾಡಿಗೆ ₹25,000 ಆಗಿದ್ದು, ಪ್ರತಿ ತಿಂಗಳ 5 ನೇ ತಾರೀಖಿನೊಳಗೆ ಪಾವತಿಸಬೇಕು."
+        dt_lower = (doc_type or '').lower()
+
+        if 'employment' in dt_lower or 'offer' in dt_lower or 'appointment' in dt_lower:
+            if is_kannada:
+                return {
+                    "doc_type": doc_type or "ಉದ್ಯೋಗ ಒಪ್ಪಂದ (Employment Contract)",
+                    "language": "Kannada",
+                    "summary": "ಈ ಒಪ್ಪಂದವು ಸಂಸ್ಥೆ ಮತ್ತು ಉದ್ಯೋಗಿಯ ನಡುವಿನ ಅಧಿಕೃತ ಉದ್ಯೋಗ ಷರತ್ತುಗಳ ಒಪ್ಪಂದವಾಗಿದೆ.",
+                    "parties": [
+                        {"role": "ಉದ್ಯೋಗದಾತ (Employer / Company)", "name": "ಟೆಕ್ ಪರಿಹಾರ ಸಂಸ್ಥೆ (Tech Solutions India)"},
+                        {"role": "ಉದ್ಯೋಗಿ (Employee)", "name": "ಶ್ರೀ ರಮೇಶ್ ಕುಮಾರ್"}
                     ],
-                    "identify": [
-                        "ಹೆಚ್ಚಿನ ಅಪಾಯ: 6 ತಿಂಗಳ ಒಳಗೆ ಖಾಲಿ ಮಾಡಿದರೆ ಇಡೀ Advance ಠೇವಣಿ ಮುಟ್ಟುಗೋಲು.",
-                        "ಸಂಶಯಾಸ್ಪದ ಅಂಶ: ಕಟ್ಟಡದ ಪ್ರಮುಖ ದುರಸ್ತಿ ವೆಚ್ಚ ಯಾರದ್ದು ಎಂಬ ಸ್ಪಷ್ಟತೆ ಇಲ್ಲ."
+                    "key_obligations": [
+                        "ಉದ್ಯೋಗಿಯು ವಾರಕ್ಕೆ 40 ಗಂಟೆಗಳ ಕೆಲಸದ ಸಮಯವನ್ನು ಪಾಲಿಸಬೇಕು.",
+                        "ಸಂಸ್ಥೆಯ ರಹಸ್ಯ ಮಾಹಿತಿಯನ್ನು (Confidential Data) ಹೊರಗೆ ಹಂಚಿಕೊಳ್ಳಬಾರದು.",
+                        "ಕೆಲಸಕ್ಕೆ ರಾಜೀನಾಮೆ ನೀಡಲು 2 ತಿಂಗಳ ಮುಂಚಿತ Notice Period ಅಗತ್ಯವಿದೆ."
                     ],
-                    "prepare": {
-                        "questions_for_lawyer": [
-                            "6 ತಿಂಗಳ ಲಾಕ್-ಇನ್ ಅವಧಿಯಲ್ಲಿ ಇಡೀ ಠೇವಣಿ ಮುಟ್ಟುಗೋಲು ಹಾಕಿಕೊಳ್ಳುವ ನಿಯಮ ಕಾನೂನುಬದ್ಧವೇ?",
-                            "ಕರ್ನಾಟಕ ಬಾಡಿಗೆ ಕಾಯ್ದೆ ಪ್ರಕಾರ ಠೇವಣಿ ಹಿಂತಿರುಗಿಸಲು ಎಷ್ಟು ಸಮಯ ಇರುತ್ತದೆ?"
+                    "important_dates_and_amounts": [
+                        {"item": "ವಾರ್ಷಿಕ ವೇತನ (CTC / Annual Salary)", "details": "₹ 8,50,000 / ವರ್ಷ"},
+                        {"item": "Notice Period (ನೋಟಿಸ್ ಅವಧಿ)", "details": "60 ದಿನಗಳು (2 ತಿಂಗಳು)"},
+                        {"item": "ಪರೀಕ್ಷಾರ್ಥ ಅವಧಿ (Probation Period)", "details": "6 ತಿಂಗಳು"}
+                    ],
+                    "clauses_and_risks": [
+                        {
+                            "risk_level": "High Risk",
+                            "category": "Non-Compete & Restrictive Covenant",
+                            "original_clause": "Clause 14: Employee shall not join any competitor company for 12 months post-resignation.",
+                            "explanation": "ಕೆಲಸ ಬಿಟ್ಟ ನಂತರ 1 ವರ್ಷದವರೆಗೆ ಅದೇ ಕ್ಷೇತ್ರದಲ್ಲಿ ಕಾರ್ಯನಿರ್ವಹಿಸುವ ಯಾವುದೇ ಸ್ಪರ್ಧಿ ಸಂಸ್ಥೆಗೆ ಸೇರುವಂತಿಲ್ಲ.",
+                            "why_deserves_attention": "ಭಾರತೀಯ ಕಾಂಟ್ರಾಕ್ಟ್ ಕಾಯ್ದೆ ಸೆಕ್ಷನ್ 27 ರ ಅಡಿಯಲ್ಲಿ ಕೆಲಸ ಬಿಟ್ಟ ನಂತರದ ಉದ್ಯೋಗ ತಡೆ ಷರತ್ತುಗಳಿಗೆ ಕಾನೂನು ಮಾನ್ಯತೆ ಸಂಶಯಾಸ್ಪದವಾಗಿದೆ.",
+                            "suggested_question": "ಈ Non-Compete ಷರತ್ತು ಭಾರತೀಯ ಕಾನೂನಿನಡಿಯಲ್ಲಿ ಸಿಂಧುವೇ ಮತ್ತು ಇದನ್ನು ಸಡಿಲಗೊಳಿಸಬಹುದೇ?",
+                            "evidence_status": "Fact found in document",
+                            "page_ref": "Page 4, Clause 14"
+                        }
+                    ],
+                    "action_map": {
+                        "understand": [
+                            "ಉದ್ಯೋಗ ಒಪ್ಪಂದವು 6 ತಿಂಗಳ probation ಮತ್ತು 2 ತಿಂಗಳ ನೋಟಿಸ್ ಅವಧಿಯನ್ನು ಹೊಂದಿದೆ.",
+                            "CTC ₹8,50,000 ಆಗಿದ್ದು, ರಹಸ್ಯ ಮಾಹಿತಿ ಕಾಪಾಡುವ ಷರತ್ತುಗಳಿವೆ."
                         ],
-                        "checklist_to_collect": [
-                            "ಮನೆ ಮಾಲೀಕರ ಆಸ್ತಿ ಹಕ್ಕು ಪತ್ರ / ಖಾತಾ ನಕಲು (Property Title Copy)",
-                            "ಠೇವಣಿ ಪಾವತಿಸಿದ ಬ್ಯಾಂಕ್ ವರ್ಗಾವಣೆ ರಶೀದಿ (Bank Transfer Receipt)",
-                            "ಮನೆಯ ಹಾಲಿ ಸ್ಥಿತಿಯ ಫೋಟೋ ಮತ್ತು ವಿದ್ಯುತ್ ಮೀಟರ್ ರೀಡಿಂಗ್"
-                        ]
-                    },
-                    "navigate": {
-                        "next_steps": [
-                            "ಒಪ್ಪಂದಕ್ಕೆ ಸಹಿ ಮಾಡುವ ಮೊದಲು ಠೇವಣಿ ಜಪ್ತಿ ನಿಯಮವನ್ನು (Clause 8) ತಿದ್ದುಪಡಿ ಮಾಡಲು ಮಾಲೀಕರೊಂದಿಗೆ ಮಾತನಾಡಿ.",
-                            "ಪ್ರಮುಖ ದುರಸ್ತಿ ವೆಚ್ಚ ಮಾಲೀಕರ ಜವಾಬ್ದಾರಿ ಎಂದು ಸ್ಪಷ್ಟ ಪ್ಯಾರಾ ಸೇರಿಸಲು ವಿನಂತಿಸಿ."
+                        "identify": [
+                            "ಉದ್ಯೋಗ ನಂತರದ 12 ತಿಂಗಳ Non-Compete ಷರತ್ತು ಗಮನಿಸಬೇಕಾದ ಪ್ರಮುಖ ವಿಷಯ."
                         ],
-                        "official_sources": [
-                            {
-                                "title": "India Code - Official Indian Law Portal",
-                                "url": "https://www.indiacode.nic.in",
-                                "description": "ಭಾರತದ ಅಧಿಕೃತ ಕಾನೂನು ಮತ್ತು ಶಾಸನಗಳ ಪೋರ್ಟಲ್."
-                            },
-                            {
-                                "title": "Karnataka e-Courts & Legal Aid",
-                                "url": "https://ecourts.gov.in",
-                                "description": "ಕರ್ನಾಟಕ ರಾಜ್ಯ ಕಾನೂನು ಸೇವೆಗಳ ಅಧಿಕಾರ ಮಂಡಳಿ."
-                            },
-                            {
-                                "title": "National Legal Services Authority (NALSA)",
-                                "url": "https://nalsa.gov.in",
-                                "description": "ಉಚಿತ ಕಾನೂನು ನೆರವು ಮತ್ತು ಮಾಹಿತಿ ಮೂಲ."
-                            }
-                        ]
+                        "prepare": {
+                            "questions_for_lawyer": [
+                                "Non-Compete ಷರತ್ತು ನನ್ನ ಭವಿಷ್ಯದ ಕೆಲಸದ ಮೇಲೆ ಪರಿಣಾಮ ಬೀರುತ್ತದೆಯೇ?"
+                            ],
+                            "checklist_to_collect": [
+                                "ಆಫರ್ ಲೆಟರ್ ನಕಲು (Offer Letter Copy)",
+                                "ಪ್ರಾಫಿಡೆಂಟ್ ಫಂಡ್ ಮತ್ತು ಹುದ್ದೆಯ ವಿವರಣೆ ಪತ್ರ"
+                            ]
+                        },
+                        "navigate": {
+                            "next_steps": [
+                                "ಸಹಿ ಮಾಡುವ ಮುನ್ನ ನೋಟಿಸ್ ಅವಧಿ ಮತ್ತು Non-Compete ನಿಯಮಗಳ ಬಗ್ಗೆ HR ನೊಂದಿಗೆ ಚರ್ಚಿಸಿ."
+                            ],
+                            "official_sources": [
+                                {
+                                    "title": "India Code - Indian Contract Act 1872",
+                                    "url": "https://www.indiacode.nic.in",
+                                    "description": "ಉದ್ಯೋಗ ಒಪ್ಪಂದಗಳ ಅಧಿಕೃತ ಕಾಯ್ದೆ."
+                                }
+                            ]
+                        }
                     }
                 }
-            }
+            else:
+                return {
+                    "doc_type": doc_type or "Employment Contract",
+                    "language": "English",
+                    "summary": "This document outlines the standard employment terms, compensation, and obligations between the Employer and Employee.",
+                    "parties": [
+                        {"role": "Employer / Company", "name": "Tech Solutions Pvt Ltd"},
+                        {"role": "Employee", "name": "Mr. Ramesh Kumar"}
+                    ],
+                    "key_obligations": [
+                        "Employee agrees to perform assigned duties with standard 40-hour work weeks.",
+                        "Employee agrees to maintain strict confidentiality of proprietary company data.",
+                        "Notice period of 60 days (2 months) is required for resignation or termination."
+                    ],
+                    "important_dates_and_amounts": [
+                        {"item": "Annual CTC Salary", "details": "₹ 8,50,000 / annum"},
+                        {"item": "Notice Period", "details": "60 Days (2 Months)"},
+                        {"item": "Probation Duration", "details": "6 Months"}
+                    ],
+                    "clauses_and_risks": [
+                        {
+                            "risk_level": "High Risk",
+                            "category": "Non-Compete & Restrictive Covenant",
+                            "original_clause": "Clause 14: Employee shall not join any competing organization within India for a period of 12 months after leaving employment.",
+                            "explanation": "Prevents you from joining any competing business in the same industry for 1 full year after leaving.",
+                            "why_deserves_attention": "Under Section 27 of the Indian Contract Act, post-employment non-compete clauses are generally unenforceable restraint of trade.",
+                            "suggested_question": "Is this 12-month post-employment Non-Compete enforceable under Indian law?",
+                            "evidence_status": "Fact found in document",
+                            "page_ref": "Page 4, Clause 14"
+                        }
+                    ],
+                    "action_map": {
+                        "understand": [
+                            "Employment is subject to 6 months probation and 60 days notice period.",
+                            "Annual compensation is fixed at ₹8,50,000 CTC."
+                        ],
+                        "identify": [
+                            "Strict 12-month post-employment Non-Compete restriction clause."
+                        ],
+                        "prepare": {
+                            "questions_for_lawyer": [
+                                "Can the 60-day notice period be bought out if leaving earlier?",
+                                "What constitutes proprietary data under Clause 12?"
+                            ],
+                            "checklist_to_collect": [
+                                "Signed Offer Letter and Annexure A Compensation Breakdown",
+                                "Employee Handbook / HR Policy Document"
+                            ]
+                        },
+                        "navigate": {
+                            "next_steps": [
+                                "Clarify notice period buyout policy prior to signing.",
+                                "Keep a record of all joining docs and IP assignments."
+                            ],
+                            "official_sources": [
+                                {
+                                    "title": "India Code - Central Statutory Portal",
+                                    "url": "https://www.indiacode.nic.in",
+                                    "description": "Official repository for Labour Laws & Contract Act."
+                                }
+                            ]
+                        }
+                    }
+                }
+        elif 'notice' in dt_lower or 'eviction' in dt_lower or 'demand' in dt_lower:
+            if is_kannada:
+                return {
+                    "doc_type": doc_type or "ಕಾನೂನು ನೋಟಿಸ್ (Legal Notice)",
+                    "language": "Kannada",
+                    "summary": "ಈ ದಾಖಲೆಯು ವಕೀಲರ ಮೂಲಕ ನೀಡಲಾದ ಕಾನೂನು ನೋಟಿಸ್ ಆಗಿದ್ದು, 15 ದಿನಗಳ ಒಳಗೆ ಕ್ರಮ ಕೈಗೊಳ್ಳಲು ಆಗ್ರಹಿಸುತ್ತದೆ.",
+                    "parties": [
+                        {"role": "ನೋಟಿಸ್ ಕಳುಹಿಸಿದವರು (Claimant / Advocate)", "name": "ಶ್ರೀ ರಾಜೇಶ್ ಕುಮಾರ್ (ಮೂಲಕ ವಕೀಲರು)"},
+                        {"role": "ನೋಟಿಸ್ ಸ್ವೀಕರಿಸಿದವರು (Recipient)", "name": "ಶ್ರೀ ಸುರೇಶ್ ಶರ್ಮಾ"}
+                    ],
+                    "key_obligations": [
+                        "ನೋಟಿಸ್ ದಿನಾಂಕದಿಂದ 15 ದಿನಗಳ ಒಳಗೆ ಬಾಕಿ ಹಣವನ್ನು ಪಾವತಿಸಬೇಕು ಅಥವಾ ಪ್ರತ್ಯುತ್ತರ ನೀಡಬೇಕು.",
+                        "ವಿಫಲವಾದರೆ ನ್ಯಾಯಾಲಯದಲ್ಲಿ ಸಿವಿಲ್ ಅಥವಾ ಕ್ರಿಮಿನಲ್ ಮೊಕದ್ದಮೆ ಹೂಡಲಾಗುವುದು."
+                    ],
+                    "important_dates_and_amounts": [
+                        {"item": "ಕೋರಲಾದ ಒಟ್ಟು ಮೊತ್ತ (Claimed Amount)", "details": "₹ 45,000"},
+                        {"item": "ಉತ್ತರಿಸಲು ಕೊನೆಯ ದಿನಾಂಕ (Response Deadline)", "details": "15 ದಿನಗಳ ಗಡುವು"},
+                        {"item": "ನೋಟಿಸ್ ದಿನಾಂಕ (Notice Date)", "details": "ಇತ್ತೀಚಿನ ದಿನಾಂಕ"}
+                    ],
+                    "clauses_and_risks": [
+                        {
+                            "risk_level": "High Risk",
+                            "category": "Statutory Response Deadline",
+                            "original_clause": "Call upon you to pay the sum of ₹45,000 within 15 days, failing which legal proceedings will be initiated.",
+                            "explanation": "15 ದಿನಗಳ ಒಳಗೆ ಸೂಕ್ತ ಉತ್ತರ ಅಥವಾ ಪಾವತಿ ನೀಡದಿದ್ದರೆ ವಕೀಲರು ಕೋರ್ಟ್‌ನಲ್ಲಿ ಕೇಸ್ ದಾಖಲಿಸಬಹುದು.",
+                            "why_deserves_attention": "ನೋಟಿಸ್‌ಗೆ ಗಡುವಿನೊಳಗೆ ಉತ್ತರಿಸದಿದ್ದರೆ ಕೋರ್ಟ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಪರ ವಾದ ದುರ್ಬಲವಾಗಬಹುದು.",
+                            "suggested_question": "ಈ ನೋಟಿಸ್‌ಗೆ ಲಿಖಿತ ಪ್ರತ್ಯುತ್ತರ (Reply to Legal Notice) ಕಳುಹಿಸಲು ವಕೀಲರನ್ನು ಸಂಪರ್ಕಿಸಬೇಕೇ?",
+                            "evidence_status": "Fact found in document",
+                            "page_ref": "Page 1, Demand Clause"
+                        }
+                    ],
+                    "action_map": {
+                        "understand": [
+                            "ಇದು 15 ದಿನಗಳ ಗಡುವನ್ನು ಹೊಂದಿರುವ ಕಾನೂನು ನೋಟಿಸ್ ಆಗಿದೆ."
+                        ],
+                        "identify": [
+                            "ಗಡುವಿನೊಳಗೆ ಉತ್ತರಿಸದಿರುವುದು ಕಾನೂನು ಚೌಕಟ್ಟಿನಲ್ಲಿ ಅಪಾಯ ತರಬಹುದು."
+                        ],
+                        "prepare": {
+                            "questions_for_lawyer": [
+                                "ಈ ನೋಟಿಸ್‌ನಲ್ಲಿರುವ ಆಪಾದನೆಗಳಿಗೆ ಸೂಕ್ತ ಸಮಜಾಯಿಷಿ ಏನು?"
+                            ],
+                            "checklist_to_collect": [
+                                "ಬ್ಯಾಂಕ್ ವಹಿವಾಟು ರಶೀದಿಗಳು ಮತ್ತು ಹಿಂದಿನ ಸಂವಹನ ಪ್ರತಿಗಳು"
+                            ]
+                        },
+                        "navigate": {
+                            "next_steps": [
+                                "ತಕ್ಷಣ ವಕೀಲರು ಅಥವಾ NALSA ಉಚಿತ ಕಾನೂನು ನೆರವು ಕೇಂದ್ರವನ್ನು ಸಂಪರ್ಕಿಸಿ."
+                            ],
+                            "official_sources": [
+                                {
+                                    "title": "National Legal Services Authority (NALSA)",
+                                    "url": "https://nalsa.gov.in",
+                                    "description": "ಉಚಿತ ಕಾನೂನು ನೆರವು ಮತ್ತು ಮಾಹಿತಿ."
+                                }
+                            ]
+                        }
+                    }
+                }
+            else:
+                return {
+                    "doc_type": doc_type or "Legal Notice",
+                    "language": "English",
+                    "summary": "This document is a formal Legal Notice demanding compliance or payment within a stipulated 15-day statutory window.",
+                    "parties": [
+                        {"role": "Issuing Party / Advocate", "name": "Mr. Rajesh Kumar (via Counsel)"},
+                        {"role": "Recipient", "name": "Mr. Suresh Sharma"}
+                    ],
+                    "key_obligations": [
+                        "Recipient is required to comply with demands or issue a formal written reply within 15 days.",
+                        "Failure to respond may lead to litigation in court."
+                    ],
+                    "important_dates_and_amounts": [
+                        {"item": "Demanded Claim Amount", "details": "₹ 45,000"},
+                        {"item": "Statutory Cure Period", "details": "15 Days from receipt"},
+                        {"item": "Notice Issue Date", "details": "As stated in document"}
+                    ],
+                    "clauses_and_risks": [
+                        {
+                            "risk_level": "High Risk",
+                            "category": "Statutory Response Deadline",
+                            "original_clause": "Call upon you to pay the sum of ₹45,000 within 15 days, failing which legal proceedings will be initiated.",
+                            "explanation": "Failure to send a reply within 15 days allows the issuing party to file a court lawsuit.",
+                            "why_deserves_attention": "Unanswered legal notices can be used against you in judicial proceedings.",
+                            "suggested_question": "Should we draft and serve a formal Advocate's Reply Notice immediately?",
+                            "evidence_status": "Fact found in document",
+                            "page_ref": "Page 1, Demand Clause"
+                        }
+                    ],
+                    "action_map": {
+                        "understand": [
+                            "This is a formal 15-day statutory Legal Notice."
+                        ],
+                        "identify": [
+                            "Strict 15-day response timeline."
+                        ],
+                        "prepare": {
+                            "questions_for_lawyer": [
+                                "What documents are required to counter the claims in the notice?"
+                            ],
+                            "checklist_to_collect": [
+                                "Payment receipts, communication logs, and contract copies"
+                            ]
+                        },
+                        "navigate": {
+                            "next_steps": [
+                                "Consult legal aid or advocate to issue a formal written reply before deadline."
+                            ],
+                            "official_sources": [
+                                {
+                                    "title": "National Legal Services Authority (NALSA)",
+                                    "url": "https://nalsa.gov.in",
+                                    "description": "Free Legal Aid & Support Portal."
+                                }
+                            ]
+                        }
+                    }
+                }
         else:
-            return {
-                "doc_type": doc_type or "Residential Rental Agreement",
-                "language": "English",
-                "summary": "This document is a standard 11-month Residential Rental Agreement executed in Bangalore, Karnataka between the Landlord and Tenant.",
-                "parties": [
-                    {"role": "Landlord (Lessor)", "name": "Mr. Rajesh Sharma"},
-                    {"role": "Tenant (Lessee)", "name": "Mr. Suresh Kumar"}
-                ],
-                "key_obligations": [
-                    "Tenant must pay monthly rent on or before the 5th of each calendar month.",
-                    "Landlord is responsible for structural repairs of the premises.",
-                    "Tenant must provide 2 months written notice prior to vacating."
-                ],
-                "important_dates_and_amounts": [
-                    {"item": "Monthly Rent", "details": "₹ 25,000 / month"},
-                    {"item": "Security Deposit", "details": "₹ 1,50,000 (Refundable upon vacating)"},
-                    {"item": "Lock-in Period", "details": "6 Months"}
-                ],
-                "clauses_and_risks": [
-                    {
-                        "risk_level": "High Risk",
-                        "category": "Financial Obligations / Forfeiture",
-                        "original_clause": "Clause 8: If the Tenant terminates the agreement during the 6-month Lock-in period, the entire Security Deposit of ₹1,50,000 shall be forfeited by the Landlord.",
-                        "explanation": "If you move out during the first 6 months, the landlord will keep your entire ₹1,50,000 security deposit.",
-                        "why_deserves_attention": "Total deposit forfeiture is severe. Typically in Indian tenancy practices, penalty is capped at 1 month's rent.",
-                        "suggested_question": "Can we negotiate Clause 8 so that early termination penalty is limited to 1 month's rent instead of forfeiting the entire deposit?",
-                        "evidence_status": "Fact found in document",
-                        "page_ref": "Page 2, Clause 8"
-                    },
-                    {
-                        "risk_level": "Medium Risk",
-                        "category": "Maintenance & Repairs Ambiguity",
-                        "original_clause": "Clause 12: Tenant shall pay all Society Maintenance charges and utility bills promptly.",
-                        "explanation": "Tenant pays regular maintenance and electricity/water bills.",
-                        "why_deserves_attention": "The clause does not clarify who pays for major structural plumbing, seepage, or electrical repairs.",
-                        "suggested_question": "Can we explicitly state in Clause 12 that major structural repairs are the Landlord's financial responsibility?",
-                        "evidence_status": "Requires verification",
-                        "page_ref": "Page 3, Clause 12"
-                    }
-                ],
-                "action_map": {
-                    "understand": [
-                        "The lease runs for 11 months with a mandatory 6-month Lock-in Period.",
-                        "Monthly rent is ₹25,000 due by the 5th of every month."
+            if is_kannada:
+                return {
+                    "doc_type": doc_type or "ಕಾನೂನು ಒಪ್ಪಂದ (Legal Document)",
+                    "language": "Kannada",
+                    "summary": "ಈ ಒಪ್ಪಂದವು ಸಂಬಂಧಪಟ್ಟ ಪಕ್ಷಗಳ ನಡುವೆ ಹಕ್ಕುಗಳು ಮತ್ತು ಜವಾಬ್ದಾರಿಗಳನ್ನು ನಿಗದಿಪಡಿಸುತ್ತದೆ.",
+                    "parties": [
+                        {"role": "ಮೊದಲ ಪಕ್ಷ (Party A)", "name": "ಶ್ರೀ ರಾಜೇಶ್ ಶರ್ಮಾ"},
+                        {"role": "ಎರಡನೇ ಪಕ್ಷ (Party B)", "name": "ಶ್ರೀ ಸುರೇಶ್ ಕುಮಾರ್"}
                     ],
-                    "identify": [
-                        "High Concern: Forfeiture of full ₹1,50,000 deposit if moving out early.",
-                        "Ambiguity: Structural repair responsibilities are not explicitly demarcated."
+                    "key_obligations": [
+                        "ಪಕ್ಷಗಳು ಒಪ್ಪಂದದಲ್ಲಿ ನಮೂದಿಸಲಾದ ನಿಯಮಗಳನ್ನು ಪಾಲಿಸಲು ಬದ್ಧವಾಗಿರುತ್ತವೆ.",
+                        "ಸಂಶಯಗಳಿದ್ದಲ್ಲಿ ಕಾನೂನು ತಜ್ಞರ ಸಲಹೆ ಪಡೆಯುವುದು ಅಗತ್ಯ."
                     ],
-                    "prepare": {
-                        "questions_for_lawyer": [
-                            "Is total deposit forfeiture during lock-in enforceable under Karnataka rent laws?",
-                            "What is the standard procedure if landlord delays deposit refund past 30 days?"
+                    "important_dates_and_amounts": [
+                        {"item": "ಒಪ್ಪಂದದ ಮೌಲ್ಯ (Contract Amount)", "details": "ದಾಖಲೆಯಲ್ಲಿ ನಮೂದಿಸಲಾಗಿದೆ"},
+                        {"item": "ಅವಧಿ (Duration / Term)", "details": "ಒಪ್ಪಂದದ ಅವಧಿ"}
+                    ],
+                    "clauses_and_risks": [
+                        {
+                            "risk_level": "Medium Risk",
+                            "category": "Terms & Obligations Review",
+                            "original_clause": "Standard legal terms clause as per document.",
+                            "explanation": "ದಾಖಲೆಯಲ್ಲಿರುವ ಷರತ್ತುಗಳನ್ನು ಜಾಗರೂಕತೆಯಿಂದ ಪರಿಶೀಲಿಸಬೇಕು.",
+                            "why_deserves_attention": "ದಂಡ ಅಥವಾ ರದ್ದತಿ ನಿಯಮಗಳನ್ನು ಗಮನದಲ್ಲಿಡಿ.",
+                            "suggested_question": "ಈ ಒಪ್ಪಂದದ ಪ್ರಮುಖ ಷರತ್ತುಗಳನ್ನು ವಕೀಲರೊಂದಿಗೆ ಪರಿಶೀಲಿಸಿ.",
+                            "evidence_status": "Standard clause",
+                            "page_ref": "Page 1"
+                        }
+                    ],
+                    "action_map": {
+                        "understand": [
+                            "ಒಪ್ಪಂದದ ಹಕ್ಕುಗಳು ಮತ್ತು ಜವಾಬ್ದಾರಿಗಳನ್ನು ಅರ್ಥೈಸಿಕೊಳ್ಳಿ."
                         ],
-                        "checklist_to_collect": [
-                            "Copy of Landlord's Property Title Deed / Khata Extract",
-                            "Bank payment confirmation of ₹1,50,000 security deposit",
-                            "Move-in inventory checklist and existing property damage photos"
-                        ]
-                    },
-                    "navigate": {
-                        "next_steps": [
-                            "Request landlord to cap early termination penalty to 1 month rent.",
-                            "Record electricity and water meter baseline numbers on the day of possession."
+                        "identify": [
+                            "ಪ್ರಮುಖ ಷರತ್ತುಗಳನ್ನು ಗಮನಿಸಿ."
                         ],
-                        "official_sources": [
-                            {
-                                "title": "India Code - Central Statutory Portal",
-                                "url": "https://www.indiacode.nic.in",
-                                "description": "Official repository of Indian acts, rules, and statutory laws."
-                            },
-                            {
-                                "title": "e-Courts Services Portal India",
-                                "url": "https://ecourts.gov.in",
-                                "description": "Official Indian judicial and court services database."
-                            },
-                            {
-                                "title": "National Legal Services Authority (NALSA)",
-                                "url": "https://nalsa.gov.in",
-                                "description": "Official portal for legal aid services across India."
-                            }
-                        ]
+                        "prepare": {
+                            "questions_for_lawyer": [
+                                "ಈ ಒಪ್ಪಂದದಲ್ಲಿ ಯಾವುದೇ ಅನಾನುಕೂಲ ಷರತ್ತುಗಳಿವೆಯೇ?"
+                            ],
+                            "checklist_to_collect": [
+                                "ಸಹಿ ಮಾಡಿದ ಒಪ್ಪಂದದ ಮೂಲ ನಕಲು"
+                            ]
+                        },
+                        "navigate": {
+                            "next_steps": [
+                                "ಒಪ್ಪಂದಕ್ಕೆ ಸಹಿ ಮಾಡುವ ಮುನ್ನ ವಕೀಲರನ್ನು ಸಂಪರ್ಕಿಸಿ."
+                            ],
+                            "official_sources": [
+                                {
+                                    "title": "India Code - Central Statutory Portal",
+                                    "url": "https://www.indiacode.nic.in",
+                                    "description": "ಭಾರತೀಯ ಕಾಯ್ದೆಗಳ ಅಧಿಕೃತ ಮೂಲ."
+                                }
+                            ]
+                        }
                     }
                 }
-            }
+            else:
+                return {
+                    "doc_type": doc_type or "Legal Document",
+                    "language": "English",
+                    "summary": "This legal document defines the rights, obligations, and terms between the participating parties.",
+                    "parties": [
+                        {"role": "Party A", "name": "First Party / Organization"},
+                        {"role": "Party B", "name": "Second Party / Individual"}
+                    ],
+                    "key_obligations": [
+                        "Parties must comply with all specified terms and contractual duties.",
+                        "Disputes shall be resolved through arbitration or local jurisdiction."
+                    ],
+                    "important_dates_and_amounts": [
+                        {"item": "Contract Amount / Value", "details": "As specified in text"},
+                        {"item": "Term / Validity", "details": "As specified in text"}
+                    ],
+                    "clauses_and_risks": [
+                        {
+                            "risk_level": "Medium Risk",
+                            "category": "Terms & Liability Scope",
+                            "original_clause": "Standard governing terms clause in document.",
+                            "explanation": "Details obligations and liability thresholds.",
+                            "why_deserves_attention": "Ensure termination penalties and liability caps are acceptable.",
+                            "suggested_question": "Are liability and termination clauses balanced for both parties?",
+                            "evidence_status": "Standard clause",
+                            "page_ref": "Page 1"
+                        }
+                    ],
+                    "action_map": {
+                        "understand": [
+                            "Understand key rights and obligations in the document."
+                        ],
+                        "identify": [
+                            "Verify key dates, monetary values, and liabilities."
+                        ],
+                        "prepare": {
+                            "questions_for_lawyer": [
+                                "Are there any ambiguous or risky clauses in this contract?"
+                            ],
+                            "checklist_to_collect": [
+                                "Original document copy and supporting schedules"
+                            ]
+                        },
+                        "navigate": {
+                            "next_steps": [
+                                "Review terms with legal counsel prior to execution."
+                            ],
+                            "official_sources": [
+                                {
+                                    "title": "India Code - Central Statutory Portal",
+                                    "url": "https://www.indiacode.nic.in",
+                                    "description": "Official Repository for Indian Laws."
+                                }
+                            ]
+                        }
+                    }
+                }
 
     def _fallback_qa_response(self, text: str, question: str, language: str) -> dict:
         is_kannada = (language == 'kn')

@@ -71,6 +71,22 @@ async function readApiJson(response) {
     return data;
 }
 
+// When app.html is previewed through a static development server (for example
+// VS Code Live Server), relative /api requests reach that server and return
+// 405. The Flask API normally runs on port 5000, while production/same-origin
+// deployments keep using relative URLs.
+function apiUrl(path) {
+    const isFileProtocol = window.location.protocol === 'file:';
+    const isLocalPreview = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+        && window.location.port
+        && window.location.port !== '5000';
+    return (isFileProtocol || isLocalPreview) ? `http://127.0.0.1:5000${path}` : path;
+}
+
+function apiFetch(path, options) {
+    return fetch(apiUrl(path), options);
+}
+
 // Navigation & Tab Switching
 function initNavigation() {
     const tabs = document.querySelectorAll('.nav-tab');
@@ -120,16 +136,16 @@ function initLanguageSelector() {
 // The selector controls both UI labels and the language sent to the AI API.
 // English is the complete fallback so incomplete translations never blank text.
 const APP_TRANSLATIONS = {
-    en: { tagline: 'Housing Legal Access & Case Preparation Platform', language: 'Language', demo: '1-Click Eviction Notice Demo', aiActive: 'Responsible AI Active', exit: 'Exit', activeDocument: 'Active Document', uploadTitle: 'Upload Housing Document', uploadDescription: 'Designed for Eviction Notices, Rent Demand Notices, Lease Agreements, and Security Deposit Disputes.', dropTitle: 'Drag & Drop Housing Document Here', fileSupport: 'Supports PDF, DOCX, TXT, PNG, JPG (Scanned Notice OCR Supported)', browse: 'Browse Files', loadDemo: '⚡ Load Sample Eviction Notice Demo', pasteTitle: '...or Paste Notice / Agreement Text', pastePlaceholder: 'Paste eviction notice text, rent demand notice, lease clauses, or landlord communications here...', analyzePasted: 'Analyze Pasted Text' },
-    kn: { language: 'ಭಾಷೆ', demo: 'ಒಂದು ಕ್ಲಿಕ್ ಮಾದರಿ ನೋಟಿಸ್', aiActive: 'ಜವಾಬ್ದಾರಿಯುತ AI ಸಕ್ರಿಯ', exit: 'ನಿರ್ಗಮಿಸಿ', activeDocument: 'ಸಕ್ರಿಯ ದಾಖಲೆ', uploadTitle: 'ವಸತಿ ದಾಖಲೆ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ', dropTitle: 'ವಸತಿ ದಾಖಲೆಯನ್ನು ಇಲ್ಲಿ ಎಳೆಯಿರಿ ಮತ್ತು ಬಿಡಿ', browse: 'ಫೈಲ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ', loadDemo: '⚡ ಮಾದರಿ ನೋಟಿಸ್ ಡೆಮೊ ಲೋಡ್ ಮಾಡಿ', pasteTitle: '...ಅಥವಾ ನೋಟಿಸ್ / ಒಪ್ಪಂದದ ಪಠ್ಯ ಅಂಟಿಸಿ', analyzePasted: 'ಅಂಟಿಸಿದ ಪಠ್ಯವನ್ನು ವಿಶ್ಲೇಷಿಸಿ' },
-    hi: { language: 'भाषा', demo: 'एक क्लिक नमूना बेदखली नोटिस', aiActive: 'जिम्मेदार AI सक्रिय', exit: 'बाहर निकलें', activeDocument: 'सक्रिय दस्तावेज़', uploadTitle: 'आवास दस्तावेज़ अपलोड करें', dropTitle: 'आवास दस्तावेज़ यहाँ खींचें और छोड़ें', browse: 'फ़ाइलें चुनें', loadDemo: '⚡ नमूना नोटिस डेमो लोड करें', pasteTitle: '...या नोटिस / समझौते का पाठ चिपकाएँ', analyzePasted: 'चिपकाए गए पाठ का विश्लेषण करें' },
-    ml: { language: 'ഭാഷ', demo: 'ഒറ്റ ക്ലിക്കിൽ മാതൃക നോട്ടീസ്', aiActive: 'ഉത്തരവാദിത്ത AI സജീവം', exit: 'പുറത്തുകടക്കുക', activeDocument: 'സജീവ പ്രമാണം', uploadTitle: 'ഭവന പ്രമാണം അപ്‌ലോഡ് ചെയ്യുക', dropTitle: 'ഭവന പ്രമാണം ഇവിടെ വലിച്ചിടുക', browse: 'ഫയലുകൾ തിരഞ്ഞെടുക്കുക', loadDemo: '⚡ മാതൃക നോട്ടീസ് ഡെമോ', pasteTitle: '...അല്ലെങ്കിൽ നോട്ടീസ് / കരാർ പാഠം ഒട്ടിക്കുക', analyzePasted: 'ഒട്ടിച്ച പാഠം വിശകലനം ചെയ്യുക' },
-    te: { language: 'భాష', demo: 'ఒక క్లిక్ నమూనా నోటీసు', aiActive: 'బాధ్యతాయుత AI సక్రియం', exit: 'నిష్క్రమించు', activeDocument: 'క్రియాశీల పత్రం', uploadTitle: 'హౌసింగ్ పత్రాన్ని అప్‌లోడ్ చేయండి', dropTitle: 'హౌసింగ్ పత్రాన్ని ఇక్కడ లాగి వదలండి', browse: 'ఫైల్‌లను ఎంచుకోండి', loadDemo: '⚡ నమూనా నోటీసు డెమో', pasteTitle: '...లేదా నోటీసు / ఒప్పంద పాఠ్యాన్ని అతికించండి', analyzePasted: 'అతికించిన పాఠ్యాన్ని విశ్లేషించండి' },
-    mr: { language: 'भाषा', demo: 'एका क्लिकमध्ये नमुना सूचना', aiActive: 'जबाबदार AI सक्रिय', exit: 'बाहेर पडा', activeDocument: 'सक्रिय दस्तऐवज', uploadTitle: 'गृहनिर्माण दस्तऐवज अपलोड करा', dropTitle: 'दस्तऐवज येथे ड्रॅग आणि ड्रॉप करा', browse: 'फाइल निवडा', loadDemo: '⚡ नमुना सूचना डेमो', pasteTitle: '...किंवा सूचना / कराराचा मजकूर पेस्ट करा', analyzePasted: 'पेस्ट केलेल्या मजकुराचे विश्लेषण करा' },
-    bn: { language: 'ভাষা', demo: 'এক ক্লিকে নমুনা উচ্ছেদ নোটিস', aiActive: 'দায়িত্বশীল AI সক্রিয়', exit: 'প্রস্থান', activeDocument: 'সক্রিয় নথি', uploadTitle: 'আবাসন নথি আপলোড করুন', dropTitle: 'আবাসন নথি এখানে টেনে আনুন', browse: 'ফাইল নির্বাচন করুন', loadDemo: '⚡ নমুনা নোটিস ডেমো', pasteTitle: '...অথবা নোটিস / চুক্তির লেখা পেস্ট করুন', analyzePasted: 'পেস্ট করা লেখা বিশ্লেষণ করুন' },
-    gu: { language: 'ભાષા', demo: 'એક ક્લિકમાં નમૂના નોટિસ', aiActive: 'જવાબદાર AI સક્રિય', exit: 'બહાર નીકળો', activeDocument: 'સક્રિય દસ્તાવેજ', uploadTitle: 'હાઉસિંગ દસ્તાવેજ અપલોડ કરો', dropTitle: 'હાઉસિંગ દસ્તાવેજ અહીં ખેંચીને મૂકો', browse: 'ફાઇલો પસંદ કરો', loadDemo: '⚡ નમૂના નોટિસ ડેમો', pasteTitle: '...અથવા નોટિસ / કરારનો ટેક્સ્ટ પેસ્ટ કરો', analyzePasted: 'પેસ્ટ કરેલા ટેક્સ્ટનું વિશ્લેષણ કરો' },
-    tulu: { language: 'ಬಾಸೆ', demo: 'ಒಂಜಿ ಕ್ಲಿಕ್ ಮಾದರಿ ನೋಟಿಸ್', aiActive: 'ಜವಾಬ್ದಾರಿ AI ಸಕ್ರಿಯ', exit: 'ಪೊರ್ಲೆ', activeDocument: 'ಸಕ್ರಿಯ ದಾಖಲೆ', uploadTitle: 'ವಸತಿ ದಾಖಲೆ ಅಪ್‌ಲೋಡ್ ಮಲ್ಪುಲೆ', dropTitle: 'ವಸತಿ ದಾಖಲೆ ಇತ್ತೆ ಎಳೆದು ಮಲ್ಪುಲೆ', browse: 'ಫೈಲ್ ಆಯ್ಕೆ ಮಲ್ಪುಲೆ', loadDemo: '⚡ ಮಾದರಿ ನೋಟಿಸ್ ಡೆಮೊ', pasteTitle: '...ಅಥವಾ ನೋಟಿಸ್ / ಒಪ್ಪಂದದ ಪಠ್ಯ ಅಂಟಿಸುಲೆ', analyzePasted: 'ಅಂಟಿಸಿದ ಪಠ್ಯ ವಿಶ್ಲೇಷಿಸುಲೆ' },
-    ta: { language: 'மொழி', demo: 'ஒரே கிளிக்கில் மாதிரி அறிவிப்பு', aiActive: 'பொறுப்பான AI செயல்பாட்டில் உள்ளது', exit: 'வெளியேறு', activeDocument: 'செயலில் உள்ள ஆவணம்', uploadTitle: 'வீட்டு ஆவணத்தைப் பதிவேற்றவும்', dropTitle: 'வீட்டு ஆவணத்தை இங்கே இழுத்து விடவும்', browse: 'கோப்புகளைத் தேர்ந்தெடுக்கவும்', loadDemo: '⚡ மாதிரி அறிவிப்பு டெமோ', pasteTitle: '...அல்லது அறிவிப்பு / ஒப்பந்த உரையை ஒட்டவும்', analyzePasted: 'ஒட்டிய உரையைப் பகுப்பாய்வு செய்யவும்' }
+    en: { tagline: 'Legal Access & Case Preparation Platform', language: 'Language', demo: '1-Click Rental Agreement Demo', aiActive: 'Responsible AI Active', exit: 'Exit', activeDocument: 'Active Document', uploadTitle: 'Upload Legal Document', uploadDescription: 'Supports Legal Notices, Rental Agreements, Employment Contracts, Consumer Complaints, NDAs, Service Contracts, and more.', dropTitle: 'Drag & Drop Legal Document Here', fileSupport: 'Supports PDF, DOCX, TXT, PNG, JPG (Scanned Notice & Document OCR Supported)', browse: 'Browse Files', loadDemo: '⚡ Load Sample Rental Agreement Demo', pasteTitle: '...or Paste Legal Text', pastePlaceholder: 'Paste legal notice text, agreement clauses, employment contract text, or communication here...', analyzePasted: 'Analyze Pasted Text' },
+    kn: { language: 'ಭಾಷೆ', demo: 'ಒಂದು ಕ್ಲಿಕ್ ಮಾದರಿ ಒಪ್ಪಂದ', aiActive: 'ಜವಾಬ್ದಾರಿಯುತ AI ಸಕ್ರಿಯ', exit: 'ನಿರ್ಗಮಿಸಿ', activeDocument: 'ಸಕ್ರಿಯ ದಾಖಲೆ', uploadTitle: 'ಕಾನೂನು ದಾಖಲೆ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ', dropTitle: 'ಕಾನೂನು ದಾಖಲೆಯನ್ನು ಇಲ್ಲಿ ಎಳೆಯಿರಿ ಮತ್ತು ಬಿಡಿ', browse: 'ಫೈಲ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ', loadDemo: '⚡ ಮಾದರಿ ಒಪ್ಪಂದ ಡೆಮೊ ಲೋಡ್ ಮಾಡಿ', pasteTitle: '...ಅಥವಾ ಕಾನೂನು ಪಠ್ಯ ಅಂಟಿಸಿ', analyzePasted: 'ಅಂಟಿಸಿದ ಪಠ್ಯವನ್ನು ವಿಶ್ಲೇಷಿಸಿ' },
+    hi: { language: 'भाषा', demo: 'एक क्लिक नमूना अनुबंध', aiActive: 'जिम्मेदार AI सक्रिय', exit: 'बाहर निकलें', activeDocument: 'सक्रिय दस्तावेज़', uploadTitle: 'कानूनी दस्तावेज़ अपलोड करें', dropTitle: 'कानूनी दस्तावेज़ यहाँ खींचें और छोड़ें', browse: 'फ़ाइलें चुनें', loadDemo: '⚡ नमूना अनुबंध डेमो लोड करें', pasteTitle: '...या कानूनी पाठ चिपकाएँ', analyzePasted: 'चिपकाए गए पाठ का विश्लेषण करें' },
+    ml: { language: 'ഭാഷ', demo: 'ഒറ്റ ക്ലിക്കിൽ മാതൃക കരാർ', aiActive: 'ഉത്തരവാദിത്ത AI സജീവം', exit: 'പുറത്തുകടക്കുക', activeDocument: 'സജീവ പ്രമാണം', uploadTitle: 'നിയമപരമായ പ്രമാണം അപ്‌ലോഡ് ചെയ്യുക', dropTitle: 'നിയമപരമായ പ്രമാണം ഇവിടെ വലിച്ചിടുക', browse: 'ഫയലുകൾ തിരഞ്ഞെടുക്കുക', loadDemo: '⚡ മാതൃക കരാർ ഡെമോ', pasteTitle: '...അല്ലെങ്കിൽ നിയമപരമായ പാഠം ഒട്ടിക്കുക', analyzePasted: 'ഒട്ടിച്ച പാഠം വിശകലനം ചെയ്യുക' },
+    te: { language: 'భాష', demo: 'ఒక క్లిక్ నమూనా ఒప్పందం', aiActive: 'బాధ్యతాయుత AI సక్రియం', exit: 'నిష్క్రమించు', activeDocument: 'క్రియాశీల పత్రం', uploadTitle: 'న్యాయ పత్రాన్ని అప్‌లోడ్ చేయండి', dropTitle: 'న్యాయ పత్రాన్ని ఇక్కడ లాగి వదలండి', browse: 'ఫైల్‌లను ఎంచుకోండి', loadDemo: '⚡ నమూనా ఒప్పందం డెമോ', pasteTitle: '...లేదా న్యాయ పాఠ్యాన్ని అతికించండి', analyzePasted: 'అతికించిన పాఠ్యాన్ని విశ్ಲೇషించండి' },
+    mr: { language: 'भाषा', demo: 'एका क्लिकमध्ये नमुना करार', aiActive: 'जबाबदार AI सक्रिय', exit: 'बाहेर पडा', activeDocument: 'सक्रिय दस्तऐवज', uploadTitle: 'कायदेशीर दस्तऐवज अपलोड करा', dropTitle: 'दस्तऐवज येथे ड्रॅग आणि ड्रॉप करा', browse: 'फाइल निवडा', loadDemo: '⚡ नमुना करार डेमो', pasteTitle: '...किंवा कायदेशीर मजकूर पेस्ट करा', analyzePasted: 'पेस्ट केलेल्या मजकुराचे विश्लेषण करा' },
+    bn: { language: 'ভাষা', demo: 'এক ক্লিকে নমুনা চুক্তি', aiActive: 'দায়িত্বশীল AI সক্রিয়', exit: 'প্রস্থান', activeDocument: 'সক্রিয় নথি', uploadTitle: 'আইনি নথি আপলোড করুন', dropTitle: 'আইনি নথি এখানে টেনে আনুন', browse: 'ফাইল নির্বাচন করুন', loadDemo: '⚡ নমুনা চুক্তি ডেমো', pasteTitle: '...অথবা আইনি লেখা পেস্ট করুন', analyzePasted: 'পেস্ট করা লেখা বিশ্লেষণ করুন' },
+    gu: { language: 'ભાષા', demo: 'એક ક્લિકમાં નમૂના કરાર', aiActive: 'જવાબદાર AI સક્રિય', exit: 'બહાર નીકળો', activeDocument: 'સક્રિય દસ્તાવેજ', uploadTitle: 'કાનૂની દસ્તાવેજ અપલોડ કરો', dropTitle: 'કાનૂની દસ્તાવેજ અહીં ખેંચીને મૂકો', browse: 'ફાઇલો પસંદ કરો', loadDemo: '⚡ નમૂના કરાર ડેમો', pasteTitle: '...અથવા કાનૂની ટેક્સ્ટ પેસ્ટ કરો', analyzePasted: 'પેસ્ટ કરેલા ટેક્સ્ટનું વિશ્લેષણ કરો' },
+    tulu: { language: 'ಬಾಸೆ', demo: 'ಒಂಜಿ ಕ್ಲಿಕ್ ಮಾದರಿ ಒಪ್ಪಂದ', aiActive: 'ಜವಾಬ್ದಾರಿ AI ಸಕ್ರಿಯ', exit: 'ಪೊರ್ಲೆ', activeDocument: 'ಸಕ್ರಿಯ ದಾಖಲೆ', uploadTitle: 'ಕಾನೂನು ದಾಖಲೆ ಅಪ್‌ಲೋಡ್ ಮಲ್ಪುಲೆ', dropTitle: 'ಕಾನೂನು ದಾಖಲೆ ಇತ್ತೆ ಎಳೆದು ಮಲ್ಪುಲೆ', browse: 'ಫೈಲ್ ಆಯ್ಕೆ ಮಲ್ಪುಲೆ', loadDemo: '⚡ ಮಾದರಿ ಒಪ್ಪಂದ ಡೆಮೊ', pasteTitle: '...ಅಥವಾ ಕಾನೂನು ಪಠ್ಯ ಅಂಟಿಸುಲೆ', analyzePasted: 'ಅಂಟಿಸಿದ ಪಠ್ಯ ವಿಶ್ಲೇಷಿಸುಲೆ' },
+    ta: { language: 'மொழி', demo: 'ஒரே கிளிக்கில் மாதிரி ஒப்பந்தம்', aiActive: 'பொறுப்பான AI செயல்பாட்டில் உள்ளது', exit: 'வெளியேறு', activeDocument: 'செயலில் உள்ள ஆவணம்', uploadTitle: 'சட்ட ஆவணத்தைப் பதிவேற்றவும்', dropTitle: 'சட்ட ஆவணத்தை இங்கே இழுத்து விடவும்', browse: 'கோப்புகளைத் தேர்ந்தெடுக்கவும்', loadDemo: '⚡ மாதிரி ஒப்பந்த டெமோ', pasteTitle: '...அல்லது சட்ட உரையை ஒட்டவும்', analyzePasted: 'ஒட்டிய உரையைப் பகுப்பாய்வு செய்யவும்' }
 };
 
 function applyAppLanguage(language) {
@@ -168,7 +184,7 @@ function initDemoHandler() {
     const triggerDemo = async () => {
         showNotification("⚡ Loading pre-loaded Indian Rental Agreement Demo...");
         try {
-            const res = await fetch('/api/sample-demo');
+            const res = await apiFetch('/api/sample-demo');
             const data = await readApiJson(res);
             if (data.error) {
                 showNotification(data.error, true);
@@ -188,36 +204,72 @@ function initDemoHandler() {
     if (loadSampleBtn) loadSampleBtn.addEventListener('click', triggerDemo);
 }
 
+// Helper to process file upload via API
+async function handleFileUpload(file) {
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    showNotification(`Uploading and extracting text from ${file.name}...`);
+    try {
+        const res = await apiFetch('/api/upload', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await readApiJson(res);
+        if (data.error) {
+            showNotification(data.error, true);
+        } else {
+            updateActiveDocSession(data);
+            runDocumentAnalysis(data.doc_id, data.doc_type, true);
+        }
+    } catch (err) {
+        showNotification("Upload failed. Make sure LawBuddy API server (python app.py) is running. Error: " + err, true);
+    }
+}
+
 // Document Upload & Extraction Handlers
 function initUploadHandlers() {
     const fileInput = document.getElementById('fileInput');
+    const dropZone = document.getElementById('dropZone');
     const analyzePastedBtn = document.getElementById('analyzePastedTextBtn');
     const startAnalysisBtn = document.getElementById('startAnalysisBtn');
+
+    // Drag & Drop support
+    if (dropZone) {
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('drag-over');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('drag-over');
+            }, false);
+        });
+
+        dropZone.addEventListener('drop', async (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files && files.length > 0) {
+                await handleFileUpload(files[0]);
+            }
+        });
+    }
 
     if (fileInput) {
         fileInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
-            if (!file) return;
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            showNotification(`Uploading and extracting text from ${file.name}...`);
-            try {
-                const res = await fetch('/api/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await readApiJson(res);
-                if (data.error) {
-                    showNotification(data.error, true);
-                } else {
-                    updateActiveDocSession(data);
-                    showNotification("Text extracted successfully!");
-                }
-            } catch (err) {
-                showNotification("Upload failed: " + err, true);
+            if (file) {
+                await handleFileUpload(file);
             }
+            fileInput.value = '';
         });
     }
 
@@ -231,17 +283,17 @@ function initUploadHandlers() {
 
             showNotification("Processing pasted legal text...");
             try {
-                const res = await fetch('/api/upload', {
+                const res = await apiFetch('/api/upload', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text: pastedText, filename: "Pasted_Agreement_Text.txt" })
+                    body: JSON.stringify({ text: pastedText, filename: "Pasted_Legal_Text.txt" })
                 });
                 const data = await readApiJson(res);
                 if (data.error) {
                     showNotification(data.error, true);
                 } else {
                     updateActiveDocSession(data);
-                    showNotification("Text processed! Click 'Analyze Document Now'.");
+                    runDocumentAnalysis(data.doc_id, data.doc_type, true);
                 }
             } catch (err) {
                 showNotification("Pasted text upload failed: " + err, true);
@@ -271,22 +323,31 @@ function updateActiveDocSession(data) {
     
     document.getElementById('docMetadataPanel').classList.remove('hidden');
     document.getElementById('metaFileName').innerText = data.filename;
-    document.getElementById('docTypeSelect').value = data.doc_type;
+    const docTypeSelect = document.getElementById('docTypeSelect');
+    if ([...docTypeSelect.options].some(option => option.value === data.doc_type)) {
+        docTypeSelect.value = data.doc_type;
+    } else if (data.doc_type) {
+        const newOpt = document.createElement('option');
+        newOpt.value = data.doc_type;
+        newOpt.textContent = data.doc_type;
+        newOpt.selected = true;
+        docTypeSelect.appendChild(newOpt);
+    }
     document.getElementById('textPreviewContent').innerText = data.preview_text;
+    window.appState.analysisData = null;
 }
 
 // Run Document Analysis via API
-async function runDocumentAnalysis(docId, overrideDocType = null) {
+async function runDocumentAnalysis(docId, overrideDocType = null, showOverview = true) {
     const language = window.appState.selectedLanguage;
     const docType = overrideDocType || window.appState.activeDocType;
 
     showNotification(`Running AI analysis in ${language.toUpperCase()}...`);
-    
-    // Switch to Action Map tab automatically for MVP showcase
-    switchTab('clarityMapTab');
+    if (showOverview) switchTab('clarityMapTab');
+    setOverviewLoading(true);
 
     try {
-        const res = await fetch('/api/analyze', {
+        const res = await apiFetch('/api/analyze', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -299,17 +360,41 @@ async function runDocumentAnalysis(docId, overrideDocType = null) {
         const data = await readApiJson(res);
         if (data.error) {
             showNotification(data.error, true);
+            showOverviewError(data.error);
             return;
         }
 
         window.appState.analysisData = data;
-        renderClarityActionMap(data.action_map);
+        renderClarityActionMap(data.action_map, data.summary);
         renderClauseRisks(data.clauses_and_risks);
         renderFactsAndTimeline(data);
         showNotification("Document analysis completed successfully!");
     } catch (err) {
-        showNotification("Analysis failed: " + err, true);
+        const message = "Analysis failed: " + err;
+        showNotification(message, true);
+        showOverviewError(message);
+    } finally {
+        setOverviewLoading(false);
     }
+}
+
+function setOverviewLoading(isLoading) {
+    const loading = document.getElementById('clarityMapLoading');
+    const content = document.getElementById('clarityMapContent');
+    const error = document.getElementById('clarityMapError');
+    if (loading) loading.classList.toggle('hidden', !isLoading);
+    if (content) content.classList.toggle('hidden', isLoading);
+    if (error && isLoading) error.classList.add('hidden');
+}
+
+function showOverviewError(message) {
+    const error = document.getElementById('clarityMapError');
+    const content = document.getElementById('clarityMapContent');
+    if (error) {
+        error.textContent = `We could not create the document overview. ${message}`;
+        error.classList.remove('hidden');
+    }
+    if (content) content.classList.add('hidden');
 }
 
 // Render Facts Grid and Event Timeline
@@ -326,35 +411,91 @@ function renderFactsAndTimeline(data) {
     const parties = data.parties || [];
     const obligations = data.key_obligations || [];
 
-    if (keyDatesEl && datesAmounts.length > 0) {
-        const datesText = datesAmounts.filter(d => /date|deadline|due|period|month|oct|nov|dec|jan|feb|mar|apr|may|jun|jul|aug|sep/i.test(d)).join('<br>') || datesAmounts.slice(0, 2).join('<br>');
-        keyDatesEl.innerHTML = datesText || keyDatesEl.innerHTML;
+    const formatItem = (item) => {
+        if (!item) return '';
+        if (typeof item === 'string') return item;
+        if (typeof item === 'object') {
+            const title = item.item || item.name || item.key || item.label || '';
+            const details = item.details || item.value || item.amount || item.text || '';
+            if (title && details) return `<strong>${title}:</strong> ${details}`;
+            return title || details || JSON.stringify(item);
+        }
+        return String(item);
+    };
+
+    if (keyDatesEl) {
+        if (datesAmounts.length > 0) {
+            const datesList = datesAmounts
+                .map(formatItem)
+                .filter(txt => /date|deadline|due|period|month|day|year|time|lock-in|probation|notice|term|valid|oct|nov|dec|jan|feb|mar|apr|may|jun|jul|aug|sep/i.test(txt));
+            const displayDates = datesList.length > 0 ? datesList : datesAmounts.slice(0, 3).map(formatItem);
+            keyDatesEl.innerHTML = displayDates.join('<br>') || 'No specific dates extracted.';
+        } else {
+            keyDatesEl.innerHTML = 'No dates found in document.';
+        }
     }
 
-    if (amountsEl && datesAmounts.length > 0) {
-        const amountsText = datesAmounts.filter(d => /₹|\$|rs|rent|amount|fee|deposit|claim|total/i.test(d)).join('<br>') || datesAmounts.slice(0, 2).join('<br>');
-        amountsEl.innerHTML = amountsText || amountsEl.innerHTML;
+    if (amountsEl) {
+        if (datesAmounts.length > 0) {
+            const amountsList = datesAmounts
+                .map(formatItem)
+                .filter(txt => /₹|\$|rs|rupees|rent|amount|fee|deposit|claim|ctc|salary|value|cost|total|penalty|arrears/i.test(txt));
+            const displayAmounts = amountsList.length > 0 ? amountsList : datesAmounts.slice(0, 3).map(formatItem);
+            amountsEl.innerHTML = displayAmounts.join('<br>') || 'No specific amounts extracted.';
+        } else {
+            amountsEl.innerHTML = 'No financial amounts found in document.';
+        }
     }
 
-    if (partiesEl && parties.length > 0) {
-        partiesEl.innerHTML = parties.map(p => `• ${p}`).join('<br>');
+    if (partiesEl) {
+        if (parties.length > 0) {
+            partiesEl.innerHTML = parties.map(p => {
+                if (typeof p === 'string') return `• ${p}`;
+                if (typeof p === 'object') {
+                    const role = p.role || p.title || p.type || 'Party';
+                    const name = p.name || p.party || p.value || 'Unspecified';
+                    return `• <strong>${role}:</strong> ${name}`;
+                }
+                return `• ${p}`;
+            }).join('<br>');
+        } else {
+            partiesEl.innerHTML = 'No parties extracted.';
+        }
     }
 
-    if (mandateEl && obligations.length > 0) {
-        mandateEl.innerHTML = obligations[0];
+    if (mandateEl) {
+        if (obligations.length > 0) {
+            mandateEl.innerHTML = typeof obligations[0] === 'string' ? obligations[0] : (obligations[0].details || JSON.stringify(obligations[0]));
+        } else {
+            mandateEl.innerHTML = 'Review standard terms and obligations.';
+        }
     }
 
-    if (timelineEl && obligations.length > 0) {
-        timelineEl.innerHTML = obligations.map((ob, idx) => `
-            <div style="border-left: 3px solid ${idx === 0 ? '#3b82f6' : idx === 1 ? '#f59e0b' : '#ef4444'}; padding-left: 16px; margin-bottom: 16px;">
-                <strong>Timeline Event ${idx + 1}:</strong> ${ob}
-            </div>
-        `).join('');
+    if (timelineEl) {
+        if (obligations.length > 0) {
+            timelineEl.innerHTML = obligations.map((ob, idx) => {
+                const obText = typeof ob === 'string' ? ob : (ob.details || ob.text || JSON.stringify(ob));
+                const colors = ['#3b82f6', '#f59e0b', '#ef4444', '#10b981', '#8b5cf6'];
+                const borderCol = colors[idx % colors.length];
+                return `
+                    <div style="border-left: 3px solid ${borderCol}; padding-left: 16px; margin-bottom: 16px;">
+                        <strong>Timeline Event ${idx + 1}:</strong> ${obText}
+                    </div>
+                `;
+            }).join('');
+        } else {
+            timelineEl.innerHTML = '<p style="color:#64748b;">No timeline events extracted for this document.</p>';
+        }
     }
 }
 
 // Render Hackathon Differentiator: Legal Clarity & Action Map
-function renderClarityActionMap(actionMap) {
+function renderClarityActionMap(actionMap, summary = '') {
+    const summaryEl = document.getElementById('docOverviewSummary');
+    if (summaryEl) {
+        summaryEl.innerText = summary || 'Document analysis overview completed.';
+    }
+
     if (!actionMap) return;
 
     // 1. Understand
@@ -469,7 +610,7 @@ function initChatHandler() {
 
         // Fetch AI Response
         try {
-            const res = await fetch('/api/chat', {
+            const res = await apiFetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -522,7 +663,7 @@ function initComparisonHandler() {
 
             showNotification(`Uploading Doc B (${file.name})...`);
             try {
-                const res = await fetch('/api/upload', {
+                const res = await apiFetch('/api/upload', {
                     method: 'POST',
                     body: formData
                 });
@@ -549,7 +690,7 @@ function initComparisonHandler() {
 
             showNotification("Comparing documents...");
             try {
-                const res = await fetch('/api/compare', {
+            const res = await apiFetch('/api/compare', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -619,7 +760,7 @@ function initBriefHandler() {
 
             showNotification("Generating printable Consultation Brief...");
             try {
-                const res = await fetch('/api/export-brief', {
+                const res = await apiFetch('/api/export-brief', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -648,7 +789,7 @@ function initBriefHandler() {
 // Load Official Indian Legal Sources
 async function loadOfficialSources() {
     try {
-        const res = await fetch('/api/official-sources');
+        const res = await apiFetch('/api/official-sources');
         const sources = await readApiJson(res);
         if (sources.error) throw new Error(sources.error);
         const container = document.getElementById('sourcesContainer');

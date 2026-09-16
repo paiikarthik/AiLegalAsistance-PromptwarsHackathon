@@ -172,16 +172,28 @@ class OCRService:
         Rule-based quick detection hint for document type.
         """
         txt_lower = text.lower()
-        if any(term in txt_lower for term in ['rental agreement', 'lease deed', 'tenancy agreement', 'landlord', 'tenant', 'rent per month']):
+        if any(term in txt_lower for term in ['eviction notice', 'notice to vacate', 'vacate premises', 'quit and deliver']):
+            return 'Eviction Notice'
+        elif any(term in txt_lower for term in ['rent demand', 'cure notice', 'demand for rent', 'arrears of rent']):
+            return 'Rent Demand Notice'
+        elif any(term in txt_lower for term in ['security deposit', 'refund of deposit', 'deposit dispute']):
+            return 'Deposit Dispute Notice'
+        elif any(term in txt_lower for term in ['rental agreement', 'lease deed', 'tenancy agreement', 'landlord', 'lessor', 'lessee']):
             return 'Rental Agreement'
-        elif any(term in txt_lower for term in ['employment agreement', 'employment contract', 'offer letter', 'employee', 'employer', 'ctc', 'salary']):
+        elif any(term in txt_lower for term in ['employment agreement', 'employment contract', 'offer letter', 'appointment letter', 'employee', 'employer', 'ctc', 'salary']):
             return 'Employment Contract'
-        elif any(term in txt_lower for term in ['consumer complaint', 'deficiency of service', 'consumer forum', 'district commission']):
+        elif any(term in txt_lower for term in ['non-disclosure', 'nda', 'confidentiality agreement', 'proprietary information', 'disclosing party', 'receiving party']):
+            return 'Non-Disclosure Agreement (NDA)'
+        elif any(term in txt_lower for term in ['consumer complaint', 'deficiency of service', 'consumer forum', 'district commission', 'unfair trade']):
             return 'Consumer Complaint'
-        elif any(term in txt_lower for term in ['legal notice', 'advocate notice', 'hereby notice', 'cease and desist']):
+        elif any(term in txt_lower for term in ['loan agreement', 'promissory note', 'mortgage', 'borrower', 'lender', 'sanction letter', 'emi']):
+            return 'Loan / Financial Agreement'
+        elif any(term in txt_lower for term in ['legal notice', 'advocate notice', 'hereby notice', 'cease and desist', 'statutory notice']):
             return 'Legal Notice'
-        elif any(term in txt_lower for term in ['service agreement', 'master service agreement', 'contractor', 'client', 'statement of work']):
+        elif any(term in txt_lower for term in ['service agreement', 'master service agreement', 'contractor', 'client', 'statement of work', 'vendor agreement']):
             return 'Service Agreement'
+        elif any(term in txt_lower for term in ['summons', 'court order', 'pleading', 'petition', 'written statement', 'affidavit']):
+            return 'Court Order / Summons'
         elif any(term in txt_lower for term in ['privacy policy', 'terms of service', 'terms and conditions', 'data processing']):
             return 'Privacy Policy'
         else:
