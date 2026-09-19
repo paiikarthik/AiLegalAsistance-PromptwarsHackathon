@@ -321,6 +321,11 @@ function updateActiveDocSession(data) {
     document.getElementById('activeDocName').innerText = data.filename;
     document.getElementById('activeDocTypeBadge').innerText = data.doc_type;
     
+    const docALabel = document.getElementById('docANameLabel');
+    if (docALabel) {
+        docALabel.innerText = `Active Doc A: ${data.filename} (${data.doc_type})`;
+    }
+
     document.getElementById('docMetadataPanel').classList.remove('hidden');
     document.getElementById('metaFileName').innerText = data.filename;
     const docTypeSelect = document.getElementById('docTypeSelect');
@@ -792,15 +797,10 @@ async function loadOfficialSources() {
         const res = await apiFetch('/api/official-sources');
         const sources = await readApiJson(res);
         if (sources.error) throw new Error(sources.error);
-        const container = document.getElementById('sourcesContainer');
-        if (container && sources) {
+        const container = document.getElementById('actionMapSources') || document.getElementById('sourcesContainer');
+        if (container && sources && Array.isArray(sources)) {
             container.innerHTML = sources.map(s => `
-                <div class="source-card">
-                    <h3>🏛️ ${s.name}</h3>
-                    <span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:bold;">${s.category}</span>
-                    <p>${s.description}</p>
-                    <a href="${s.url}" target="_blank" class="btn btn-secondary" style="font-size:12px; text-decoration:none;">Visit Official Portal 🔗</a>
-                </div>
+                <a href="${s.url}" target="_blank" class="source-chip" title="${s.description || ''}">🏛️ ${s.name}</a>
             `).join('');
         }
     } catch (err) {

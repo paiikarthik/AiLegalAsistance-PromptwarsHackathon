@@ -106,6 +106,16 @@
                     <span>Clause risks</span>
                 </button>
 
+                <button class="nav-tab" data-target="deadlinesTab">
+                    <span class="icon">⏰</span>
+                    <span>Deadline radar</span>
+                </button>
+
+                <button class="nav-tab" data-target="scenariosTab">
+                    <span class="icon">🔀</span>
+                    <span>Scenario matrix</span>
+                </button>
+
                 <button class="nav-tab" data-target="compareTab">
                     <span class="icon">⚔️</span>
                     <span>Compare documents</span>
@@ -119,6 +129,16 @@
                 <button class="nav-tab" data-target="briefTab">
                     <span class="icon">📋</span>
                     <span>Case packet</span>
+                </button>
+
+                <button class="nav-tab" data-target="safetyAuditTab">
+                    <span class="icon">🛡️</span>
+                    <span>Safety audit</span>
+                </button>
+
+                <button class="nav-tab" data-target="designArchTab">
+                    <span class="icon">🏛️</span>
+                    <span>Architecture & Pitch</span>
                 </button>
             </nav>
 
@@ -332,15 +352,15 @@
             <section id="deadlinesTab" class="tab-pane">
                 <div class="section-header">
                     <h2>Deadline & Urgency Radar</h2>
-                    <p>Calculates statutory response windows and flags emergency risks (e.g. 7-day cure window, lockout threats).</p>
+                    <p>Calculates statutory response windows and flags emergency risks (e.g. cure windows, response deadlines).</p>
                 </div>
 
                 <div style="background: #fef2f2; border: 1px solid #fca5a5; border-radius: 14px; padding: 20px; margin-bottom: 20px;">
                     <div style="display: flex; align-items: center; justify-content: space-between;">
                         <div>
-                            <span class="badge-pill bg-urgent">🔴 URGENT STATUTORY DEADLINE DETECTED</span>
-                            <h3 style="color: #7f1d1d; margin-top: 8px;">Notice Response / Payment Deadline: 15 Days Remaining</h3>
-                            <p style="color: #991b1b; font-size: 13px; margin-top: 4px;">Statutory cure notice period under Rent Control Regulations requires written response or payment proof before October 16, 2026.</p>
+                            <span class="badge-pill bg-urgent">🔴 STATUTORY & CONTRACTUAL DEADLINES</span>
+                            <h3 style="color: #7f1d1d; margin-top: 8px;" id="radarDeadlineTitle">Response & Obligation Windows</h3>
+                            <p style="color: #991b1b; font-size: 13px; margin-top: 4px;" id="radarDeadlineDesc">Upload a document to analyze statutory cure windows, notice periods, and payment deadlines.</p>
                         </div>
                         <button class="btn btn-primary" onclick="switchTab('briefTab')">Generate Handoff Brief 🖨️</button>
                     </div>
@@ -351,18 +371,18 @@
             <section id="scenariosTab" class="tab-pane">
                 <div class="section-header">
                     <h2>"What Would Change the Answer?" Scenario Matrix</h2>
-                    <p>Evaluates how missing evidence, disputed facts, or counter-documents change tenant legal standing.</p>
+                    <p>Evaluates how missing evidence, disputed facts, or counter-documents change legal standing.</p>
                 </div>
 
                 <div class="grid-2">
                     <div class="scenario-card" style="border-left: 4px solid #10b981;">
-                        <h4>Situation A: Tenant Has Bank/UPI Receipts for Claimed Period</h4>
-                        <p style="color: #166534; font-size: 13px; margin-top: 8px;">🟢 <strong>Impact:</strong> Completely invalidates non-payment eviction grounds. Demand notice can be formally refuted using UPI UTR reference numbers.</p>
+                        <h4>Situation A: Payment Proof or Receipts Available</h4>
+                        <p style="color: #166534; font-size: 13px; margin-top: 8px;">🟢 <strong>Impact:</strong> Valid bank statements, UPI UTR numbers, or signed payment vouchers refute claims of non-payment or default.</p>
                     </div>
 
                     <div class="scenario-card" style="border-left: 4px solid #f59e0b;">
-                        <h4>Situation B: Unregistered Lease Exceeding 11 Months</h4>
-                        <p style="color: #92400e; font-size: 13px; margin-top: 8px;">🟡 <strong>Impact:</strong> Tenancy treated as month-to-month under Registration Act S.17. 15-day statutory notice applies instead of fixed term lock-in.</p>
+                        <h4>Situation B: Unregistered Agreement / Ambiguous Clauses</h4>
+                        <p style="color: #92400e; font-size: 13px; margin-top: 8px;">🟡 <strong>Impact:</strong> Statutory provisions under Indian Contract Act & Registration Act S.17 govern rights when terms are unregistered or ambiguous.</p>
                     </div>
                 </div>
             </section>
@@ -371,7 +391,7 @@
             <section id="riskExplorerTab" class="tab-pane">
                 <div class="section-header">
                     <h2>Clause & Risk Explorer</h2>
-                    <p>Categorized risk breakdown (High, Medium, Low) for fees, penalties, lock-in, and indemnities.</p>
+                    <p>Categorized risk breakdown (High, Medium, Low) for fees, penalties, lock-in, non-competes, and indemnities.</p>
                 </div>
 
                 <div class="risk-filter-bar">
@@ -382,17 +402,8 @@
                 </div>
 
                 <div id="riskListContainer" class="risk-cards-list">
-                    <div class="risk-card High-Risk">
-                        <div class="risk-header">
-                            <h3>#1 Eviction Demand & 15-Day Cure Window</h3>
-                            <span class="risk-badge High-Risk">High Risk</span>
-                        </div>
-                        <div class="original-clause-box">
-                            📜 <strong>Original Clause (Page 1):</strong><br>
-                            "Vacate and deliver possession of the premises within FIFTEEN (15) DAYS from date of service, on or before October 16, 2026."
-                        </div>
-                        <p><strong>Plain Language Explanation:</strong> Landlord is demanding you move out or pay full claimed rent arrears by Oct 16.</p>
-                        <p style="margin-top: 6px; color: #92400e;"><strong>Why it deserves attention:</strong> Passing this date without a formal reply allows landlord to initiate court proceedings.</p>
+                    <div class="empty-state">
+                        <p>Upload a document and click 'Analyze Document & Map Facts' to extract clause risks.</p>
                     </div>
                 </div>
             </section>

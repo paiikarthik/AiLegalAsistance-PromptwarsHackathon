@@ -1,3 +1,4 @@
+from datetime import datetime
 import html
 import logging
 from typing import Dict
@@ -14,6 +15,7 @@ class ConsultationService:
         """
         Generates clean HTML string formatted as an official Lawyer Consultation Brief.
         """
+        current_date = datetime.now().strftime("%Y-%m-%d")
         doc_type = html.escape(str(analysis_data.get("doc_type", "Legal Document")))
         summary = html.escape(str(analysis_data.get("summary", "N/A")))
         parties = analysis_data.get("parties", [])
@@ -78,7 +80,7 @@ class ConsultationService:
         <div class="badge">Document: {doc_type}</div>
     </div>
 
-    <p><strong>Date Generated:</strong> 2026-09-15</p>
+    <p><strong>Date Generated:</strong> {current_date}</p>
 
     <h2>1. Executive Summary</h2>
     <p>{summary}</p>
