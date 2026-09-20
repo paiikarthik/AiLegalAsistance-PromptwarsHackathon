@@ -234,6 +234,7 @@ function initUploadHandlers() {
     const fileInput = document.getElementById('fileInput');
     const dropZone = document.getElementById('dropZone');
     const analyzePastedBtn = document.getElementById('analyzePastedTextBtn');
+    const analyzeWebsiteLinkBtn = document.getElementById('analyzeWebsiteLinkBtn');
     const startAnalysisBtn = document.getElementById('startAnalysisBtn');
 
     // Drag & Drop support
@@ -297,6 +298,34 @@ function initUploadHandlers() {
                 }
             } catch (err) {
                 showNotification("Pasted text upload failed: " + err, true);
+            }
+        });
+    }
+
+    if (analyzeWebsiteLinkBtn) {
+        analyzeWebsiteLinkBtn.addEventListener('click', async () => {
+            const url = document.getElementById('websiteLinkInput').value.trim();
+            if (!url) {
+                showNotification("Please enter a public website link first!", true);
+                return;
+            }
+
+            showNotification("Fetching website text for AI analysis...");
+            try {
+                const res = await apiFetch('/api/upload-link', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+                const data = await readApiJson(res);
+                if (data.error) {
+                    showNotification(data.error, true);
+                } else {
+                    updateActiveDocSession(data);
+                    runDocumentAnalysis(data.doc_id, data.doc_type, true);
+                }
+            } catch (err) {
+                showNotification("Website link analysis failed: " + err, true);
             }
         });
     }

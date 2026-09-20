@@ -10,6 +10,10 @@ class Config:
     BASE_DIR = BASE_DIR
     SECRET_KEY = os.environ.get('SECRET_KEY', 'lawbuddy-hackathon-secret-key-2026')
     GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY') or os.environ.get('GOOGLE_API_KEY', '')
+    OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '')
+    DEEPSEEK_API_KEY = os.environ.get('DEEPSEEK_API_KEY', '')
+    GROK_API_KEY = os.environ.get('GROK_API_KEY') or os.environ.get('XAI_API_KEY', '')
+    PERPLEXITY_API_KEY = os.environ.get('PERPLEXITY_API_KEY', '')
     
     # Model preferences
     PRIMARY_MODEL = 'gemini-2.5-flash'  # Default fast model

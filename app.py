@@ -2,6 +2,13 @@ import os
 import re
 import uuid
 import logging
+import ipaddress
+import socket
+from html import unescape
+from html.parser import HTMLParser
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlparse
+from urllib.request import Request, build_opener, HTTPRedirectHandler
 from flask import Flask, request, jsonify, send_from_directory, Response
 from flask_cors import CORS
 from werkzeug.exceptions import HTTPException, RequestEntityTooLarge
@@ -62,6 +69,94 @@ def handle_unexpected_error(error):
 DOCUMENT_CACHE = {}
 gemini_service = GeminiService()
 
+
+class _NoRedirect(HTTPRedirectHandler):
+    """Make redirects explicit so every destination can be safety-checked."""
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+class _WebsiteTextExtractor(HTMLParser):
+    """Small dependency-free HTML-to-text extractor for public webpages."""
+    def __init__(self):
+        super().__init__()
+        self.parts = []
+        self.title = ""
+        self._skip_depth = 0
+        self._in_title = False
+
+    def handle_starttag(self, tag, attrs):
+        if tag in {"script", "style", "noscript", "svg", "template"}:
+            self._skip_depth += 1
+        elif tag == "title":
+            self._in_title = True
+        elif tag in {"p", "div", "br", "li", "h1", "h2", "h3", "h4", "article", "section", "tr"}:
+            self.parts.append("\n")
+
+    def handle_endtag(self, tag):
+        if tag in {"script", "style", "noscript", "svg", "template"} and self._skip_depth:
+            self._skip_depth -= 1
+        elif tag == "title":
+            self._in_title = False
+
+    def handle_data(self, data):
+        if self._skip_depth:
+            return
+        cleaned = unescape(data).strip()
+        if cleaned:
+            self.parts.append(cleaned + " ")
+            if self._in_title:
+                self.title += cleaned + " "
+
+
+def _validate_public_web_url(url: str) -> str:
+    parsed = urlparse(url)
+    if parsed.scheme not in {"http", "https"} or not parsed.hostname or parsed.username or parsed.password:
+        raise ValueError("Enter a valid public http:// or https:// website link.")
+    try:
+        addresses = socket.getaddrinfo(parsed.hostname, parsed.port or (443 if parsed.scheme == "https" else 80), type=socket.SOCK_STREAM)
+        for address in addresses:
+            ip = ipaddress.ip_address(address[4][0])
+            if not ip.is_global:
+                raise ValueError("Links to private or local network addresses are not allowed.")
+    except socket.gaierror:
+        raise ValueError("We could not find that website. Check the link and try again.")
+    return parsed.geturl()
+
+
+def _fetch_website_text(url: str) -> tuple[str, str]:
+    opener = build_opener(_NoRedirect())
+    current_url = _validate_public_web_url(url)
+    for _ in range(4):
+        request_obj = Request(current_url, headers={"User-Agent": "LawBuddyAI/1.0 (document analysis)"})
+        try:
+            response = opener.open(request_obj, timeout=12)
+        except HTTPError as error:
+            if error.code in {301, 302, 303, 307, 308} and error.headers.get("Location"):
+                from urllib.parse import urljoin
+                current_url = _validate_public_web_url(urljoin(current_url, error.headers["Location"]))
+                continue
+            raise ValueError(f"The website returned HTTP {error.code}.")
+        except URLError:
+            raise ValueError("We could not retrieve that website. It may block automated access.")
+
+        content_type = response.headers.get_content_type()
+        if content_type not in {"text/html", "text/plain"}:
+            raise ValueError("That link does not point to a readable webpage or text document.")
+        raw = response.read(1_000_001)
+        if len(raw) > 1_000_000:
+            raise ValueError("That webpage is too large to analyze. Please paste the relevant text instead.")
+        charset = response.headers.get_content_charset() or "utf-8"
+        page_text = raw.decode(charset, errors="replace")
+        if content_type == "text/plain":
+            return re.sub(r'\s+', ' ', page_text).strip(), current_url
+        parser = _WebsiteTextExtractor()
+        parser.feed(page_text)
+        text = re.sub(r'\s+', ' ', ''.join(parser.parts)).strip()
+        title = re.sub(r'\s+', ' ', parser.title).strip()
+        return text, title or current_url
+    raise ValueError("Too many website redirects.")
+
 @app.route('/')
 def root():
     return send_from_directory('.', 'index.html')
@@ -84,6 +179,10 @@ def health_check():
         "service": "LawBuddy AI API",
         "version": "1.0.0",
         "gemini_active": bool(gemini_service.client),
+        "openai_active": bool(Config.OPENAI_API_KEY),
+        "deepseek_active": bool(Config.DEEPSEEK_API_KEY),
+        "grok_active": bool(Config.GROK_API_KEY),
+        "perplexity_active": bool(Config.PERPLEXITY_API_KEY),
         "supported_languages": Config.SUPPORTED_LANGUAGES
     })
 
@@ -179,6 +278,51 @@ def upload_document():
         "doc_type": extracted["doc_type_hint"],
         "total_pages": extracted["total_pages"],
         "preview_text": extracted["raw_text"][:600] + "..."
+    })
+
+
+@app.route('/api/upload-link', methods=['POST'])
+def upload_website_link():
+    """Fetch public webpage text and make it available to the normal AI analysis flow."""
+    data = request.get_json(silent=True) or {}
+    url = (data.get("url") or "").strip()
+    if not url:
+        return jsonify({"error": "A website link is required."}), 400
+
+    try:
+        raw_text, page_title = _fetch_website_text(url)
+    except ValueError as error:
+        return jsonify({"error": str(error)}), 400
+    except Exception as error:
+        logger.exception("Website text extraction failed for %s", url)
+        return jsonify({"error": "We could not extract text from that website. Please paste the relevant text instead."}), 502
+
+    if len(raw_text) < 40:
+        return jsonify({"error": "We could not find enough readable text on that webpage. Please paste the relevant text instead."}), 400
+
+    filename = sanitize_upload_filename(f"Website - {page_title[:100]}.txt")
+    extracted = {
+        "raw_text": raw_text,
+        "pages": [{"page_num": 1, "text": raw_text}],
+        "total_pages": 1,
+        "doc_type_hint": OCRService.detect_document_type_hint(raw_text)
+    }
+    doc_id = str(uuid.uuid4())
+    DOCUMENT_CACHE[doc_id] = {
+        "filename": filename,
+        "source_url": url,
+        "raw_text": raw_text,
+        "pages": extracted["pages"],
+        "total_pages": 1,
+        "doc_type": extracted["doc_type_hint"],
+        "chunks": RAGService.chunk_text(raw_text)
+    }
+    return jsonify({
+        "doc_id": doc_id,
+        "filename": filename,
+        "doc_type": extracted["doc_type_hint"],
+        "total_pages": 1,
+        "preview_text": raw_text[:600] + ("..." if len(raw_text) > 600 else "")
     })
 
 @app.route('/api/analyze', methods=['POST'])
