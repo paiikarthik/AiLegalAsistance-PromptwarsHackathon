@@ -2,24 +2,29 @@ import os
 import json
 import logging
 import re
+import urllib.request
+import urllib.error
 from config import Config
 
 logger = logging.getLogger("lawbuddy.gemini")
 
 class GeminiService:
     """
-    Interfaces with Google Gemini API to produce structured legal document analysis,
+    Interfaces with Google Gemini and OpenAI (ChatGPT) APIs to produce structured legal document analysis,
     clause risk explorer, Legal Clarity & Action Map, and multilingual responses.
+    Routes Kannada, Malayalam, Telugu, Tamil, and other non-(Hindi/English/Tulu) languages to ChatGPT,
+    while routing Hindi, English, and Tulu to Gemini.
     """
     
     def __init__(self, api_key: str = None):
         self.api_key = api_key or Config.GEMINI_API_KEY
+        self.openai_api_key = Config.OPENAI_API_KEY
         self.client = None
         self._init_client()
         
     def _init_client(self):
         if not self.api_key:
-            logger.warning("No GEMINI_API_KEY found in config/env. Will use fallback AI generator mode.")
+            logger.warning("No GEMINI_API_KEY found in config/env. Will use fallback AI generator mode if Gemini requested.")
             return
             
         try:
@@ -40,6 +45,89 @@ class GeminiService:
                 logger.error(f"Failed to initialize any Gemini client: {e2}")
                 self.client = None
 
+    def _is_chatgpt_language(self, language: str) -> bool:
+        """
+        Determines whether the given language should be routed to ChatGPT (OpenAI).
+        Hindi, English, Tulu use Gemini.
+        Kannada, Malayalam, Telugu, Tamil, and all other languages use ChatGPT.
+        """
+        lang_lower = (language or 'en').lower().strip()
+        if lang_lower in {'en', 'english', 'hi', 'hindi', 'tulu', 'tcy'}:
+            return False
+        return True
+
+    def _call_openai_raw(self, prompt: str) -> str:
+        """
+        Invokes ChatGPT (OpenAI API) for non-(Hindi/English/Tulu) languages such as Kannada, Malayalam, Telugu, Tamil, etc.
+        """
+        api_key = self.openai_api_key or os.environ.get('OPENAI_API_KEY', '')
+        if not api_key:
+            raise ValueError("No OPENAI_API_KEY available")
+
+        url = "https://api.openai.com/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+        
+        models_to_try = ["gpt-4o-mini", "gpt-3.5-turbo", "gpt-4o"]
+        last_error = None
+
+        for model in models_to_try:
+            try:
+                payload = {
+                    "model": model,
+                    "messages": [
+                        {"role": "system", "content": "You are LawBuddy, an expert Indian legal AI assistant and accurate multilingual legal document translator."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    "temperature": 0.2
+                }
+                req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers=headers)
+                with urllib.request.urlopen(req, timeout=30) as response:
+                    res_data = json.loads(response.read().decode("utf-8"))
+                    content = res_data["choices"][0]["message"]["content"]
+                    logger.info(f"Successfully generated response using ChatGPT ({model}).")
+                    return content
+            except Exception as e:
+                last_error = e
+                logger.warning(f"ChatGPT model {model} attempt failed: {e}")
+
+        raise last_error or Exception("All ChatGPT model attempts failed.")
+
+    def _call_llm_raw(self, prompt: str, language: str = 'en') -> str:
+        """
+        Unified LLM router:
+        - Kannada, Malayalam, Telugu, Tamil, and other languages -> ChatGPT (OpenAI)
+        - Hindi, English, Tulu -> Gemini
+        Gracefully falls back to secondary provider if primary provider fails.
+        """
+        use_chatgpt = self._is_chatgpt_language(language)
+
+        if use_chatgpt:
+            logger.info(f"Routing language '{language}' to ChatGPT (OpenAI API)...")
+            try:
+                return self._call_openai_raw(prompt)
+            except Exception as e:
+                logger.warning(f"ChatGPT request failed for language '{language}': {e}. Attempting Gemini fallback...")
+                if self.client:
+                    return self._call_gemini_raw(prompt)
+                raise e
+        else:
+            logger.info(f"Routing language '{language}' to Google Gemini API...")
+            if self.client:
+                try:
+                    return self._call_gemini_raw(prompt)
+                except Exception as e:
+                    logger.warning(f"Gemini API request failed for language '{language}': {e}. Attempting ChatGPT fallback...")
+                    if self.openai_api_key:
+                        return self._call_openai_raw(prompt)
+                    raise e
+            elif self.openai_api_key:
+                return self._call_openai_raw(prompt)
+            else:
+                raise ValueError("No active Gemini or OpenAI client available")
+
     def analyze_document(self, text: str, doc_type: str, language: str = 'en') -> dict:
         """
         Runs full comprehensive analysis on the extracted document text.
@@ -48,7 +136,7 @@ class GeminiService:
         2. Clause and Risk Analysis
         3. Legal Clarity & Action Map
         """
-        target_lang_name = Config.SUPPORTED_LANGUAGES.get(language, 'English')
+        target_lang_name = Config.SUPPORTED_LANGUAGES.get(language, language)
         
         prompt = f"""
 You are LawBuddy, an expert Indian Legal AI Assistant.
@@ -148,7 +236,7 @@ DOCUMENT TEXT:
         """
         Answer user question strictly grounded in the uploaded document text (RAG Q&A).
         """
-        target_lang_name = Config.SUPPORTED_LANGUAGES.get(language, 'English')
+        target_lang_name = Config.SUPPORTED_LANGUAGES.get(language, language)
         
         prompt = f"""
 You are LawBuddy, an AI Legal Assistant for Indian citizens.
@@ -168,33 +256,25 @@ DOCUMENT TEXT:
 {text[:12000]}
 \"\"\"
 """
-        if not self.client:
-            return self._fallback_qa_response(text, question, language)
-
         try:
-            raw_response = self._call_gemini_raw(prompt)
+            raw_response = self._call_llm_raw(prompt, language)
             return {
                 "answer": raw_response.strip(),
                 "grounded": "Information found in document" if "not found in the uploaded document" not in raw_response.lower() else "Not found in document",
                 "disclaimer": "LawBuddy provides general legal information. Verify with a qualified professional."
             }
         except Exception as e:
-            logger.error(f"Error calling Gemini QA: {e}")
+            logger.error(f"Error calling LLM QA: {e}")
             return self._fallback_qa_response(text, question, language)
 
     def _generate_json_response(self, prompt: str, doc_type: str, language: str) -> dict:
-        if not self.client:
-            logger.info("Using fallback structured JSON generator.")
-            return self._fallback_analysis_response(doc_type, language)
-
         try:
-            raw_text = self._call_gemini_raw(prompt)
-            # Parse JSON from markdown codeblock if present
+            raw_text = self._call_llm_raw(prompt, language)
             cleaned_json = self._extract_json_string(raw_text)
             parsed_data = json.loads(cleaned_json)
             return parsed_data
         except Exception as e:
-            logger.error(f"Failed to generate or parse Gemini JSON response: {e}")
+            logger.error(f"Failed to generate or parse LLM JSON response: {e}")
             return self._fallback_analysis_response(doc_type, language)
 
     def _call_gemini_raw(self, prompt: str) -> str:

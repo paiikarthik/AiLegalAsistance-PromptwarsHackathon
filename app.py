@@ -355,7 +355,7 @@ def analyze_document():
 def chat_with_document():
     data = request.get_json() or {}
     doc_id = data.get('doc_id')
-    question = data.get('question', '').strip()
+    question = (data.get('question') or data.get('query') or '').strip()
     language = data.get('language', 'en')
 
     if not doc_id or doc_id not in DOCUMENT_CACHE:
