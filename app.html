@@ -89,6 +89,10 @@
                     <span class="icon">📤</span>
                     <span>Upload document</span>
                 </button>
+                <button class="nav-tab" data-target="evidenceTab">
+                    <span class="icon">📋</span>
+                    <span>Evidence & Clause Map</span>
+                </button>
             </nav>
 
             <div class="disclaimer-sidebar-box">
@@ -171,6 +175,38 @@
                     <div class="text-preview-box">
                         <label>Extracted Text Preview:</label>
                         <pre id="textPreviewContent">Text preview will appear here...</pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 1B: EVIDENCE & CLAUSE MAPPING -->
+            <section id="evidenceTab" class="tab-pane">
+                <div class="section-header">
+                    <h2>📋 Evidence-to-Clause Mapping & Verification Matrix</h2>
+                    <p>Connects critical document clauses with evidence categories needed for advocate consultation. Uses neutral labels without claiming unverified legal conclusions.</p>
+                </div>
+
+                <div class="card-box" style="margin-bottom: 20px; background: #f8fafc; border: 1px solid #cbd5e1;">
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                        <input type="text" id="manualEvidenceName" placeholder="Enter manual evidence item (e.g. HDFC UPI Statement, Email Thread)..." style="flex: 1; min-width: 260px; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                        <select id="manualEvidenceStatus" style="padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                            <option value="Evidence found">Evidence found</option>
+                            <option value="Evidence missing">Evidence missing</option>
+                            <option value="Evidence suggested">Evidence suggested</option>
+                            <option value="Requires verification">Requires verification</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="addManualEvidenceItem()">➕ Add Evidence Item</button>
+                    </div>
+                </div>
+
+                <div id="evidenceMatrixLoading" class="loading-state hidden">
+                    <div class="spinner"></div>
+                    <p>Mapping document clauses to evidence categories...</p>
+                </div>
+
+                <div id="evidenceMatrixContainer" class="evidence-matrix-grid">
+                    <div class="empty-state">
+                        <p>Upload a document and click 'Analyze Document & Map Facts' to generate the Evidence-to-Clause Map.</p>
                     </div>
                 </div>
             </section>

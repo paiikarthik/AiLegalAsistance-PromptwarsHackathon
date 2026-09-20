@@ -144,7 +144,7 @@ const APP_TRANSLATIONS = {
     mr: { language: 'भाषा', demo: 'एका क्लिकमध्ये नमुना करार', aiActive: 'जबाबदार AI सक्रिय', exit: 'बाहेर पडा', activeDocument: 'सक्रिय दस्तऐवज', uploadTitle: 'कायदेशीर दस्तऐवज अपलोड करा', dropTitle: 'दस्तऐवज येथे ड्रॅग आणि ड्रॉप करा', browse: 'फाइल निवडा', loadDemo: '⚡ नमुना करार डेमो', pasteTitle: '...किंवा कायदेशीर मजकूर पेस्ट करा', analyzePasted: 'पेस्ट केलेल्या मजकुराचे विश्लेषण करा' },
     bn: { language: 'ভাষা', demo: 'এক ক্লিকে নমুনা চুক্তি', aiActive: 'দায়িত্বশীল AI সক্রিয়', exit: 'প্রস্থান', activeDocument: 'সক্রিয় নথি', uploadTitle: 'আইনি নথি আপলোড করুন', dropTitle: 'আইনি নথি এখানে টেনে আনুন', browse: 'ফাইল নির্বাচন করুন', loadDemo: '⚡ নমুনা চুক্তি ডেমো', pasteTitle: '...অথবা আইনি লেখা পেস্ট করুন', analyzePasted: 'পেস্ট করা লেখা বিশ্লেষণ করুন' },
     gu: { language: 'ભાષા', demo: 'એક ક્લિકમાં નમૂના કરાર', aiActive: 'જવાબદાર AI સક્રિય', exit: 'બહાર નીકળો', activeDocument: 'સક્રિય દસ્તાવેજ', uploadTitle: 'કાનૂની દસ્તાવેજ અપલોડ કરો', dropTitle: 'કાનૂની દસ્તાવેજ અહીં ખેંચીને મૂકો', browse: 'ફાઇલો પસંદ કરો', loadDemo: '⚡ નમૂના કરાર ડેમો', pasteTitle: '...અથવા કાનૂની ટેક્સ્ટ પેસ્ટ કરો', analyzePasted: 'પેસ્ટ કરેલા ટેક્સ્ટનું વિશ્લેષણ કરો' },
-    tulu: { language: 'ಬಾಸೆ', demo: 'ಒಂಜಿ ಕ್ಲಿಕ್ ಮಾದರಿ ಒಪ್ಪಂದ', aiActive: 'ಜವಾಬ್ದಾರಿ AI ಸಕ್ರಿಯ', exit: 'ಪೊರ್ಲೆ', activeDocument: 'ಸಕ್ರಿಯ ದಾಖಲೆ', uploadTitle: 'ಕಾನೂನು ದಾಖಲೆ ಅಪ್‌ಲೋಡ್ ಮಲ್ಪುಲೆ', dropTitle: 'ಕಾನೂನು ದಾಖಲೆ ಇತ್ತೆ ಎಳೆದು ಮಲ್ಪುಲೆ', browse: 'ಫೈಲ್ ಆಯ್ಕೆ ಮಲ್ಪುಲೆ', loadDemo: '⚡ ಮಾದರಿ ಒಪ್ಪಂದ ಡೆಮೊ', pasteTitle: '...ಅಥವಾ ಕಾನೂನು ಪಠ್ಯ ಅಂಟಿಸುಲೆ', analyzePasted: 'ಅಂಟಿಸಿದ ಪಠ್ಯ ವಿಶ್ಲೇಷಿಸುಲೆ' },
+    tulu: { language: 'ಬಾಸೆ', demo: 'ಒಂಜಿ ಕ್ಲಿಕ್ ಮಾದರಿ ಒಪ್ಪಂದ', aiActive: 'ಜವಾಬ್ದಾರಿ AI', exit: 'ಪೊಲೆ', activeDocument: 'ಸಕ್ರಿಯ ದಾಖಲೆ', uploadTitle: 'ಕಾನೂನು ದಾಖಲೆ ಅಪ್‌ಲೋಡ್ ಮಲ್ಪುಲೆ', dropTitle: 'ಕಾನೂನು ದಾಖಲೆ ಮುಳ್ಪಾ ಪಾಡ್ಲೇ', browse: 'ಫೈಲ್ ಆಯ್ಕೆ ಮಲ್ಪುಲೆ', loadDemo: '⚡ ಮಾದರಿ ಒಪ್ಪಂದ ಡೆಮೊ', pasteTitle: '... ಇಜ್ಜಿoಡ  ಕಾನೂನು ಪಠ್ಯ ಅಂಟಿಸುಲೆ', analyzePasted: 'ಅಂಟಿಯಿನ  ಪಠ್ಯ ವಿಶ್ಲೇಷಿಸುಲೆ' },
     ta: { language: 'மொழி', demo: 'ஒரே கிளிக்கில் மாதிரி ஒப்பந்தம்', aiActive: 'பொறுப்பான AI செயல்பாட்டில் உள்ளது', exit: 'வெளியேறு', activeDocument: 'செயலில் உள்ள ஆவணம்', uploadTitle: 'சட்ட ஆவணத்தைப் பதிவேற்றவும்', dropTitle: 'சட்ட ஆவணத்தை இங்கே இழுத்து விடவும்', browse: 'கோப்புகளைத் தேர்ந்தெடுக்கவும்', loadDemo: '⚡ மாதிரி ஒப்பந்த டெமோ', pasteTitle: '...அல்லது சட்ட உரையை ஒட்டவும்', analyzePasted: 'ஒட்டிய உரையைப் பகுப்பாய்வு செய்யவும்' }
 };
 
@@ -402,6 +402,7 @@ async function runDocumentAnalysis(docId, overrideDocType = null, showOverview =
         renderClarityActionMap(data.action_map, data.summary);
         renderClauseRisks(data.clauses_and_risks);
         renderFactsAndTimeline(data);
+        fetchAndRenderEvidenceMatrix(docId);
         showNotification("Document analysis completed successfully!");
     } catch (err) {
         const message = "Analysis failed: " + err;
@@ -836,3 +837,204 @@ async function loadOfficialSources() {
         console.warn("Could not load official sources:", err);
     }
 }
+
+// --- EVIDENCE-TO-CLAUSE MAPPING & VERIFICATION MATRIX ---
+async function fetchAndRenderEvidenceMatrix(docId) {
+    const activeId = docId || window.appState.activeDocId;
+    if (!activeId) return;
+
+    const container = document.getElementById('evidenceMatrixContainer');
+    const loading = document.getElementById('evidenceMatrixLoading');
+    if (loading) loading.classList.remove('hidden');
+
+    try {
+        const res = await apiFetch(`/api/evidence/${activeId}`);
+        const data = await readApiJson(res);
+        if (data.error) throw new Error(data.error);
+        renderEvidenceMatrix(data);
+    } catch (err) {
+        console.warn("Could not fetch evidence map:", err);
+        if (container) {
+            container.innerHTML = `<div class="empty-state"><p>Could not load evidence matrix: ${err.message}</p></div>`;
+        }
+    } finally {
+        if (loading) loading.classList.add('hidden');
+    }
+}
+
+function renderEvidenceMatrix(data) {
+    const container = document.getElementById('evidenceMatrixContainer');
+    if (!container) return;
+
+    if (!data || !data.issues || data.issues.length === 0) {
+        container.innerHTML = `<div class="empty-state"><p>No evidence mapping extracted yet. Upload a document to generate.</p></div>`;
+        return;
+    }
+
+    container.innerHTML = data.issues.map(issue => {
+        const items = issue.items || [];
+        
+        // Categorize items by status for neutral display
+        const availableItems = items.filter(i => i.status === 'Evidence found' || i.status === 'Requires verification');
+        const missingItems = items.filter(i => i.status === 'Evidence missing' || i.status === 'Evidence suggested');
+
+        const availableHtml = availableItems.length > 0 ? availableItems.map(item => `
+            <div style="background: #f0fdf4; border: 1px solid #86efac; padding: 8px 12px; border-radius: 8px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong>📄 ${escapeHtml(item.name)}</strong>
+                    <div style="font-size: 11px; color: #166534; margin-top: 2px;">
+                        Status: <span class="badge-pill ${item.status === 'Evidence found' ? 'bg-success' : 'bg-warning'}">${escapeHtml(item.status)}</span>
+                        ${item.notes ? `• <em>${escapeHtml(item.notes)}</em>` : ''}
+                    </div>
+                </div>
+                <div style="display: flex; gap: 4px;">
+                    <button class="btn btn-secondary" style="padding: 2px 6px; font-size: 11px;" onclick="toggleEvidenceStatus('${item.item_id}', '${item.status}')">🔄 Toggle Status</button>
+                    <button class="btn btn-secondary" style="padding: 2px 6px; font-size: 11px; color: #dc2626;" onclick="deleteEvidenceItem('${item.item_id}')">🗑️</button>
+                </div>
+            </div>
+        `).join('') : '<p style="font-size: 12px; color: #64748b; italic;">No evidence currently uploaded/linked for this clause.</p>';
+
+        const missingHtml = missingItems.length > 0 ? missingItems.map(item => `
+            <div style="background: #fef2f2; border: 1px solid #fca5a5; padding: 8px 12px; border-radius: 8px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong>❓ ${escapeHtml(item.name)}</strong>
+                    <div style="font-size: 11px; color: #991b1b; margin-top: 2px;">
+                        Status: <span class="badge-pill bg-urgent">${escapeHtml(item.status)}</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 4px;">
+                    <button class="btn btn-secondary" style="padding: 2px 6px; font-size: 11px;" onclick="toggleEvidenceStatus('${item.item_id}', '${item.status}')">🔄 Mark Found</button>
+                    <button class="btn btn-secondary" style="padding: 2px 6px; font-size: 11px; color: #dc2626;" onclick="deleteEvidenceItem('${item.item_id}')">🗑️</button>
+                </div>
+            </div>
+        `).join('') : '<p style="font-size: 12px; color: #166534;">All suggested evidence categories accounted for!</p>';
+
+        const suggestedList = (issue.suggested_evidence || []).map(s => `<li>${escapeHtml(s)}</li>`).join('');
+
+        return `
+            <div class="card-box" style="margin-bottom: 20px; border-left: 5px solid #2563eb;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <span class="badge-pill bg-info">ISSUE / FACTUAL CLAIM</span>
+                        <h3 style="margin-top: 4px; color: #1e293b;">${escapeHtml(issue.issue)}</h3>
+                    </div>
+                    <span style="font-size: 12px; background: #e2e8f0; padding: 4px 10px; border-radius: 12px; color: #475569;">📍 ${escapeHtml(issue.location || 'Document Clause')}</span>
+                </div>
+
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; margin: 12px 0;">
+                    <strong style="color: #334155; font-size: 12px;">RELEVANT CLAUSE TEXT:</strong>
+                    <p style="margin: 4px 0 0 0; font-size: 13px; color: #1e293b; font-style: italic;">"${escapeHtml(issue.clause)}"</p>
+                </div>
+
+                <div class="grid-2" style="margin-top: 14px;">
+                    <div>
+                        <h4 style="font-size: 13px; color: #166534; margin-bottom: 8px;">✅ Evidence Available / Linked</h4>
+                        ${availableHtml}
+                    </div>
+                    <div>
+                        <h4 style="font-size: 13px; color: #991b1b; margin-bottom: 8px;">🚨 Evidence Needed / Missing</h4>
+                        ${missingHtml}
+                    </div>
+                </div>
+
+                ${suggestedList ? `
+                <div style="margin-top: 12px; border-top: 1px dashed #cbd5e1; padding-top: 8px;">
+                    <small style="color: #64748b;"><strong>Potential Evidence Categories to Collect:</strong></small>
+                    <ul style="margin: 4px 0 0 0; padding-left: 20px; font-size: 12px; color: #475569;">${suggestedList}</ul>
+                </div>` : ''}
+            </div>
+        `;
+    }).join('');
+}
+
+async function addManualEvidenceItem() {
+    const nameInput = document.getElementById('manualEvidenceName');
+    const statusSelect = document.getElementById('manualEvidenceStatus');
+    const name = nameInput ? nameInput.value.trim() : '';
+    const status = statusSelect ? statusSelect.value : 'Evidence missing';
+
+    if (!name) {
+        showNotification("Please enter an evidence item name!", true);
+        return;
+    }
+    if (!window.appState.activeDocId) {
+        showNotification("Upload a document first to add evidence items!", true);
+        return;
+    }
+
+    try {
+        const res = await apiFetch('/api/evidence/item', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                doc_id: window.appState.activeDocId,
+                issue_id: "ev_issue_custom",
+                name: name,
+                status: status
+            })
+        });
+        const data = await readApiJson(res);
+        if (data.error) throw new Error(data.error);
+
+        nameInput.value = '';
+        showNotification(`Added evidence item: "${name}"`);
+        await fetchAndRenderEvidenceMatrix(window.appState.activeDocId);
+    } catch (err) {
+        showNotification("Failed to add evidence item: " + err.message, true);
+    }
+}
+
+async function toggleEvidenceStatus(itemId, currentStatus) {
+    if (!window.appState.activeDocId) return;
+
+    let nextStatus = 'Evidence found';
+    if (currentStatus === 'Evidence found') nextStatus = 'Requires verification';
+    else if (currentStatus === 'Requires verification') nextStatus = 'Evidence missing';
+    else if (currentStatus === 'Evidence missing') nextStatus = 'Evidence suggested';
+
+    try {
+        const res = await apiFetch(`/api/evidence/item/${itemId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                doc_id: window.appState.activeDocId,
+                status: nextStatus
+            })
+        });
+        const data = await readApiJson(res);
+        if (data.error) throw new Error(data.error);
+
+        showNotification(`Updated status to: "${nextStatus}"`);
+        await fetchAndRenderEvidenceMatrix(window.appState.activeDocId);
+    } catch (err) {
+        showNotification("Failed to update status: " + err.message, true);
+    }
+}
+
+async function deleteEvidenceItem(itemId) {
+    if (!window.appState.activeDocId) return;
+
+    try {
+        const res = await apiFetch(`/api/evidence/item/${itemId}?doc_id=${window.appState.activeDocId}`, {
+            method: 'DELETE'
+        });
+        const data = await readApiJson(res);
+        if (data.error) throw new Error(data.error);
+
+        showNotification("Evidence item deleted.");
+        await fetchAndRenderEvidenceMatrix(window.appState.activeDocId);
+    } catch (err) {
+        showNotification("Failed to delete item: " + err.message, true);
+    }
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+

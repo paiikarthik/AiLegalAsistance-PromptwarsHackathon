@@ -19,6 +19,7 @@ from services.gemini_service import GeminiService
 from services.rag_service import RAGService
 from services.comparison_service import ComparisonService
 from services.consultation_service import ConsultationService
+from services.case_preparation_service import EvidenceService
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("lawbuddy")
@@ -453,6 +454,113 @@ def get_official_sources():
             "description": "Official registry for Indian companies, master data, and corporate compliances."
         }
     ])
+
+# --- EVIDENCE-TO-CLAUSE MAPPING & TRACKING ENDPOINTS ---
+@app.route('/api/evidence/<doc_id>', methods=['GET'])
+def get_evidence_map(doc_id):
+    if doc_id not in DOCUMENT_CACHE:
+        return jsonify({"error": "Invalid or expired document session ID"}), 404
+        
+    cached_doc = DOCUMENT_CACHE[doc_id]
+    analysis = cached_doc.get("analysis")
+    evidence_map = EvidenceService.get_or_create_evidence_map(
+        doc_id=doc_id,
+        analysis_data=analysis,
+        gemini_service=gemini_service
+    )
+    return jsonify(evidence_map)
+
+@app.route('/api/evidence/extract', methods=['POST'])
+def extract_evidence_map():
+    data = request.get_json() or {}
+    doc_id = data.get('doc_id')
+    language = data.get('language', 'en')
+
+    if not doc_id or doc_id not in DOCUMENT_CACHE:
+        return jsonify({"error": "Invalid or expired document session ID"}), 404
+
+    cached_doc = DOCUMENT_CACHE[doc_id]
+    analysis = cached_doc.get("analysis")
+    if not analysis:
+        try:
+            analysis = gemini_service.analyze_document(cached_doc["raw_text"], cached_doc["doc_type"], language)
+            cached_doc["analysis"] = analysis
+        except Exception as e:
+            logger.warning(f"Analysis extraction failed during evidence mapping: {e}")
+            analysis = {}
+
+    evidence_map = EvidenceService.get_or_create_evidence_map(
+        doc_id=doc_id,
+        analysis_data=analysis,
+        gemini_service=gemini_service,
+        language=language
+    )
+    return jsonify(evidence_map)
+
+@app.route('/api/evidence/item', methods=['POST'])
+def add_evidence_item():
+    data = request.get_json() or {}
+    doc_id = data.get('doc_id')
+    issue_id = data.get('issue_id')
+    name = (data.get('name') or '').strip()
+    status = data.get('status', 'Evidence missing')
+    linked_doc_id = data.get('linked_doc_id')
+    notes = data.get('notes', '')
+
+    if not doc_id or doc_id not in DOCUMENT_CACHE:
+        return jsonify({"error": "Invalid or expired document session ID"}), 404
+    if not name:
+        return jsonify({"error": "Evidence item name is required"}), 400
+
+    item = EvidenceService.add_evidence_item(
+        doc_id=doc_id,
+        issue_id=issue_id,
+        name=name,
+        status=status,
+        linked_doc_id=linked_doc_id,
+        notes=notes
+    )
+    return jsonify(item), 201
+
+@app.route('/api/evidence/item/<item_id>', methods=['PUT'])
+def update_evidence_item(item_id):
+    data = request.get_json() or {}
+    doc_id = data.get('doc_id')
+    status = data.get('status')
+    name = data.get('name')
+    notes = data.get('notes')
+    linked_doc_id = data.get('linked_doc_id')
+
+    if not doc_id:
+        return jsonify({"error": "doc_id is required"}), 400
+
+    updated = EvidenceService.update_evidence_item(
+        doc_id=doc_id,
+        item_id=item_id,
+        status=status,
+        name=name,
+        notes=notes,
+        linked_doc_id=linked_doc_id
+    )
+
+    if not updated:
+        return jsonify({"error": "Evidence item not found"}), 404
+    return jsonify(updated)
+
+@app.route('/api/evidence/item/<item_id>', methods=['DELETE'])
+def delete_evidence_item(item_id):
+    doc_id = request.args.get('doc_id')
+    if not doc_id:
+        data = request.get_json(silent=True) or {}
+        doc_id = data.get('doc_id')
+
+    if not doc_id:
+        return jsonify({"error": "doc_id is required"}), 400
+
+    success = EvidenceService.delete_evidence_item(doc_id=doc_id, item_id=item_id)
+    if not success:
+        return jsonify({"error": "Evidence item not found"}), 404
+    return jsonify({"message": "Evidence item deleted successfully"})
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
