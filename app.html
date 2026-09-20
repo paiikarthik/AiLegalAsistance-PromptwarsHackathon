@@ -61,9 +61,9 @@
                 </div>
 
                 <div class="user-profile">
-                 
                     <div class="avatar">👤</div>
                     <span id="userNameLabel">Legal User</span>
+                    <button id="deleteAccountBtn" class="delete-account-btn" onclick="deleteAccount()" title="Delete Account & Data">Delete Account</button>
                     <a href="index.html" class="logout-link" data-i18n="exit">Exit</a>
                 </div>
             </div>
@@ -85,19 +85,19 @@
             </div>
 
             <nav class="nav-menu">
-                <button class="nav-tab active" data-target="uploadTab">
+                <button class="nav-tab active" data-target="homeTab">
                     <span class="icon">📤</span>
-                    <span>Upload document</span>
+                    <span data-i18n="navHome">Home</span>
                 </button>
                 <button class="nav-tab" data-target="evidenceTab">
                     <span class="icon">📋</span>
-                    <span>Evidence & Clause Map</span>
+                    <span data-i18n="navMyCase">My Case</span>
                 </button>
             </nav>
 
             <div class="disclaimer-sidebar-box">
-                <p>⚠️ <strong>Legal Information Notice</strong><br>
-                LawBuddy AI provides preparation assistance, not legal advice or representation. Verify critical claims with legal aid or an advocate.</p>
+                <p><strong data-i18n="legalInfoNoticeTitle">⚠️ Legal Information Notice</strong><br>
+                <span data-i18n="legalInfoNoticeDesc">LawBuddy AI provides preparation assistance, not legal advice or representation. Verify critical claims with legal aid or an advocate.</span></p>
             </div>
         </aside>
 
@@ -109,8 +109,28 @@
                 <span id="notificationMessage">Ready</span>
             </div>
 
+            <section id="homeTab" class="tab-pane active">
+                <div class="simple-home">
+                    <div class="privacy-notice-banner" data-i18n="privacyBanner">
+                        🔒 <strong>Privacy Guarantee:</strong> Uploaded documents are processed securely in memory and automatically deleted within 3 hours. We do not store any document permanently.
+                    </div>
+                    <div class="home-welcome"><div class="home-logo">⚖️</div><h1>LawBuddy</h1><h2 data-i18n="homeHeader">What do you need help with?</h2><p data-i18n="homeSub">Legal documents can be difficult to understand. Let me explain them simply.</p></div>
+                    <div class="home-actions">
+                        <button class="home-action" data-home-action="document"><span>📄</span><strong data-i18n="cardExplainDoc">Explain my document</strong><small data-i18n="cardExplainDocSub">Upload a file, paste text, or add a link</small></button>
+                        <button class="home-action" data-home-action="question"><span>❓</span><strong data-i18n="cardLegalQuestion">I have a legal question</strong><small data-i18n="cardLegalQuestionSub">Tell me what happened in your own words</small></button>
+                        <button class="home-action" data-home-action="photo"><span>📷</span><strong data-i18n="cardPhotoNotice">Take a photo of a notice</strong><small data-i18n="cardPhotoNoticeSub">We will read it and explain it</small></button>
+                        <button class="home-action" data-home-action="voice"><span>🎤</span><strong data-i18n="cardSpeak">Speak to LawBuddy</strong><small data-i18n="cardSpeakSub">Say what happened in your preferred language</small></button>
+                    </div>
+                    <button class="my-case-home" data-home-action="case" data-i18n="btnMyCase">📁 My Case</button>
+                </div>
+            </section>
+
+            <section id="storyTab" class="tab-pane">
+                <div class="story-card"><button class="back-home" onclick="switchTab('homeTab')" data-i18n="btnBackHome">← Home</button><h2 data-i18n="storyTitle">What happened?</h2><p data-i18n="storySub">Use everyday words. You do not need to know legal terms.</p><textarea id="storyInput" data-i18n-placeholder="storyPlaceholder" placeholder="For example: My landlord gave me a notice and I don't understand it."></textarea><div class="story-actions"><button class="btn btn-secondary" id="storySpeakBtn" data-i18n="btnSpeakInstead">🎤 Speak instead</button><button class="btn btn-primary" id="storyContinueBtn" data-i18n="btnContinue">Continue</button></div><p id="voiceHelp" class="voice-help hidden" data-i18n="listeningText">Listening… speak naturally, then pause.</p></div>
+            </section>
+
             <!-- TAB 1: UPLOAD & EXTRACT -->
-            <section id="uploadTab" class="tab-pane active">
+            <section id="uploadTab" class="tab-pane">
                 <div class="section-header">
                     <h2 data-i18n="uploadTitle">Upload Legal Document</h2>
                     <p data-i18n="uploadDescription">Supports Legal Notices, Rental Agreements, Employment Contracts, Consumer Complaints, NDAs, Service Contracts, and more.</p>
@@ -119,9 +139,10 @@
                 <div class="upload-grid">
                     <div class="upload-box" id="dropZone">
                         <div class="upload-icon">📁</div>
-                        <h3>1. Upload Document</h3>
+                        <h3 data-i18n="uploadStep1">1. Upload Document</h3>
                         <p data-i18n="fileSupport">Supports PDF, DOCX, TXT, PNG, JPG (Scanned Notice & Document OCR Supported)</p>
                         <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.png,.jpg,.jpeg" class="hidden-file-input">
+                        <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden-file-input">
                         <div class="upload-buttons">
                             <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()" data-i18n="browse">Browse Files</button>
                             <button class="btn btn-secondary" id="loadSampleBtn" data-i18n="loadDemo">⚡ Load Sample Rental Agreement Demo</button>
@@ -129,17 +150,17 @@
                     </div>
 
                     <div class="paste-text-box">
-                        <h3>2. Upload Text</h3>
+                        <h3 data-i18n="uploadStep2">2. Upload Text</h3>
                         <textarea id="pasteTextInput" data-i18n-placeholder="pastePlaceholder" placeholder="Paste legal notice text, agreement clauses, employment contract text, or communication here..."></textarea>
                         <button class="btn btn-secondary" id="analyzePastedTextBtn" data-i18n="analyzePasted">Analyze Pasted Text</button>
                     </div>
 
                     <div class="link-upload-box">
-                        <h3>3. Enter or Paste a Link</h3>
-                        <p>Paste a public webpage link and LawBuddy will extract its text for AI analysis.</p>
+                        <h3 data-i18n="uploadStep3">3. Enter or Paste a Link</h3>
+                        <p data-i18n="linkSub">Paste a public webpage link and LawBuddy will extract its text for AI analysis.</p>
                         <label class="sr-only" for="websiteLinkInput">Website link</label>
-                        <input type="url" id="websiteLinkInput" placeholder="https://example.com/legal-notice" autocomplete="url">
-                        <button class="btn btn-secondary" id="analyzeWebsiteLinkBtn">Analyze Website Link</button>
+                        <input type="url" id="websiteLinkInput" data-i18n-placeholder="linkPlaceholder" placeholder="https://example.com/legal-notice" autocomplete="url">
+                        <button class="btn btn-secondary" id="analyzeWebsiteLinkBtn" data-i18n="btnAnalyzeLink">Analyze Website Link</button>
                     </div>
                 </div>
 
@@ -147,11 +168,11 @@
                 <div id="docMetadataPanel" class="doc-meta-card hidden">
                     <div class="meta-row">
                         <div>
-                            <span class="label">Document Source:</span>
+                            <span class="label" data-i18n="docSource">Document Source:</span>
                             <strong id="metaFileName">notice.pdf</strong>
                         </div>
                         <div>
-                            <span class="label">Document Category:</span>
+                            <span class="label" data-i18n="docTypeLabel">Document type:</span>
                             <select id="docTypeSelect" class="doc-type-select">
                                 <option value="Rental Agreement">Rental Agreement / Lease Deed</option>
                                 <option value="Eviction Notice">Eviction Notice / Notice to Vacate</option>
@@ -168,12 +189,12 @@
                             </select>
                         </div>
                         <div>
-                            <button class="btn btn-success" id="startAnalysisBtn">🚀 Analyze Document & Map Facts</button>
+                            <button class="btn btn-success" id="startAnalysisBtn" data-i18n="btnAnalyzeDoc">🚀 Analyze Document & Map Facts</button>
                         </div>
                     </div>
 
                     <div class="text-preview-box">
-                        <label>Extracted Text Preview:</label>
+                        <label data-i18n="textFoundLabel">Text we found:</label>
                         <pre id="textPreviewContent">Text preview will appear here...</pre>
                     </div>
                 </div>
@@ -182,31 +203,33 @@
             <!-- TAB 1B: EVIDENCE & CLAUSE MAPPING -->
             <section id="evidenceTab" class="tab-pane">
                 <div class="section-header">
-                    <h2>📋 Evidence-to-Clause Mapping & Verification Matrix</h2>
-                    <p>Connects critical document clauses with evidence categories needed for advocate consultation. Uses neutral labels without claiming unverified legal conclusions.</p>
+                    <h2 data-i18n="evidenceTitle">📋 Evidence-to-Clause Mapping & Verification Matrix</h2>
+                    <p data-i18n="evidenceSub">Keep your important documents, dates, and questions in one simple place.</p>
                 </div>
+
+                <div id="caseReadiness" class="case-readiness"><p>Add a document or tell LawBuddy what happened to start your case list.</p></div>
 
                 <div class="card-box" style="margin-bottom: 20px; background: #f8fafc; border: 1px solid #cbd5e1;">
                     <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-                        <input type="text" id="manualEvidenceName" placeholder="Enter manual evidence item (e.g. HDFC UPI Statement, Email Thread)..." style="flex: 1; min-width: 260px; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                        <input type="text" id="manualEvidenceName" data-i18n-placeholder="evidenceAddPlaceholder" placeholder="Add something you have, such as a payment receipt or message..." style="flex: 1; min-width: 260px; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
                         <select id="manualEvidenceStatus" style="padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
-                            <option value="Evidence found">Evidence found</option>
-                            <option value="Evidence missing">Evidence missing</option>
-                            <option value="Evidence suggested">Evidence suggested</option>
-                            <option value="Requires verification">Requires verification</option>
+                            <option value="Evidence found" data-i18n="statusFound">Evidence found</option>
+                            <option value="Evidence missing" data-i18n="statusMissing">Evidence missing</option>
+                            <option value="Evidence suggested" data-i18n="statusSuggested">Evidence suggested</option>
+                            <option value="Requires verification" data-i18n="statusVerification">Requires verification</option>
                         </select>
-                        <button class="btn btn-primary" onclick="addManualEvidenceItem()">➕ Add Evidence Item</button>
+                        <button class="btn btn-primary" onclick="addManualEvidenceItem()" data-i18n="btnAddEvidence">➕ Add Evidence Item</button>
                     </div>
                 </div>
 
                 <div id="evidenceMatrixLoading" class="loading-state hidden">
                     <div class="spinner"></div>
-                    <p>Mapping document clauses to evidence categories...</p>
+                    <p>Preparing your document list...</p>
                 </div>
 
                 <div id="evidenceMatrixContainer" class="evidence-matrix-grid">
                     <div class="empty-state">
-                        <p>Upload a document and click 'Analyze Document & Map Facts' to generate the Evidence-to-Clause Map.</p>
+                        <p>Add a document to see what may be useful to keep ready.</p>
                     </div>
                 </div>
             </section>
@@ -214,8 +237,15 @@
             <!-- TAB 2: LEGAL CLARITY & ACTION MAP -->
             <section id="clarityMapTab" class="tab-pane">
                 <div class="section-header">
-                    <h2>Legal Clarity & Document Overview Action Map</h2>
-                    <p>Connecting complex legal text into 4 structured, actionable outputs for citizens and legal aid advocates.</p>
+                    <h2 data-i18n="clarityTitle">Legal Clarity & Document Overview Action Map</h2>
+                    <p data-i18n="claritySub">Based on the document or information you shared. This is general information, not legal advice.</p>
+                    <div class="explanation-tools">
+                        <span data-i18n="showLabel">Show:</span>
+                        <button class="level-btn active" data-level="simple" data-i18n="lvlSimple">🙂 Simple</button>
+                        <button class="level-btn" data-level="very-simple" data-i18n="lvlVerySimple">👶 Very Simple</button>
+                        <button class="level-btn" data-level="details" data-i18n="lvlDetails">⚖️ Legal Details</button>
+                        <button class="btn btn-secondary speak-result" id="speakResultBtn" data-i18n="btnReadAloud">🔊 Read this aloud</button>
+                    </div>
                 </div>
 
                 <div id="clarityMapLoading" class="loading-state hidden">
@@ -226,8 +256,8 @@
                 <div id="clarityMapError" class="empty-state hidden" role="alert"></div>
 
                 <div class="card-box" style="margin-bottom: 20px;">
-                    <h3>📄 Executive Document Summary</h3>
-                    <p id="docOverviewSummary" style="font-size: 14px; line-height: 1.6; color: #334155; margin-top: 6px;">
+                    <h3 data-i18n="execSummaryTitle">📄 Executive Document Summary</h3>
+                    <p id="docOverviewSummary" style="font-size: 14px; line-height: 1.6; color: #334155; margin-top: 6px;" data-i18n="execSummaryPlaceholder">
                         Upload a document and click 'Analyze Document & Map Facts' to generate an instant plain-language summary.
                     </p>
                 </div>
@@ -237,9 +267,9 @@
                     <div class="action-card card-understand">
                         <div class="action-header">
                             <span class="action-num">1</span>
-                            <h3>💡 Understand</h3>
+                            <h3 data-i18n="actionUnderstand">💡 Understand</h3>
                         </div>
-                        <p class="action-desc">Plain-language summary of what this document demands</p>
+                        <p class="action-desc" data-i18n="actionUnderstandDesc">Plain-language summary of what this document demands</p>
                         <ul id="actionMapUnderstand" class="action-list">
                             <li>Upload a document to extract key rules and summary points.</li>
                         </ul>
@@ -249,9 +279,9 @@
                     <div class="action-card card-identify">
                         <div class="action-header">
                             <span class="action-num">2</span>
-                            <h3>⚠️ Identify</h3>
+                            <h3 data-i18n="actionIdentify">⚠️ Identify</h3>
                         </div>
-                        <p class="action-desc">Deadlines, cure periods, monetary claims & obligations</p>
+                        <p class="action-desc" data-i18n="actionIdentifyDesc">Deadlines, cure periods, monetary claims & obligations</p>
                         <ul id="actionMapIdentify" class="action-list">
                             <li>Upload a document to identify obligations, deadlines, and potential concerns.</li>
                         </ul>
@@ -261,9 +291,9 @@
                     <div class="action-card card-prepare">
                         <div class="action-header">
                             <span class="action-num">3</span>
-                            <h3>📝 Prepare</h3>
+                            <h3 data-i18n="actionPrepare">📝 Prepare</h3>
                         </div>
-                        <p class="action-desc">Questions for a lawyer & evidence collection checklist</p>
+                        <p class="action-desc" data-i18n="actionPrepareDesc">Questions for a lawyer & evidence collection checklist</p>
                         <div class="sub-section">
                             <strong>Questions to ask a lawyer / legal-aid advocate:</strong>
                             <ul id="actionMapQuestions" class="action-list">
@@ -282,9 +312,9 @@
                     <div class="action-card card-navigate">
                         <div class="action-header">
                             <span class="action-num">4</span>
-                            <h3>🧭 Navigate</h3>
+                            <h3 data-i18n="actionNavigate">🧭 Navigate</h3>
                         </div>
-                        <p class="action-desc">Step-by-step non-advice plan & official legal resources</p>
+                        <p class="action-desc" data-i18n="actionNavigateDesc">Step-by-step non-advice plan & official legal resources</p>
                         <div class="sub-section">
                             <strong>Suggested Immediate Next Steps:</strong>
                             <ul id="actionMapNextSteps" class="action-list">
@@ -300,39 +330,45 @@
                         </div>
                     </div>
                 </div>
+                <div class="word-help card-box">
+                    <h3 data-i18n="difficultWordTitle">What does a difficult word mean?</h3>
+                    <p data-i18n="difficultWordSub">Type a word from the document, such as “indemnification”.</p>
+                    <div class="word-help-row"><input id="difficultWordInput" data-i18n-placeholder="difficultWordPlaceholder" placeholder="Type a word"><button class="btn btn-secondary" id="explainWordBtn" data-i18n="btnExplainWord">Explain this word</button></div>
+                    <div id="wordExplanation" class="hidden"></div>
+                </div>
             </section>
 
             <!-- TAB 3: EXTRACTED FACTS & EVENT TIMELINE -->
             <section id="factsTimelineTab" class="tab-pane">
                 <div class="section-header">
-                    <h2>Extracted Facts & Chronological Event Timeline</h2>
-                    <p>Automatic extraction of entities, amounts, obligations, and dispute sequence.</p>
+                    <h2 data-i18n="factsTitle">Extracted Facts & Chronological Event Timeline</h2>
+                    <p data-i18n="factsSub">Automatic extraction of entities, amounts, obligations, and dispute sequence.</p>
                 </div>
 
                 <div class="grid-4" style="margin-bottom: 24px;">
                     <div class="card-box">
-                        <span class="badge-pill bg-info">KEY DATES & DEADLINES</span>
+                        <span class="badge-pill bg-info" data-i18n="keyDatesLabel">KEY DATES & DEADLINES</span>
                         <h4 style="margin-top: 8px;" id="factKeyDates">Upload a document to extract dates & deadlines</h4>
                     </div>
 
                     <div class="card-box">
-                        <span class="badge-pill bg-urgent">AMOUNTS & FINANCIALS</span>
+                        <span class="badge-pill bg-urgent" data-i18n="amountsLabel">AMOUNTS & FINANCIALS</span>
                         <h4 style="margin-top: 8px; color: #991b1b;" id="factAmounts">Upload a document to extract amounts</h4>
                     </div>
 
                     <div class="card-box">
-                        <span class="badge-pill bg-info">PARTIES & ENTITIES</span>
+                        <span class="badge-pill bg-info" data-i18n="partiesLabel">PARTIES & ENTITIES</span>
                         <h4 style="margin-top: 8px;" id="factParties">Upload a document to extract parties</h4>
                     </div>
 
                     <div class="card-box">
-                        <span class="badge-pill bg-warning">KEY MANDATE / OBLIGATIONS</span>
+                        <span class="badge-pill bg-warning" data-i18n="obligationsLabel">KEY MANDATE / OBLIGATIONS</span>
                         <h4 style="margin-top: 8px; color: #92400e;" id="factMandate">Upload a document to extract obligations</h4>
                     </div>
                 </div>
 
                 <div class="card-box">
-                    <h3 style="margin-bottom: 16px;">📅 Chronological Fact & Dispute Timeline</h3>
+                    <h3 style="margin-bottom: 16px;" data-i18n="timelineTitle">📅 Chronological Fact & Dispute Timeline</h3>
                     <div id="timelineEventsContainer">
                         <div style="border-left: 3px solid #3b82f6; padding-left: 16px; margin-bottom: 16px;">
                             Upload a document and click 'Analyze Document' to automatically extract event timeline.
@@ -542,6 +578,37 @@
             </section>
 
         </main>
+    </div>
+
+    <!-- Hidden Camera File Input for Notice Scanner -->
+    <input type="file" id="cameraFileInput" accept="image/*" capture="environment" style="display:none;">
+
+    <!-- Interactive Legal Word Explainer Modal -->
+    <div id="wordExplainerModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <span class="modal-icon">📖</span>
+                <h3 id="modalWordTitle" data-i18n="difficultTermModalTitle">Difficult Term</h3>
+                <button class="modal-close-btn" onclick="closeWordExplainerModal()">✖</button>
+            </div>
+            <div class="modal-body">
+                <div class="explainer-section">
+                    <strong style="color: #0369a1;" data-i18n="simpleMeaningHeader">💡 Simple Meaning:</strong>
+                    <p id="modalSimpleMeaning">Meaning will appear here...</p>
+                </div>
+                <div class="explainer-section">
+                    <strong style="color: #166534;" data-i18n="everydayExampleHeader">🌟 Everyday Example:</strong>
+                    <p id="modalRealExample">Example will appear here...</p>
+                </div>
+                <div class="explainer-section">
+                    <strong style="color: #991b1b;" data-i18n="askLawyerHeader">🧑‍⚖️ Ask a Lawyer:</strong>
+                    <p id="modalLawyerQuestion">Question will appear here...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeWordExplainerModal()" data-i18n="btnGotIt">Got it!</button>
+            </div>
+        </div>
     </div>
 
     <!-- Scripts -->

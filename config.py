@@ -35,7 +35,8 @@ class Config:
         'mr': 'Marathi (मराठी)',
         'bn': 'Bengali (বাংলা)',
         'gu': 'Gujarati (ગુજરાતી)',
-        'tulu': 'Tulu (ತುಳು)'
+        'tulu': 'Tulu (ತುಳು)',
+        'ta': 'Tamil (தமிழ்)'
     }
 
 # Ensure upload directory exists

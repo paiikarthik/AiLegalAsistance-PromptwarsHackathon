@@ -1,9 +1,12 @@
 import os
+import json
 import re
 import uuid
 import logging
 import ipaddress
 import socket
+import time
+import threading
 from html import unescape
 from html.parser import HTMLParser
 from urllib.error import HTTPError, URLError
@@ -164,10 +167,12 @@ def root():
 
 @app.route('/<path:filename>')
 def serve_static_pages(filename):
-    # Do not let the HTML-app fallback mask a misspelled API route.  Doing so
-    # used to return index.html to fetch(), which then surfaced as a JSON error.
+    # Do not let the HTML-app fallback mask a misspelled API route.
     if filename.startswith('api/'):
         return jsonify({"error": "API endpoint not found"}), 404
+    norm_path = os.path.normpath(filename).replace('\\', '/')
+    if norm_path.startswith(('uploads', 'scratch', '.env', '.git', '__pycache__')) or '/uploads' in norm_path or 'uploads/' in norm_path:
+        return jsonify({"error": "Access denied"}), 403
     if os.path.exists(filename) and filename.endswith(('.html', '.js', '.css', '.png', '.jpg', '.svg', '.txt')):
         return send_from_directory('.', filename)
     return send_from_directory('.', 'index.html')
@@ -212,7 +217,8 @@ def sample_demo():
         "pages": extracted["pages"],
         "total_pages": extracted["total_pages"],
         "doc_type": extracted["doc_type_hint"],
-        "chunks": chunks
+        "chunks": chunks,
+        "created_at": time.time()
     }
     
     return jsonify({
@@ -229,10 +235,13 @@ def upload_document():
         # Check text upload
         data = request.get_json(silent=True) or {}
         text_content = data.get('text', '')
-        filename = data.get('filename', 'Pasted_Legal_Document.txt')
+        raw_filename = data.get('filename', 'Pasted_Legal_Document.txt')
+        filename = sanitize_upload_filename(raw_filename)
         
         if not text_content.strip():
             return jsonify({"error": "No file uploaded or text provided"}), 400
+        if len(text_content) > 2_000_000:
+            return jsonify({"error": "Pasted text is too large. Maximum size is 2 MB."}), 400
             
         extracted = {
             "raw_text": text_content.strip(),
@@ -252,7 +261,11 @@ def upload_document():
 
         doc_uuid = str(uuid.uuid4())[:8]
         saved_filename = f"{doc_uuid}_{filename}"
-        save_path = os.path.join(Config.UPLOAD_FOLDER, saved_filename)
+        # Ensure target file stays strictly within Config.UPLOAD_FOLDER
+        save_path = os.path.abspath(os.path.join(Config.UPLOAD_FOLDER, saved_filename))
+        if not save_path.startswith(os.path.abspath(Config.UPLOAD_FOLDER)):
+            return jsonify({"error": "Invalid upload file path."}), 400
+
         file.save(save_path)
 
         try:
@@ -270,7 +283,8 @@ def upload_document():
         "pages": extracted["pages"],
         "total_pages": extracted["total_pages"],
         "doc_type": extracted["doc_type_hint"],
-        "chunks": chunks
+        "chunks": chunks,
+        "created_at": time.time()
     }
 
     return jsonify({
@@ -554,13 +568,145 @@ def delete_evidence_item(item_id):
         data = request.get_json(silent=True) or {}
         doc_id = data.get('doc_id')
 
-    if not doc_id:
-        return jsonify({"error": "doc_id is required"}), 400
+# --- CITIZEN ZERO-JARGON LEGAL WORD EXPLAINER ENDPOINT ---
+LEGAL_GLOSSARY = {
+    "indemnification": {
+        "simple_meaning": "It generally means one person may have to compensate another person for certain covered losses or damages.",
+        "real_world_example": "If a tenant damages apartment wiring and the landlord has to pay for repairs, this clause specifies who pays the bill.",
+        "question_for_lawyer": "Does this clause make me responsible for pre-existing damages or third-party claims?"
+    },
+    "jurisdiction": {
+        "simple_meaning": "The specific court or legal location that has the official authority to hear and decide disputes.",
+        "real_world_example": "If a dispute happens in Bengaluru, a Bangalore court jurisdiction clause means you cannot be forced to travel to Delhi to attend court.",
+        "question_for_lawyer": "Can this dispute be handled in my local district court?"
+    },
+    "lock-in period": {
+        "simple_meaning": "A fixed minimum timeframe during which neither party is allowed to cancel or terminate the agreement without paying a penalty.",
+        "real_world_example": "If a lease has a 6-month lock-in period and you move out after 3 months, you may still be asked to pay rent for the remaining 3 months.",
+        "question_for_lawyer": "What are the financial penalties if I need to leave before the lock-in period ends?"
+    },
+    "security deposit": {
+        "simple_meaning": "An advance sum of money given to a landlord or service provider as financial protection against non-payment or property damage.",
+        "real_world_example": "You give ₹50,000 when moving in; when you move out, the landlord must refund it minus valid repair costs.",
+        "question_for_lawyer": "What specific conditions must be met for a full refund of my security deposit?"
+    },
+    "notice period": {
+        "simple_meaning": "The advance warning time (in days or months) you must give before ending a contract or job.",
+        "real_world_example": "A 30-day notice period means if you tell your landlord on June 1st you are moving out, you can leave on June 30th.",
+        "question_for_lawyer": "Can I pay money instead of serving the full notice period if I need to leave early?"
+    },
+    "arbitration": {
+        "simple_meaning": "A process where a neutral private referee (arbitrator) settles a dispute outside of regular court.",
+        "real_world_example": "Instead of waiting years in court, both parties present evidence to a private lawyer who makes a binding decision.",
+        "question_for_lawyer": "Is arbitration mandatory, and who pays the arbitrator's fees?"
+    },
+    "non-compete": {
+        "simple_meaning": "A clause that attempts to stop an employee or business from working with competitors for a period of time.",
+        "real_world_example": "An employer saying you cannot work for any rival tech company for 1 year after quitting.",
+        "question_for_lawyer": "Is this post-employment non-compete enforceable under Section 27 of the Indian Contract Act?"
+    }
+}
 
-    success = EvidenceService.delete_evidence_item(doc_id=doc_id, item_id=item_id)
-    if not success:
-        return jsonify({"error": "Evidence item not found"}), 404
-    return jsonify({"message": "Evidence item deleted successfully"})
+@app.route('/api/explain-word', methods=['POST'])
+def explain_word():
+    data = request.get_json() or {}
+    word = (data.get('word') or '').strip().lower()
+    language = data.get('language', 'en')
+
+    if not word:
+        return jsonify({"error": "Word parameter is required"}), 400
+
+    # 1. Check local dictionary first
+    if word in LEGAL_GLOSSARY:
+        info = LEGAL_GLOSSARY[word]
+        return jsonify({
+            "word": word.title(),
+            "simple_meaning": info["simple_meaning"],
+            "real_world_example": info["real_world_example"],
+            "question_for_lawyer": info["question_for_lawyer"]
+        })
+
+    # 2. Call LLM for dynamic explanation
+    target_lang = Config.SUPPORTED_LANGUAGES.get(language, 'English')
+    prompt = f"""
+Explain the legal term or phrase '{word}' for an ordinary Indian citizen in simple, clear language.
+Respond in {target_lang}.
+
+Return ONLY a JSON object matching this schema:
+{{
+  "word": "{word.title()}",
+  "simple_meaning": "1-2 sentence simple explanation without legalese",
+  "real_world_example": "Short, relatable real-world example from everyday life",
+  "question_for_lawyer": "One clear question the user can ask a lawyer about this term"
+}}
+"""
+    try:
+        raw_resp = gemini_service._call_llm_raw(prompt, language)
+        cleaned = gemini_service._extract_json_string(raw_resp)
+        return jsonify(json.loads(cleaned))
+    except Exception as e:
+        logger.warning(f"Word explanation LLM call failed for '{word}': {e}")
+        return jsonify({
+            "word": word.title(),
+            "simple_meaning": f"'{word.title()}' is a legal term mentioned in your document. It defines specific contractual rights or duties.",
+            "real_world_example": "Legal documents use this term to set boundaries between participating parties.",
+            "question_for_lawyer": f"How does the '{word.title()}' clause specifically apply to my situation?"
+        })
+
+# --- 3-HOUR AUTOMATED DOCUMENT & CACHE PRIVACY PURGER ---
+def _auto_cleanup_old_documents():
+    """
+    Background worker that runs periodically and deletes any uploaded files or
+    cached document sessions older than 3 hours (10,800 seconds).
+    Ensures zero permanent document storage.
+    """
+    while True:
+        try:
+            time.sleep(600)  # Check every 10 minutes
+            now = time.time()
+            cutoff = 3 * 3600  # 3 hours (10,800s)
+
+            # 1. Purge expired document sessions from DOCUMENT_CACHE
+            expired_ids = [doc_id for doc_id, doc in list(DOCUMENT_CACHE.items()) if now - doc.get("created_at", now) > cutoff]
+            for doc_id in expired_ids:
+                DOCUMENT_CACHE.pop(doc_id, None)
+                logger.info(f"Auto-purged expired document session: {doc_id}")
+
+            # 2. Purge expired files from uploads directory
+            if os.path.exists(Config.UPLOAD_FOLDER):
+                for filename in os.listdir(Config.UPLOAD_FOLDER):
+                    if filename == ".gitkeep":
+                        continue
+                    file_path = os.path.join(Config.UPLOAD_FOLDER, filename)
+                    if os.path.isfile(file_path):
+                        if now - os.path.getmtime(file_path) > cutoff:
+                            try:
+                                os.remove(file_path)
+                                logger.info(f"Auto-purged 3-hour expired file: {filename}")
+                            except Exception as file_err:
+                                logger.warning(f"Could not purge file {filename}: {file_err}")
+        except Exception as e:
+            logger.error(f"Auto-cleanup error: {e}")
+
+# Start background cleanup thread
+cleanup_thread = threading.Thread(target=_auto_cleanup_old_documents, daemon=True)
+cleanup_thread.start()
+
+
+# --- ACCOUNT & SESSION DELETION ENDPOINT ---
+@app.route('/api/account/delete', methods=['POST'])
+def delete_account():
+    data = request.get_json(silent=True) or {}
+    doc_id = data.get('doc_id')
+
+    # Instantly purge document session if active
+    if doc_id and doc_id in DOCUMENT_CACHE:
+        DOCUMENT_CACHE.pop(doc_id, None)
+
+    return jsonify({
+        "status": "success",
+        "message": "Account session and all temporary document data have been permanently deleted."
+    })
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))

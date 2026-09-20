@@ -1,0 +1,25 @@
+# Environment & Sensitive Credentials
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# Python & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Application Uploads & Temporary Scratch Files
+uploads/*
+!uploads/.gitkeep
+scratch/
+
+# IDE & System Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

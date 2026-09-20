@@ -144,10 +144,11 @@ Analyze the following legal document (Type: {doc_type}) for an Indian user.
 Generate a structured JSON response in {target_lang_name}.
 
 CRITICAL INSTRUCTIONS:
-1. Provide explanations in simple, plain language understandable to ordinary Indian citizens.
+1. Provide explanations in simple, plain language understandable to ordinary Indian citizens. Never use AI, OCR, RAG, embeddings, classification, or other technical terms in the response.
 2. Keep important Indian legal terms in English (e.g., 'Indemnity', 'Lock-in period', 'Stamp Duty', 'Notice Period', 'Security Deposit', 'Jurisdiction') alongside their explanation in {target_lang_name}.
 3. DO NOT claim to replace a lawyer or declare clauses legally illegal without qualification. Use cautious terms like 'Potential Concern' or 'Requires Professional Review'.
-4. Ground every explanation strictly in the document text provided. Cite page numbers or clause titles if present.
+4. Ground every explanation strictly in the document text provided. Cite page numbers or clause titles if present. Never invent a legal deadline: if a date is found but its meaning is unclear, say that it was found but could not be confirmed.
+5. Use a respectful, reassuring tone. Do not predict who will win or lose, or say that anything is definitely legal or illegal. Phrase lawyer questions as questions the user may want to ask.
 5. Return ONLY a valid JSON object matching the exact schema below.
 
 JSON SCHEMA REQUIREMENT:
