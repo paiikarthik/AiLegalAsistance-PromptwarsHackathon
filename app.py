@@ -114,6 +114,11 @@ class _WebsiteTextExtractor(HTMLParser):
 
 
 def _validate_public_web_url(url: str) -> str:
+    url = (url or "").strip()
+    if not url:
+        raise ValueError("Enter a valid public website link.")
+    if not url.startswith(("http://", "https://")):
+        url = "https://" + url
     parsed = urlparse(url)
     if parsed.scheme not in {"http", "https"} or not parsed.hostname or parsed.username or parsed.password:
         raise ValueError("Enter a valid public http:// or https:// website link.")

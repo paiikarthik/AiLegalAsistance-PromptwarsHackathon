@@ -132,35 +132,51 @@ class OCRService:
 
     @staticmethod
     def _extract_image(file_path: str) -> dict:
+        text = ""
+        # Attempt 1: PyTesseract OCR
         try:
             from PIL import Image
             import pytesseract
             img = Image.open(file_path)
-            text = pytesseract.image_to_string(img)
-            
-            if not text.strip():
-                text = "OCR performed but no readable text detected in image."
-                
-            return {
-                "raw_text": text,
-                "pages": [{"page_num": 1, "text": text}],
-                "total_pages": 1,
-                "doc_type_hint": OCRService.detect_document_type_hint(text)
-            }
+            extracted = pytesseract.image_to_string(img)
+            if extracted and extracted.strip():
+                text = extracted.strip()
         except Exception as e:
-            logger.warning(f"PyTesseract OCR failed: {e}")
-            return {
-                "raw_text": "Tesseract OCR engine is not installed or failed. Please upload text-based PDF/DOCX or install pytesseract.",
-                "pages": [{"page_num": 1, "text": "OCR unavailable"}],
-                "total_pages": 1,
-                "doc_type_hint": "Other Legal Document"
-            }
+            logger.warning(f"PyTesseract OCR attempt failed: {e}")
+
+        # Attempt 2: Gemini Vision API Fallback
+        if not text:
+            try:
+                from config import Config
+                if Config.GEMINI_API_KEY:
+                    from google import genai
+                    from PIL import Image
+                    client = genai.Client(api_key=Config.GEMINI_API_KEY)
+                    img = Image.open(file_path)
+                    res = client.models.generate_content(
+                        model=Config.PRIMARY_MODEL,
+                        contents=[img, "Extract all readable text from this legal document image accurately. Return only the extracted text."]
+                    )
+                    if res and res.text and res.text.strip():
+                        text = res.text.strip()
+            except Exception as e:
+                logger.warning(f"Gemini Vision OCR attempt failed: {e}")
+
+        # Fallback if both OCR engines are unavailable or return empty text
+        if not text:
+            text = "Scanned Notice Image Received. (Tesseract OCR is not installed on this system. You can also paste notice text into the Upload Text box below for 100% instant analysis)."
+
+        return {
+            "raw_text": text,
+            "pages": [{"page_num": 1, "text": text}],
+            "total_pages": 1,
+            "doc_type_hint": OCRService.detect_document_type_hint(text)
+        }
 
     @staticmethod
     def _ocr_pdf_page(page) -> str:
         try:
             import pytesseract
-            # Convert pdfplumber page to PIL image
             page_img = page.to_image(resolution=200).original
             return pytesseract.image_to_string(page_img)
         except Exception:
@@ -172,29 +188,33 @@ class OCRService:
         Rule-based quick detection hint for document type.
         """
         txt_lower = text.lower()
-        if any(term in txt_lower for term in ['eviction notice', 'notice to vacate', 'vacate premises', 'quit and deliver']):
+        if any(term in txt_lower for term in ['rental agreement', 'lease deed', 'tenancy agreement', 'rent agreement']):
+            return 'Rental Agreement'
+        elif any(term in txt_lower for term in ['employment agreement', 'employment contract', 'offer letter', 'appointment letter']):
+            return 'Employment Contract'
+        elif any(term in txt_lower for term in ['eviction notice', 'notice to vacate', 'vacate premises', 'quit and deliver']):
             return 'Eviction Notice'
         elif any(term in txt_lower for term in ['rent demand', 'cure notice', 'demand for rent', 'arrears of rent']):
             return 'Rent Demand Notice'
-        elif any(term in txt_lower for term in ['security deposit', 'refund of deposit', 'deposit dispute']):
-            return 'Deposit Dispute Notice'
-        elif any(term in txt_lower for term in ['rental agreement', 'lease deed', 'tenancy agreement', 'landlord', 'lessor', 'lessee']):
-            return 'Rental Agreement'
-        elif any(term in txt_lower for term in ['employment agreement', 'employment contract', 'offer letter', 'appointment letter', 'employee', 'employer', 'ctc', 'salary']):
-            return 'Employment Contract'
-        elif any(term in txt_lower for term in ['non-disclosure', 'nda', 'confidentiality agreement', 'proprietary information', 'disclosing party', 'receiving party']):
+        elif any(term in txt_lower for term in ['non-disclosure', 'nda', 'confidentiality agreement', 'proprietary information']):
             return 'Non-Disclosure Agreement (NDA)'
-        elif any(term in txt_lower for term in ['consumer complaint', 'deficiency of service', 'consumer forum', 'district commission', 'unfair trade']):
+        elif any(term in txt_lower for term in ['consumer complaint', 'deficiency of service', 'consumer forum', 'district commission']):
             return 'Consumer Complaint'
-        elif any(term in txt_lower for term in ['loan agreement', 'promissory note', 'mortgage', 'borrower', 'lender', 'sanction letter', 'emi']):
+        elif any(term in txt_lower for term in ['loan agreement', 'promissory note', 'mortgage', 'sanction letter']):
             return 'Loan / Financial Agreement'
-        elif any(term in txt_lower for term in ['legal notice', 'advocate notice', 'hereby notice', 'cease and desist', 'statutory notice']):
+        elif any(term in txt_lower for term in ['refund of deposit', 'deposit dispute', 'security deposit refund']):
+            return 'Deposit Dispute Notice'
+        elif any(term in txt_lower for term in ['legal notice', 'advocate notice', 'hereby notice', 'cease and desist']):
             return 'Legal Notice'
-        elif any(term in txt_lower for term in ['service agreement', 'master service agreement', 'contractor', 'client', 'statement of work', 'vendor agreement']):
+        elif any(term in txt_lower for term in ['service agreement', 'master service agreement', 'statement of work']):
             return 'Service Agreement'
-        elif any(term in txt_lower for term in ['summons', 'court order', 'pleading', 'petition', 'written statement', 'affidavit']):
+        elif any(term in txt_lower for term in ['summons', 'court order', 'pleading', 'petition', 'written statement']):
             return 'Court Order / Summons'
-        elif any(term in txt_lower for term in ['privacy policy', 'terms of service', 'terms and conditions', 'data processing']):
+        elif any(term in txt_lower for term in ['privacy policy', 'terms of service', 'terms and conditions']):
             return 'Privacy Policy'
+        elif any(term in txt_lower for term in ['landlord', 'lessor', 'lessee', 'tenant']):
+            return 'Rental Agreement'
+        elif any(term in txt_lower for term in ['employee', 'employer', 'ctc', 'salary']):
+            return 'Employment Contract'
         else:
             return 'Other Legal Document'
