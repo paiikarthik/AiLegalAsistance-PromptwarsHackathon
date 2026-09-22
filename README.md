@@ -111,21 +111,6 @@ Ran 17 tests in 15.938s
 
 OK
 ```
-
----
-
-## 🎯 Hackathon Evaluation Alignment Matrix
-
-| Evaluation Parameter | Implementation & Features |
-| :--- | :--- |
-| **1. Kannada Translation Quality** | Specialized Kannada prompts, SOV grammar enforcement, standard Kannada legal terms (`ಕರಾರು`, `ಭದ್ರತಾ ಠೇವಣಿ`, `ನೋಟಿಸ್ ಅವಧಿ`), preserved English terms in brackets, rule-based fallback responses in native Kannada script. |
-| **2. Code Quality** | Clean architecture, type annotations, explicit error handling, robust logging, structured JSON schema validation. |
-| **3. Security** | HTTP Security Headers (CSP, X-Frame-Options, HSTS), thread-safe API rate limiting (100 req/min), path traversal protection, SSRF URL validation, and 3-hour automated file/session privacy purger. |
-| **4. Efficiency** | Module-level TF-IDF imports, fast keyword fallback, context truncation, intelligent session caching to prevent redundant LLM calls. |
-| **5. Testing** | 17 automated unit and integration tests passing with 100% success rate. |
-| **6. Accessibility (A11y)** | Integrated `Noto Sans Kannada` font, dynamic HTML `lang` toggling, keyboard focus states, ARIA live region notifications. |
-| **7. Problem Alignment** | Grounded in Indian statutory framework (Indian Contract Act 1872, Rent Control Acts, NALSA legal aid, India Code, e-Courts) with plain-language document analysis, evidence mapping, and consultation brief export. |
-
 ---
 
 ## 📜 Legal Disclaimer
