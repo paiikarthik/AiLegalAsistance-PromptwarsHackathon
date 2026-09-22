@@ -4,6 +4,14 @@ from typing import List, Dict
 
 logger = logging.getLogger("lawbuddy.rag")
 
+try:
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.metrics.pairwise import cosine_similarity
+    SKLEARN_AVAILABLE = True
+except ImportError:
+    SKLEARN_AVAILABLE = False
+    logger.info("scikit-learn not available, using fast keyword matcher for RAG")
+
 class RAGService:
     """
     Retrieval-Augmented Generation service.
@@ -58,38 +66,38 @@ class RAGService:
         if not chunks:
             return []
             
-        try:
-            from sklearn.feature_extraction.text import TfidfVectorizer
-            from sklearn.metrics.pairwise import cosine_similarity
-            
-            corpus = [c["text"] for c in chunks]
-            vectorizer = TfidfVectorizer(stop_words='english')
-            tfidf_matrix = vectorizer.fit_transform(corpus + [query])
-            
-            query_vec = tfidf_matrix[-1]
-            doc_vecs = tfidf_matrix[:-1]
-            
-            similarities = cosine_similarity(query_vec, doc_vecs).flatten()
-            top_indices = similarities.argsort()[::-1][:top_k]
-            
-            results = []
-            for idx in top_indices:
-                if similarities[idx] > 0.05: # score threshold
-                    c = chunks[idx].copy()
-                    c["score"] = float(similarities[idx])
-                    results.append(c)
-                    
-            if not results and chunks:
-                return chunks[:top_k]
+        if SKLEARN_AVAILABLE:
+            try:
+                corpus = [c["text"] for c in chunks]
+                vectorizer = TfidfVectorizer(stop_words='english')
+                tfidf_matrix = vectorizer.fit_transform(corpus + [query])
                 
-            return results
-        except Exception as e:
-            logger.warning(f"TF-IDF vector retrieval fallback triggered: {e}")
-            query_words = set(re.findall(r'\w+', query.lower()))
-            scored = []
-            for c in chunks:
-                words = set(re.findall(r'\w+', c["text"].lower()))
-                overlap = len(query_words.intersection(words))
-                scored.append((overlap, c))
-            scored.sort(key=lambda x: x[0], reverse=True)
-            return [item[1] for item in scored[:top_k]]
+                query_vec = tfidf_matrix[-1]
+                doc_vecs = tfidf_matrix[:-1]
+                
+                similarities = cosine_similarity(query_vec, doc_vecs).flatten()
+                top_indices = similarities.argsort()[::-1][:top_k]
+                
+                results = []
+                for idx in top_indices:
+                    if similarities[idx] > 0.05: # score threshold
+                        c = chunks[idx].copy()
+                        c["score"] = float(similarities[idx])
+                        results.append(c)
+                        
+                if not results and chunks:
+                    return chunks[:top_k]
+                    
+                return results
+            except Exception as e:
+                logger.warning(f"TF-IDF vector retrieval fallback triggered: {e}")
+
+        # Fast keyword matching fallback
+        query_words = set(re.findall(r'\w+', query.lower()))
+        scored = []
+        for c in chunks:
+            words = set(re.findall(r'\w+', c["text"].lower()))
+            overlap = len(query_words.intersection(words))
+            scored.append((overlap, c))
+        scored.sort(key=lambda x: x[0], reverse=True)
+        return [item[1] for item in scored[:top_k]]

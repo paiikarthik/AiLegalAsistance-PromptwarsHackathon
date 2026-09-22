@@ -31,6 +31,35 @@ app = Flask(__name__, static_folder="static", template_folder=".")
 app.config.from_object(Config)
 CORS(app)
 
+# --- SECURITY HEADERS MIDDLEWARE ---
+@app.after_request
+def apply_security_headers(response):
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['Content-Security-Policy'] = "default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; frame-ancestors 'none';"
+    return response
+
+# --- THREAD-SAFE IN-MEMORY API RATE LIMITER ---
+RATE_LIMIT_STORE = {}
+RATE_LIMIT_LOCK = threading.Lock()
+MAX_REQUESTS_PER_MINUTE = 100
+
+@app.before_request
+def rate_limit_check():
+    if request.path.startswith('/api/'):
+        client_ip = request.remote_addr or '127.0.0.1'
+        now = time.time()
+        with RATE_LIMIT_LOCK:
+            timestamps = RATE_LIMIT_STORE.get(client_ip, [])
+            timestamps = [t for t in timestamps if now - t < 60]
+            if len(timestamps) >= MAX_REQUESTS_PER_MINUTE:
+                return jsonify({"error": "Too many requests. Please wait a minute before trying again."}), 429
+            timestamps.append(now)
+            RATE_LIMIT_STORE[client_ip] = timestamps
+
 
 def sanitize_upload_filename(filename: str) -> str:
     """
@@ -572,43 +601,113 @@ def delete_evidence_item(item_id):
     if not doc_id:
         data = request.get_json(silent=True) or {}
         doc_id = data.get('doc_id')
+    if not doc_id:
+        return jsonify({"error": "doc_id is required"}), 400
+
+    deleted = EvidenceService.delete_evidence_item(doc_id, item_id)
+    if not deleted:
+        return jsonify({"error": "Evidence item not found"}), 404
+    return jsonify({"status": "success", "message": "Evidence item deleted successfully"})
 
 # --- CITIZEN ZERO-JARGON LEGAL WORD EXPLAINER ENDPOINT ---
 LEGAL_GLOSSARY = {
     "indemnification": {
-        "simple_meaning": "It generally means one person may have to compensate another person for certain covered losses or damages.",
-        "real_world_example": "If a tenant damages apartment wiring and the landlord has to pay for repairs, this clause specifies who pays the bill.",
-        "question_for_lawyer": "Does this clause make me responsible for pre-existing damages or third-party claims?"
+        "en": {
+            "word": "Indemnification",
+            "simple_meaning": "It generally means one person may have to compensate another person for certain covered losses or damages.",
+            "real_world_example": "If a tenant damages apartment wiring and the landlord has to pay for repairs, this clause specifies who pays the bill.",
+            "question_for_lawyer": "Does this clause make me responsible for pre-existing damages or third-party claims?"
+        },
+        "kn": {
+            "word": "ನಷ್ಟಪರಿಹಾರ ಬಾಧ್ಯತೆ (Indemnification)",
+            "simple_meaning": "ಒಬ್ಬ ವ್ಯಕ್ತಿಯು ಅನುಭವಿಸಿದ ನಷ್ಟ ಅಥವಾ ಹಾನಿಯನ್ನು ಮತ್ತೊಬ್ಬರು ಭರ್ತಿ ಮಾಡಿಕೊಡುವ ಕಾನೂನಾತ್ಮಕ ಒಪ್ಪಂದ.",
+            "real_world_example": "ಉದಾಹರಣೆಗೆ: ಬಾಡಿಗೆದಾರರು ಮನೆಯಲ್ಲಿ ಹಾನಿ ಮಾಡಿದರೆ, ಅದರ ಸಂಪೂರ್ಣ ನಷ್ಟವನ್ನು ಅವರೇ ಭರಿಸಬೇಕೆಂದು ಹೇಳುವ ನಿಯಮ.",
+            "question_for_lawyer": "ಈ ಷರತ್ತು ನನ್ನ ಮೇಲೆ ಅನಗತ್ಯ ನಷ್ಟ ಪರಿಹಾರದ ಹೊಣೆಗಾರಿಕೆಯನ್ನು ಹಾಕುತ್ತದೆಯೇ?"
+        }
     },
     "jurisdiction": {
-        "simple_meaning": "The specific court or legal location that has the official authority to hear and decide disputes.",
-        "real_world_example": "If a dispute happens in Bengaluru, a Bangalore court jurisdiction clause means you cannot be forced to travel to Delhi to attend court.",
-        "question_for_lawyer": "Can this dispute be handled in my local district court?"
+        "en": {
+            "word": "Jurisdiction",
+            "simple_meaning": "The specific court or legal location that has the official authority to hear and decide disputes.",
+            "real_world_example": "If a dispute happens in Bengaluru, a Bangalore court jurisdiction clause means you cannot be forced to travel to Delhi to attend court.",
+            "question_for_lawyer": "Can this dispute be handled in my local district court?"
+        },
+        "kn": {
+            "word": "ನ್ಯಾಯಾಂಗ ವ್ಯಾಪ್ತಿ (Jurisdiction)",
+            "simple_meaning": "ವಿವಾದವನ್ನು ಆಲಿಸಿ ತೀರ್ಪು ನೀಡಲು ಅಧಿಕಾರ ಹೊಂದಿರುವ ನಿರ್ದಿಷ್ಟ ನ್ಯಾಯಾಲಯ ಅಥವಾ ಕಾನೂನಾತ್ಮಕ ಪ್ರದೇಶ.",
+            "real_world_example": "ಉದಾಹರಣೆಗೆ: ಬೆಂಗಳೂರಿನಲ್ಲಿ ವಿವಾದ ಸಂಭವಿಸಿದರೆ, ಬೆಂಗಳೂರು ನ್ಯಾಯಾಲಯದ ವ್ಯಾಪ್ತಿಯು ಪ್ರಕರಣದ ತೀರ್ಪು ನೀಡುವ ಅಧಿಕಾರ ಹೊಂದಿರುತ್ತದೆ.",
+            "question_for_lawyer": "ಈ ವಿವಾದವನ್ನು ನನ್ನ ಸ್ಥಳೀಯ ಜಿಲ್ಲಾ ನ್ಯಾಯಾಲಯದಲ್ಲೇ ನಿರ್ವಹಿಸಬಹುದೇ?"
+        }
     },
     "lock-in period": {
-        "simple_meaning": "A fixed minimum timeframe during which neither party is allowed to cancel or terminate the agreement without paying a penalty.",
-        "real_world_example": "If a lease has a 6-month lock-in period and you move out after 3 months, you may still be asked to pay rent for the remaining 3 months.",
-        "question_for_lawyer": "What are the financial penalties if I need to leave before the lock-in period ends?"
+        "en": {
+            "word": "Lock-in Period",
+            "simple_meaning": "A fixed minimum timeframe during which neither party is allowed to cancel or terminate the agreement without paying a penalty.",
+            "real_world_example": "If a lease has a 6-month lock-in period and you move out after 3 months, you may still be asked to pay rent for the remaining 3 months.",
+            "question_for_lawyer": "What are the financial penalties if I need to leave before the lock-in period ends?"
+        },
+        "kn": {
+            "word": "ಲಾಕ್-ಇನ್ ಅವಧಿ (Lock-in Period)",
+            "simple_meaning": "ಒಪ್ಪಂದವನ್ನು ರದ್ದುಗೊಳಿಸಲು ಅವಕಾಶವಿಲ್ಲದ ಕನಿಷ್ಠ ನಿಗದಿತ ಅವಧಿ.",
+            "real_world_example": "ಉದಾಹರಣೆಗೆ: 6 ತಿಂಗಳ ಲಾಕ್-ಇನ್ ಅವಧಿಯಲ್ಲಿದ್ದಾಗ 3 ತಿಂಗಳಲ್ಲಿ ಮನೆ ಖಾಲಿ ಮಾಡಿದರೆ, ಉಳಿದ 3 ತಿಂಗಳ ಬಾಡಿಗೆ ಪಾವತಿಸಬೇಕಾಗಬಹುದು.",
+            "question_for_lawyer": "ಲಾಕ್-ಇನ್ ಅವಧಿ ಮುಗಿಯುವ ಮುನ್ನ ನಾನು ಖಾಲಿ ಮಾಡಿದರೆ ದಂಡದ ಮೊತ್ತ ಎಷ್ಟಾಗುತ್ತದೆ?"
+        }
     },
     "security deposit": {
-        "simple_meaning": "An advance sum of money given to a landlord or service provider as financial protection against non-payment or property damage.",
-        "real_world_example": "You give ₹50,000 when moving in; when you move out, the landlord must refund it minus valid repair costs.",
-        "question_for_lawyer": "What specific conditions must be met for a full refund of my security deposit?"
+        "en": {
+            "word": "Security Deposit",
+            "simple_meaning": "An advance sum of money given to a landlord or service provider as financial protection against non-payment or property damage.",
+            "real_world_example": "You give ₹50,000 when moving in; when you move out, the landlord must refund it minus valid repair costs.",
+            "question_for_lawyer": "What specific conditions must be met for a full refund of my security deposit?"
+        },
+        "kn": {
+            "word": "ಭದ್ರತಾ ಮುಂಗಡ ಠೇವಣಿ (Security Deposit)",
+            "simple_meaning": "ಆಸ್ತಿಯ ಹಾನಿ ಅಥವಾ ಬಾಡಿಗೆ ಬಾಕಿಯ ವಿರುದ್ಧ ರಕ್ಷಣೆಗಾಗಿ ಮಾಲೀಕರಿಗೆ ನೀಡುವ ಮುಂಗಡ ಹಣ.",
+            "real_world_example": "ಉದಾಹರಣೆಗೆ: ಮನೆಗೆ ಸೇರುವಾಗ ₹1,50,000 ಮುಂಗಡ ನೀಡಲಾಗುತ್ತದೆ, ಖಾಲಿ ಮಾಡುವಾಗ ಹಾನಿ ಕಡಿತಗೊಳಿಸಿ ಬಾಕಿ ಹಿಂತಿರುಗಿಸಲಾಗುತ್ತದೆ.",
+            "question_for_lawyer": "ನನ್ನ ಮುಂಗಡ ಠೇವಣಿಯನ್ನು ಪೂರ್ಣವಾಗಿ ಹಿಂಪಡೆಯಲು ನಾನು ಪೂರೈಸಬೇಕಾದ ಷರತ್ತುಗಳು ಯಾವುವು?"
+        }
     },
     "notice period": {
-        "simple_meaning": "The advance warning time (in days or months) you must give before ending a contract or job.",
-        "real_world_example": "A 30-day notice period means if you tell your landlord on June 1st you are moving out, you can leave on June 30th.",
-        "question_for_lawyer": "Can I pay money instead of serving the full notice period if I need to leave early?"
+        "en": {
+            "word": "Notice Period",
+            "simple_meaning": "The advance warning time (in days or months) you must give before ending a contract or job.",
+            "real_world_example": "A 30-day notice period means if you tell your landlord on June 1st you are moving out, you can leave on June 30th.",
+            "question_for_lawyer": "Can I pay money instead of serving the full notice period if I need to leave early?"
+        },
+        "kn": {
+            "word": "ನೋಟಿಸ್ ಅವಧಿ (Notice Period)",
+            "simple_meaning": "ಒಪ್ಪಂದವನ್ನು ಕೊನೆಗೊಳಿಸುವ ಮುನ್ನ ನೀಡಬೇಕಾದ ಮುಂಗಡ ಮುನ್ನೆಚ್ಚರಿಕೆ ಸಮಯ.",
+            "real_world_example": "ಉದಾಹರಣೆಗೆ: 2 ತಿಂಗಳ ನೋಟಿಸ್ ಅವಧಿಯಿದ್ದರೆ, ಜೂನ್ 1 ರಂದು ಮುನ್ಸೂಚನೆ ನೀಡಿ ಜುಲೈ 31 ರಂದು ಖಾಲಿ ಮಾಡಬಹುದು.",
+            "question_for_lawyer": "ನೋಟಿಸ್ ಅವಧಿಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗದಿದ್ದರೆ ಹಣ ಪಾವತಿಸಿ ಖಾಲಿ ಮಾಡಲು ಅವಕಾಶವಿದೆಯೇ?"
+        }
     },
     "arbitration": {
-        "simple_meaning": "A process where a neutral private referee (arbitrator) settles a dispute outside of regular court.",
-        "real_world_example": "Instead of waiting years in court, both parties present evidence to a private lawyer who makes a binding decision.",
-        "question_for_lawyer": "Is arbitration mandatory, and who pays the arbitrator's fees?"
+        "en": {
+            "word": "Arbitration",
+            "simple_meaning": "A process where a neutral private referee (arbitrator) settles a dispute outside of regular court.",
+            "real_world_example": "Instead of waiting years in court, both parties present evidence to a private lawyer who makes a binding decision.",
+            "question_for_lawyer": "Is arbitration mandatory, and who pays the arbitrator's fees?"
+        },
+        "kn": {
+            "word": "ಮಧ್ಯಸ್ಥಿಕೆ (Arbitration)",
+            "simple_meaning": "ನ್ಯಾಯಾಲಯದ ಹೊರಗೆ ಮೂರನೇ ವ್ಯಕ್ತಿಯ (ಮಧ್ಯಸ್ಥಗಾರರು) ಮೂಲಕ ವಿವಾದವನ್ನು ಬಗೆಹರಿಸಿಕೊಳ್ಳುವ ಪ್ರಕ್ರಿಯೆ.",
+            "real_world_example": "ನ್ಯಾಯಾಲಯದಲ್ಲಿ ವರ್ಷಗಟ್ಟಲೆ ಕಾಯುವ ಬದಲು, ಮಧ್ಯಸ್ಥಗಾರರ ಮೂಲಕ ತ್ವರಿತವಾಗಿ ತೀರ್ಮಾನ ಪಡೆಯುವುದು.",
+            "question_for_lawyer": "ಈ ಒಪ್ಪಂದದಲ್ಲಿ ಮಧ್ಯಸ್ಥಿಕೆ ಕಡ್ಡಾಯವೇ ಮತ್ತು ಮಧ್ಯಸ್ಥಗಾರರ ವೆಚ್ಚವನ್ನು ಯಾರು ಭರಿಸಬೇಕು?"
+        }
     },
     "non-compete": {
-        "simple_meaning": "A clause that attempts to stop an employee or business from working with competitors for a period of time.",
-        "real_world_example": "An employer saying you cannot work for any rival tech company for 1 year after quitting.",
-        "question_for_lawyer": "Is this post-employment non-compete enforceable under Section 27 of the Indian Contract Act?"
+        "en": {
+            "word": "Non-Compete Clause",
+            "simple_meaning": "A clause that attempts to stop an employee or business from working with competitors for a period of time.",
+            "real_world_example": "An employer saying you cannot work for any rival tech company for 1 year after quitting.",
+            "question_for_lawyer": "Is this post-employment non-compete enforceable under Section 27 of the Indian Contract Act?"
+        },
+        "kn": {
+            "word": "ಸ್ಪರ್ಧಾತ್ಮಕವಲ್ಲದ ಷರತ್ತು (Non-Compete)",
+            "simple_meaning": "ಉದ್ಯೋಗಿ ಕೆಲಸ ತೊರೆದ ನಂತರ ಸ್ಪರ್ಧಿ ಕಂಪನಿಗಳಲ್ಲಿ ಕೆಲಸ ಮಾಡುವುದನ್ನು ತಡೆಯುವ ಷರತ್ತು.",
+            "real_world_example": "ಉದಾಹರಣೆಗೆ: ರಾಜೀನಾಮೆ ನೀಡಿದ 1 ವರ್ಷದವರೆಗೆ ಯಾವುದೇ ಪ್ರತಿಸ್ಪರ್ಧಿ ಸಂಸ್ಥೆಯಲ್ಲಿ ಕೆಲಸ ಮಾಡುವಂತಿಲ್ಲ ಎನ್ನುವ ನಿಯಮ.",
+            "question_for_lawyer": "ಭಾರತೀಯ ಕರಾರು ಕಾಯ್ದೆಯ ನಿಯಮ 27 ರ ಅಡಿಯಲ್ಲಿ ಈ ಷರತ್ತು ಕಾನೂನುಬದ್ಧವೇ?"
+        }
     }
 }
 
@@ -623,9 +722,11 @@ def explain_word():
 
     # 1. Check local dictionary first
     if word in LEGAL_GLOSSARY:
-        info = LEGAL_GLOSSARY[word]
+        dict_entry = LEGAL_GLOSSARY[word]
+        lang_key = 'kn' if language in ('kn', 'kannada') else 'en'
+        info = dict_entry.get(lang_key, dict_entry.get('en', list(dict_entry.values())[0]))
         return jsonify({
-            "word": word.title(),
+            "word": info.get("word", word.title()),
             "simple_meaning": info["simple_meaning"],
             "real_world_example": info["real_world_example"],
             "question_for_lawyer": info["question_for_lawyer"]

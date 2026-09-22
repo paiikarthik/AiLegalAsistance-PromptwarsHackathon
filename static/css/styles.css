@@ -30,7 +30,7 @@
 }
 
 body.app-body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', 'Noto Sans Kannada', system-ui, -apple-system, sans-serif;
     background: var(--bg-main);
     color: var(--text-dark);
     min-height: 100vh;
