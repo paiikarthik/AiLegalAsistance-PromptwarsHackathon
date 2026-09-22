@@ -1,6 +1,6 @@
 # ⚖️ LawBuddy AI — GenAI Legal Access & Case Preparation Platform
 
-> **AI-Powered Plain-Language Legal Document Simplification, Precision Kannada Legal Translation, Evidence Mapping, and Advocate Consultation Preparation.**
+> **AI-Powered Plain-Language Legal Document Simplification, Precision Legal Translation, Evidence Mapping, and Advocate Consultation Preparation.**
 
 ---
 
@@ -15,7 +15,7 @@ LawBuddy AI bridges this gap by transforming dense legal documents (Rental Agree
 ## 🚀 Key Features & Capabilities
 
 ### 1. 🌐 Precision Multilingual & Kannada Legal Engine
-- **Authentic Kannada Translation**: Generates summaries, explanations, risk alerts, and next steps in fluent, grammatically accurate Kannada script (ಉದಾತ್ತ ಹಾಗೂ ಸರಳ ಕನ್ನಡ).
+- **Authentic  Translation**: Generates summaries, explanations, risk alerts, and next steps in fluent, grammatically accurate language script.
 - **SOV Sentence Structure**: Enforces Subject-Object-Verb (SOV) Kannada grammar order to ensure translations sound natural to native Kannada speakers rather than literal machine-translated English (SVO).
 - **Standard Legal Terminology 
  
