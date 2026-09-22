@@ -62,7 +62,6 @@ LawBuddy AI bridges this gap by transforming dense legal documents (Rental Agree
 1. **Clone the Repository**:
    ```bash
    git clone https://github.com/paiikarthik/AiLegalAsistance-PromptwarsHackathon.git
-   cd "Legal Assitance AI"
    ```
 
 2. **Create a Virtual Environment**:
