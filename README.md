@@ -6,7 +6,7 @@
 
 ## 🌟 Overview
 
-**LawBuddy AI** is an advanced AI legal assistance platform designed for Indian citizens, tenants, employees, consumers, and advocates. Legal agreements and notices in India are often filled with intimidating legalese, complex obligations, and ambiguous deadlines. 
+**LawBuddy AI** is an advanced Multi Langauge AI legal assistance platform designed for Indian citizens, tenants, employees, consumers, and advocates. Legal agreements and notices in India are often filled with intimidating legalese, complex obligations, and ambiguous deadlines. 
 
 LawBuddy AI bridges this gap by transforming dense legal documents (Rental Agreements, Eviction Notices, Employment Contracts, Consumer Complaints, NDAs) into plain-language actionable insights. It provides **high-accuracy Kannada and regional language translations**, clause risk analysis, evidence-to-clause mapping, legal terms explainers, and downloadable lawyer consultation briefs.
 
@@ -17,15 +17,8 @@ LawBuddy AI bridges this gap by transforming dense legal documents (Rental Agree
 ### 1. 🌐 Precision Multilingual & Kannada Legal Engine
 - **Authentic Kannada Translation**: Generates summaries, explanations, risk alerts, and next steps in fluent, grammatically accurate Kannada script (ಉದಾತ್ತ ಹಾಗೂ ಸರಳ ಕನ್ನಡ).
 - **SOV Sentence Structure**: Enforces Subject-Object-Verb (SOV) Kannada grammar order to ensure translations sound natural to native Kannada speakers rather than literal machine-translated English (SVO).
-- **Standard Legal Terminology (ಕನ್ನಡ ಕಾನೂನು ಶಬ್ದಕೋಶ)**: Uses standard Kannada legal terms alongside English terms in brackets for instant document cross-referencing:
-  - `ಕರಾರು / ಒಪ್ಪಂದ (Agreement)`
-  - `ಬಾಡಿಗೆ ಕರಾರು (Rental Agreement)`
-  - `ಮಾಸಿಕ ಬಾಡಿಗೆ (Monthly Rent)`
-  - `ಭದ್ರತಾ ಮುಂಗಡ ಠೇವಣಿ (Security Deposit)`
-  - `ನೋಟಿಸ್ ಅವಧಿ (Notice Period)`
-  - `ಲಾಕ್-ಇನ್ ಅವಧಿ (Lock-in Period)`
-  - `ಒಪ್ಪಂದ ರದ್ದತಿ (Termination)`
-  - `ನಷ್ಟಪರಿಹಾರ ಬಾಧ್ಯತೆ (Indemnification)`
+- **Standard Legal Terminology 
+ 
 - **Multilingual Support**: Fully supports 10 Indian languages including Kannada (ಕನ್ನಡ), Hindi (हिंदी), Malayalam (മലയാളം), Telugu (తెలుగు), Marathi (मराठी), Bengali (বাংলা), Gujarati (ગુજરાતી), Tulu (ತುಳು), Tamil (தமிழ்), and English.
 - **Rule-Based Kannada Fallback**: Generates complete Kannada translation fallbacks when LLM APIs are offline or rate-limited.
 
@@ -55,62 +48,6 @@ LawBuddy AI bridges this gap by transforming dense legal documents (Rental Agree
 ### 7. ♿ Accessibility & Typography
 - Loaded Google Font `Noto Sans Kannada` alongside `Inter` in HTML and CSS for crisp, legible rendering of Kannada script across all browsers.
 - Dynamic `document.documentElement.lang` attribute toggling and ARIA screen reader attributes (`aria-live`, `aria-label`).
-
----
-
-## 🏗️ System Architecture
-
-```mermaid
-flowchart TD
-    User["👤 User / Indian Citizen"] --> UI["💻 Web Interface (HTML5 / JS / Noto Sans Kannada)"]
-    UI --> Flask["🐍 Flask Application Server (app.py)"]
-    
-    subgraph Security & Middleware
-        Flask --> SecHeaders["🛡️ Security Headers & CSP"]
-        Flask --> RateLimit["⏱️ In-Memory IP Rate Limiter"]
-        Flask --> Purger["🧹 3-Hour Auto Privacy Purger"]
-    end
-    
-    subgraph Processing & Services
-        Flask --> OCR["📷 OCR & Text Extractor (PyPDF / pdfplumber / Tesseract / Vision)"]
-        Flask --> LLM["🤖 LLM Router (Gemini 2.5 Flash / ChatGPT / Fallback)"]
-        Flask --> RAG["🔍 RAG TF-IDF Retrieval Engine"]
-        Flask --> Evidence["📋 Evidence-to-Clause Mapping Service"]
-        Flask --> Brief["📄 Lawyer Brief Generator"]
-    end
-    
-    LLM --> Response["📊 Structured JSON Analysis & Kannada Output"]
-    Response --> UI
-```
-
----
-
-## 📁 Repository Structure
-
-```
-Legal Assistance AI/
-├── app.py                      # Main Flask application & Security/API Endpoints
-├── config.py                   # Environment configuration & Language mapping
-├── index.html                  # Landing Page & Product Overview
-├── app.html                    # Main Web Application Workspace
-├── login.html                  # Secure User Login
-├── signup.html                 # User Registration
-├── requirements.txt            # Python Dependencies
-├── services/
-│   ├── gemini_service.py       # LLM Integration, Kannada Prompting & Fallbacks
-│   ├── rag_service.py          # TF-IDF Retrieval Augmented Generation
-│   ├── comparison_service.py   # Document Diff & Revision Comparison
-│   ├── consultation_service.py # Printable Lawyer Consultation Brief Generator
-│   ├── case_preparation_service.py # Evidence-to-Clause Mapping Engine
-│   └── ocr_service.py          # PDF/DOCX/TXT/Image Text Extraction Engine
-├── static/
-│   ├── css/styles.css          # Design System & Noto Sans Kannada Typography
-│   └── js/app.js               # Dynamic Frontend Application Logic & i18n
-├── data/
-│   └── sample_rental_agreement.txt # Pre-configured Demo Agreement
-└── scratch/
-    └── test_evaluation_parameters.py # Comprehensive Automated Test Suite
-```
 
 ---
 
@@ -156,9 +93,6 @@ Legal Assistance AI/
    python app.py
    ```
 
-6. **Access in Browser**:
-   Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your web browser.
-
 ---
 
 ## 🧪 Automated Testing
@@ -171,7 +105,7 @@ Run all tests using Python's `unittest`:
 python -m unittest discover -s scratch -p "test_*.py"
 ```
 
-Expected output:
+Expes*3acted output:
 ```text
 Ran 17 tests in 15.938s
 
@@ -199,7 +133,7 @@ OK
 > **IMPORTANT**: LawBuddy AI provides general legal information, document simplification, and preparation assistance. It is **not** a substitute for formal legal advice, representation, or opinion from a licensed legal professional or advocate. Always verify critical document clauses with a qualified advocate prior to taking formal legal action.
 
 ---
-
 ## 📄 License
+**Built BY:** Karthik Pai with Antigravity & Codex For the Submission of Google Promptwars Hackathon.
 
 Distributed under the MIT License. See `LICENSE` for details.
