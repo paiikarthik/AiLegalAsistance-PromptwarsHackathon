@@ -92,5 +92,18 @@ class TestProblemStatementAlignment(unittest.TestCase):
         self.assertIn("questions_for_lawyer", prepare_section)
         self.assertIn("checklist_to_collect", prepare_section)
 
+    def test_applicable_laws_and_sections(self):
+        """Verify dynamic statutory sections, penalties, case procedures, and portal URLs."""
+        result = self.gemini._fallback_analysis_response(self.sample_doc_a, "Rental Agreement", "en")
+        self.assertIn("applicable_laws_and_sections", result)
+        laws = result["applicable_laws_and_sections"]
+        self.assertTrue(len(laws) >= 1)
+        law = laws[0]
+        self.assertIn("act_or_law", law)
+        self.assertIn("section", law)
+        self.assertIn("penalty_or_punishment", law)
+        self.assertIn("how_to_handle_case", law)
+        self.assertIn("portal_url", law)
+
 if __name__ == '__main__':
     unittest.main()

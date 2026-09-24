@@ -546,6 +546,7 @@ async function runDocumentAnalysis(docId, overrideDocType = null, showOverview =
 
         window.appState.analysisData = data;
         renderClarityActionMap(data.action_map, data.summary);
+        renderApplicableLaws(data.applicable_laws_and_sections);
         renderClauseRisks(data.clauses_and_risks);
         renderFactsAndTimeline(data);
         renderCaseReadiness(data);
@@ -730,6 +731,52 @@ function renderClarityActionMap(actionMap, summary = '') {
             `<a href="${s.url}" target="_blank" class="source-chip" title="${s.description || ''}">🏛️ ${s.title}</a>`
         ).join('');
     }
+}
+
+// Render Applicable Indian Laws, Statutory Sections, Penalties & Case Procedure
+function renderApplicableLaws(laws) {
+    const container = document.getElementById('applicableLawsContainer');
+    if (!container) return;
+
+    if (!laws || laws.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No specific statutory laws identified for this document.</p></div>';
+        return;
+    }
+
+    container.innerHTML = laws.map((l, idx) => {
+        const actName = l.act_or_law || 'Indian Statute';
+        const section = l.section || 'General Section';
+        const title = l.title || 'Legal Right / Remedy';
+        const penalty = l.penalty_or_punishment || 'N/A';
+        const handling = (l.how_to_handle_case || '').replace(/\n/g, '<br>');
+        const portalUrl = l.portal_url || 'https://www.indiacode.nic.in';
+
+        return `
+            <div class="scenario-card" style="border-left: 4px solid #0284c7; background: #ffffff; border-radius: 12px; padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
+                    <div>
+                        <span class="badge-pill bg-info" style="font-size: 12px;">⚖️ ${actName}</span>
+                        <h4 style="margin-top: 8px; color: #0f172a; font-size: 15px; font-weight: 700;">${section}: ${title}</h4>
+                    </div>
+                    <a href="${portalUrl}" target="_blank" rel="noopener noreferrer" class="source-chip" style="font-size: 11px; font-weight: 700; flex-shrink: 0; background: #e0f2fe; color: #0369a1; text-decoration: none; border: 1px solid #38bdf8;">
+                        🔗 Case Portal
+                    </a>
+                </div>
+
+                <div style="margin-top: 12px; padding: 10px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 8px; font-size: 13px;">
+                    <strong style="color: #9f1239;">🚨 Penalty / Imprisonment / Statutory Fine:</strong><br>
+                    <span style="color: #881337;">${penalty}</span>
+                </div>
+
+                <div style="margin-top: 12px; font-size: 13px; color: #334155; line-height: 1.5;">
+                    <strong style="color: #0369a1;">📋 How to Handle Case & Step-by-Step Procedure:</strong>
+                    <div style="margin-top: 6px; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        ${handling}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
 }
 
 // Render Clause & Risk Explorer Cards

@@ -206,6 +206,16 @@ JSON SCHEMA REQUIREMENT:
       "page_ref": "Page X or Section Y"
     }}
   ],
+  "applicable_laws_and_sections": [
+    {{
+      "act_or_law": "Bharatiya Nyaya Sanhita (BNS) / Transfer of Property Act / Consumer Protection Act 2019 / Indian Contract Act 1872",
+      "section": "Section XX",
+      "title": "Title or Category of Offence / Right / Remedy",
+      "penalty_or_punishment": "Imprisonment term, fine amount, or legal penalty if applicable",
+      "how_to_handle_case": "Step-by-step guidance on how to file complaint, issue notice, or handle the case",
+      "portal_url": "https://edaakhil.nic.in or https://ecourts.gov.in or https://www.indiacode.nic.in"
+    }}
+  ],
   "action_map": {{
     "understand": [
       "Point 1: Key rule user must understand clearly",
@@ -536,6 +546,137 @@ DOCUMENT TEXT:
                     "page_ref": "Page 1"
                 }]
 
+        # 7. Extract Applicable Indian Laws, Penalties, and Case Handling Procedures
+        applicable_laws = []
+        c_text = clean_text.lower()
+        d_type = (doc_type or "").lower()
+
+        # Case 1: Criminal / Offence / Fraud / Threat / BNS / IPC
+        if any(k in c_text or k in d_type for k in ['crime', 'criminal', 'fraud', 'cheating', 'threat', 'bns', 'ipc', 'police', 'stolen', 'forgery']):
+            if is_kannada:
+                applicable_laws.append({
+                    "act_or_law": "ಭಾರತೀಯ ನ್ಯಾಯ ಸಂಹಿತೆ, 2023 (BNS) / ಐ.ಪಿ.ಸಿ (IPC)",
+                    "section": "ಸೆಕ್ಷನ್ 318 BNS (ಹಳೆಯ ಐ.ಪಿ.ಸಿ ಸೆಕ್ಷನ್ 420)",
+                    "title": "ವಂಚನೆ ಮತ್ತು ಪ್ರಚೋದನೆ (Cheating & Criminal Breach of Trust)",
+                    "penalty_or_punishment": "7 ವರ್ಷಗಳವರೆಗೆ ಜೈಲು ಶಿಕ್ಷೆ + ದಂಡ (Imprisonment up to 7 years + Mandatory Fine)",
+                    "how_to_handle_case": "1. ಸಮೀಪದ ಪೊಲೀಸ್ ಠಾಣೆಯಲ್ಲಿ ಪ್ರಥಮ ಮಾಹಿತಿ ವರದಿ (FIR) ನೀಡಲು ಲಿಖಿತ ದೂರು ಸಲ್ಲಿಸಿ.\n2. ಪೋಲಿಸರು ದೂರು ಸ್ವೀಕರಿಸದಿದ್ದರೆ ಸೆಕ್ಷನ್ 175(3) BNS ಅಡಿಯಲ್ಲಿ ಮ್ಯಾಜಿಸ್ಟ್ರೇಟ್ ನ್ಯಾಯಾಲಯದಲ್ಲಿ ದೂರು ಸಲ್ಲಿಸಿ.\n3. ದಿನಾಂಕ ಹಾಗೂ ಸಾಕ್ಷ್ಯ ದಾಖಲೆಗಳನ್ನು ಭದ್ರಪಡಿಸಿ.",
+                    "portal_url": "https://ecourts.gov.in"
+                })
+            else:
+                applicable_laws.append({
+                    "act_or_law": "Bharatiya Nyaya Sanhita, 2023 (BNS) / Indian Penal Code (IPC)",
+                    "section": "Section 318 BNS (Sec 420 IPC)",
+                    "title": "Cheating and Dishonestly Inducing Delivery of Property",
+                    "penalty_or_punishment": "Imprisonment up to 7 years + Mandatory Fine",
+                    "how_to_handle_case": "1. Submit a formal written complaint for FIR registration at the local police station.\n2. If police refuse, file an application under Sec 175(3) BNS (Sec 156(3) CrPC) before the Judicial Magistrate.\n3. Preserve all digital, transactional, and document evidence.",
+                    "portal_url": "https://ecourts.gov.in"
+                })
+
+        # Case 2: Rental / Lease / Tenancy / Eviction / Security Deposit
+        if any(k in c_text or k in d_type for k in ['rent', 'lease', 'tenant', 'landlord', 'eviction', 'vacate', 'deposit', 'lessor', 'lessee']):
+            if is_kannada:
+                applicable_laws.append({
+                    "act_or_law": "ಆಸ್ತಿ ವರ್ಗಾವಣೆ ಕಾಯ್ದೆ 1882 (Transfer of Property Act, 1882) & ಬಾಡಿಗೆ ನಿಯಂತ್ರಣ ಕಾಯ್ದೆ",
+                    "section": "ಸೆಕ್ಷನ್ 106 ಮತ್ತು ಸೆಕ್ಷನ್ 108 (Section 106 & 108)",
+                    "title": "ಲೀಸ್ ರದ್ದತಿ ನೋಟಿಸ್ ಮತ್ತು ಮಾಲೀಕರ ಹೊಣೆಗಾರಿಕೆ (Notice to Terminate Lease & Tenant Rights)",
+                    "penalty_or_punishment": "ಅನಧಿಕೃತ ಖಾಲಿ ಮಾಡಿಸುವಿಕೆ ವಿರುದ್ಧ ಸಿವಿಲ್ ತಡೆಆಜ್ಞೆ (Injunction) ಮತ್ತು %18 ವರೆಗೆ ಬಡ್ಡಿ ಸಹಿತ ಠೇವಣಿ ಮರುಪಾವತಿ ಆದೇಶ",
+                    "how_to_handle_case": "1. 15 ಅಥವಾ 30 ದಿನಗಳ ಶಾಸನಬದ್ಧ ನೋಟಿಸ್‌ಗೆ ಒಪ್ಪಂದದ ಪ್ರಕಾರ ಉತ್ತರ ನೀಡಿ.\n2. ಠೇವಣಿ ಹಿಂತಿರುಗಿಸದಿದ್ದರೆ ಅಥವಾ ಬೆದರಿಕೆ ಹಾಕಿದರೆ ಬಾಡಿಗೆ ನಿಯಂತ್ರಕರ ಬಳಿ ಅಥವಾ ಸಿವಿಲ್ ನ್ಯಾಯಾಲಯದಲ್ಲಿ ದಾವೆ ಹೂಡಿ.",
+                    "portal_url": "https://ecourts.gov.in"
+                })
+            else:
+                applicable_laws.append({
+                    "act_or_law": "Transfer of Property Act, 1882 & Rent Control Act",
+                    "section": "Section 106 & Section 108",
+                    "title": "Notice to Terminate Lease & Rights of Lessee/Tenant",
+                    "penalty_or_punishment": "Civil injunction against unlawful eviction & statutory recovery of security deposit with up to 18% p.a. interest",
+                    "how_to_handle_case": "1. Respond to notice within the statutory 15/30-day window citing lease terms.\n2. If landlord unlawfully withholds deposit or threatens eviction, file a petition before the Rent Controller / Civil Court.",
+                    "portal_url": "https://ecourts.gov.in"
+                })
+
+        # Case 3: Consumer Protection / Hidden Charges / Deficiency in Service / Billing Dispute
+        if any(k in c_text or k in d_type for k in ['consumer', 'hidden charge', 'service', 'defect', 'refund', 'fee', 'charge', 'complaint', 'bill', 'unfair']):
+            if is_kannada:
+                applicable_laws.append({
+                    "act_or_law": "ಗ್ರಾಹಕ ಸಂರಕ್ಷಣಾ ಕಾಯ್ದೆ, 2019 (Consumer Protection Act, 2019)",
+                    "section": "ಸೆಕ್ಷನ್ 2(11) ಮತ್ತು ಸೆಕ್ಷನ್ 35 (Section 2(11) & 35)",
+                    "title": "ಸೇವೆಯಲ್ಲಿ ಕೊರತೆ ಮತ್ತು ಅಡಗಿಸಿದ ಶುಲ್ಕಗಳ ಅಕ್ರಮ ವ್ಯಾಪಾರ (Deficiency in Service & Hidden Charges)",
+                    "penalty_or_punishment": "ಅಡಗಿಸಿದ ಶುಲ್ಕಗಳ ಪೂರ್ಣ ಮರುಪಾವತಿ + ಮಾನಸಿಕ ಕಿರುಕುಳಕ್ಕೆ ಪರಿಹಾರ + ₹1,00,000 ವರೆಗೆ ಕಾನೂನು ವೆಚ್ಚಗಳು",
+                    "how_to_handle_case": "1. ಕಂಪನಿ/ಮಾಲೀಕರಿಗೆ ರದ್ದತಿ ಹಾಗೂ ಹಣ ಹಿಂತಿರುಗಿಸುವ ಬಗ್ಗೆ ಅಧಿಕೃತ ಇಮೇಲ್/ನೋಟಿಸ್ ಕಳುಹಿಸಿ.\n2. 15 ದಿನಗಳಲ್ಲಿ ಪರಿಹಾರ ಸಿಗದಿದ್ದರೆ ಇ-ದಾಖಿಲ್ (e-Daakhil) ವೇದಿಕೆಯ ಮೂಲಕ ಆನ್‌ಲೈನ್ ದೂರು ಸಲ್ಲಿಸಿ.",
+                    "portal_url": "https://edaakhil.nic.in"
+                })
+            else:
+                applicable_laws.append({
+                    "act_or_law": "Consumer Protection Act, 2019",
+                    "section": "Section 2(11) & Section 35",
+                    "title": "Deficiency of Service & Hidden Charges (Unfair Trade Practice)",
+                    "penalty_or_punishment": "Full refund of undisclosed fees + Compensation for harassment + Legal costs up to ₹1,00,000",
+                    "how_to_handle_case": "1. Issue a formal legal notice seeking refund and itemized billing justification.\n2. File an online complaint on the e-Daakhil Consumer Forum portal if unresolved within 15 days.",
+                    "portal_url": "https://edaakhil.nic.in"
+                })
+
+        # Case 4: Employment / Non-Compete / Salary / Notice Period / Probation / NDA
+        if any(k in c_text or k in d_type for k in ['employ', 'salary', 'ctc', 'non-compete', 'notice period', 'probation', 'nda', 'employer', 'employee', 'termination']):
+            if is_kannada:
+                applicable_laws.append({
+                    "act_or_law": "ಭಾರತೀಯ ಕರಾರು ಕಾಯ್ದೆ 1872 (Indian Contract Act, 1872)",
+                    "section": "ಸೆಕ್ಷನ್ 27 ಮತ್ತು ಸೆಕ್ಷನ್ 73 (Section 27 & Section 73)",
+                    "title": "ವ್ಯಾಪಾರ/ಉದ್ಯೋಗ ತಡೆಹಿಡಿಯುವ ಒಪ್ಪಂದ ಶೂನ್ಯ ಮತ್ತು ಶಾಸನಬದ್ಧ ವೇತನ ಪರಿಹಾರ",
+                    "penalty_or_punishment": "ಸೇವೆಯಿಂದ ನಿರ್ಗಮಿಸಿದ ನಂತರದ ಕೆಲಸದ ತಡೆ ನಿಯಮಗಳು ಭಾರತೀಯ ಕಾನೂನಿನಲ್ಲಿ ಶೂನ್ಯ (Void ab initio); ವೇತನ ತಡೆಹಿಡಿದರೆ ಬಡ್ಡಿ ಸಹಿತ ಮರುಪಾವತಿ",
+                    "how_to_handle_case": "1. ಬಾಕಿ ವೇತನ ಹಾಗೂ ಪರಿಹಾರಕ್ಕೆ ಸಂಬಂಧಿಸಿ ಕಂಪನಿಗೆ ಲೀಗಲ್ ನೋಟಿಸ್ ನೀಡಿ.\n2. ಕಾರ್ಮಿಕ ಆಯುಕ್ತರ ಕಚೇರಿಯಲ್ಲಿ (Labor Commissioner) ಅಥವಾ ಇಂಡಸ್ಟ್ರಿಯಲ್ ಟ್ರಿಬ್ಯೂನಲ್‌ನಲ್ಲಿ ದೂರು ಸಲ್ಲಿಸಿ.",
+                    "portal_url": "https://labour.gov.in"
+                })
+            else:
+                applicable_laws.append({
+                    "act_or_law": "Indian Contract Act, 1872 & Industrial Disputes Act",
+                    "section": "Section 27 & Section 73",
+                    "title": "Agreement in Restraint of Trade Void & Relief for Breach",
+                    "penalty_or_punishment": "Post-employment non-compete restrictions are void ab initio in India; illegal salary withholding attracts labor court recovery + interest",
+                    "how_to_handle_case": "1. Issue a statutory demand notice to employer for salary release and experience certificate.\n2. File a dispute before the Labor Commissioner or Industrial Tribunal.",
+                    "portal_url": "https://labour.gov.in"
+                })
+
+        # Case 5: Cheque Bounce / Financial Dishonour
+        if any(k in c_text or k in d_type for k in ['cheque', 'bounce', 'dishonour', 'bank memo', '138', 'promissory']):
+            if is_kannada:
+                applicable_laws.append({
+                    "act_or_law": "ನೆಗೋಶಿಯೇಬಲ್ ಇನ್ಸ್ಟ್ರುಮೆಂಟ್ಸ್ ಕಾಯ್ದೆ, 1881 (Negotiable Instruments Act, 1881)",
+                    "section": "ಸೆಕ್ಷನ್ 138 (Section 138)",
+                    "title": "ಹಣದ ಕೊರತೆಯಿಂದ ಚೆಕ್ ಅಮಾನ್ಯತೆ / ಬೌನ್ಸ್ (Dishonour of Cheque)",
+                    "penalty_or_punishment": "2 ವರ್ಷಗಳವರೆಗೆ ಜೈಲು ಶಿಕ್ಷೆ, ಅಥವಾ ಚೆಕ್ ಮೊತ್ತದ ಎರಡರಷ್ಟು ದಂಡ, ಅಥವಾ ಎರಡೂ",
+                    "how_to_handle_case": "1. ಚೆಕ್ ಬೌನ್ಸ್ ಮೆಮೊ ಬಂದ 30 ದಿನಗಳೊಳಗೆ 15 ದಿನಗಳ ಶಾಸನಬದ್ಧ ಕಾನೂನು ನೋಟಿಸ್ ಕಳುಹಿಸಿ.\n2. ನೋಟಿಸ್ ಅವಧಿ ಮುಗಿದ 30 ದಿನಗಳೊಳಗೆ ಮ್ಯಾಜಿಸ್ಟ್ರೇಟ್ ನ್ಯಾಯಾಲಯದಲ್ಲಿ ಕ್ರಿಮಿನಲ್ ದೂರು ಸಲ್ಲಿಸಿ.",
+                    "portal_url": "https://ecourts.gov.in"
+                })
+            else:
+                applicable_laws.append({
+                    "act_or_law": "Negotiable Instruments Act, 1881",
+                    "section": "Section 138",
+                    "title": "Dishonour of Cheque for Insufficiency of Funds",
+                    "penalty_or_punishment": "Imprisonment up to 2 years, or fine up to twice the amount of the cheque, or both",
+                    "how_to_handle_case": "1. Issue a statutory 15-day demand notice within 30 days of receiving bank memo.\n2. File a criminal complaint before Judicial Magistrate within 30 days of notice expiry.",
+                    "portal_url": "https://ecourts.gov.in"
+                })
+
+        # Default Law Entry if none matched or as statutory foundation
+        if not applicable_laws:
+            if is_kannada:
+                applicable_laws.append({
+                    "act_or_law": "ಭಾರತೀಯ ಕರಾರು ಕಾಯ್ದೆ 1872 & ಭಾರತದ ಸಂವಿಧಾನ (Indian Contract Act, 1872)",
+                    "section": "ಸೆಕ್ಷನ್ 10 ಮತ್ತು ವಿಧಿ 300A (Section 10 & Article 300A)",
+                    "title": "ಸಿಂಧು ಒಪ್ಪಂದದ ಷರತ್ತುಗಳು ಹಾಗೂ ಮೂಲಭೂತ ಕಾನೂನು ಹಕ್ಕುಗಳು",
+                    "penalty_or_punishment": "ಕಾನೂನುಬಾಹಿರ ಅಥವಾ ಏಕಪಕ್ಷೀಯ ಷರತ್ತುಗಳು ನ್ಯಾಯಾಲಯದಿಂದ ಶೂನ್ಯ ಮತ್ತು ಜಾರಿಗೆ ತರಲಾಗುವುದಿಲ್ಲ",
+                    "how_to_handle_case": "1. ಒಪ್ಪಂದದ ಷರತ್ತುಗಳನ್ನು ಹಾಗೂ ಸಹಿ ಸಿಂಧುತ್ವವನ್ನು ಪರಿಶೀಲಿಸಿ.\n2. NALSA ಉಚಿತ ಕಾನೂನು ನೆರವು ಕೇಂದ್ರ ಅಥವಾ ವಕೀಲರ ಉಚಿತ ಸಲಹೆ ಪಡೆಯಿರಿ.",
+                    "portal_url": "https://www.indiacode.nic.in"
+                })
+            else:
+                applicable_laws.append({
+                    "act_or_law": "Indian Contract Act, 1872 & Constitution of India",
+                    "section": "Section 10 & Article 300A",
+                    "title": "Essential Conditions of Valid Contract & Property Rights",
+                    "penalty_or_punishment": "Unlawful or unconscionable clauses are unenforceable and void under Indian Law",
+                    "how_to_handle_case": "1. Inspect contract terms for compliance and mutual consent.\n2. Seek advice from legal aid (NALSA) or an advocate before taking formal steps.",
+                    "portal_url": "https://www.indiacode.nic.in"
+                })
+
         return {
             "doc_type": doc_type or ("ಕಾನೂನು ದಾಖಲೆ" if is_kannada else "Legal Document"),
             "language": Config.SUPPORTED_LANGUAGES.get(language, "Kannada (ಕನ್ನಡ)" if is_kannada else "English"),
@@ -544,6 +685,7 @@ DOCUMENT TEXT:
             "key_obligations": key_obligations,
             "important_dates_and_amounts": important_dates_and_amounts,
             "clauses_and_risks": clauses_and_risks,
+            "applicable_laws_and_sections": applicable_laws,
             "action_map": {
                 "understand": understand_list,
                 "identify": identify_list,
