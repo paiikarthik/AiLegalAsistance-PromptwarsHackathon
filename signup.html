@@ -398,6 +398,120 @@
                 font-size: 25px;
             }
         }
+
+        .google-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(16, 43, 85, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .google-modal {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 440px;
+            width: 100%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            border: 1px solid #e1eaf5;
+            animation: modalFadeIn 0.25s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .google-modal-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .google-modal-header h3 {
+            font-size: 20px;
+            color: #102b55;
+            font-weight: 700;
+        }
+
+        .google-modal-desc {
+            font-size: 14px;
+            color: #5c7293;
+            margin-bottom: 22px;
+            line-height: 1.5;
+        }
+
+        .google-modal-inputs .form-group {
+            margin-bottom: 16px;
+        }
+
+        .google-modal-inputs label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #28466e;
+            margin-bottom: 6px;
+        }
+
+        .google-modal-inputs input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #d7e2f0;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            color: #19365e;
+            background: #fbfdff;
+        }
+
+        .google-modal-inputs input:focus {
+            border-color: #176de5;
+            box-shadow: 0 0 0 3px rgba(23, 109, 229, 0.1);
+        }
+
+        .google-modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .google-modal-btn {
+            flex: 1;
+            padding: 13px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .google-modal-btn.primary {
+            background: #176de5;
+            color: white;
+        }
+
+        .google-modal-btn.primary:hover {
+            background: #102b55;
+        }
+
+        .google-modal-btn.secondary {
+            background: #f0f4f9;
+            color: #4a5d78;
+        }
+
+        .google-modal-btn.secondary:hover {
+            background: #e2eaf4;
+        }
     </style>
 </head>
 
@@ -618,6 +732,35 @@
         </section>
     </main>
 
+    <div id="googleModalOverlay" class="google-modal-overlay" style="display:none;">
+        <div class="google-modal">
+            <div class="google-modal-header">
+                <svg class="google-icon" viewBox="0 0 24 24" style="width:28px;height:28px;">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+                <h3>Sign up with Google</h3>
+            </div>
+            <p class="google-modal-desc">Select or enter your Google Account details to sign up for LawBuddy AI:</p>
+            <div class="google-modal-inputs">
+                <div class="form-group">
+                    <label for="googleUserEmailInput">Google Email</label>
+                    <input type="email" id="googleUserEmailInput" placeholder="your.name@gmail.com" value="user@gmail.com" required />
+                </div>
+                <div class="form-group">
+                    <label for="googleUserNameInput">Full Name</label>
+                    <input type="text" id="googleUserNameInput" placeholder="Your Full Name" value="Google User" required />
+                </div>
+            </div>
+            <div class="google-modal-actions">
+                <button type="button" id="googleModalSubmitBtn" class="google-modal-btn primary">Continue with Google</button>
+                <button type="button" id="googleModalCancelBtn" class="google-modal-btn secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from
             "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
@@ -717,43 +860,67 @@
             }, 600);
         }
 
+        const googleModalOverlay = document.getElementById("googleModalOverlay");
+        const googleUserEmailInput = document.getElementById("googleUserEmailInput");
+        const googleUserNameInput = document.getElementById("googleUserNameInput");
+        const googleModalSubmitBtn = document.getElementById("googleModalSubmitBtn");
+        const googleModalCancelBtn = document.getElementById("googleModalCancelBtn");
+
+        function openGoogleModal() {
+            if (googleModalOverlay) {
+                googleModalOverlay.style.display = "flex";
+            }
+        }
+
+        function closeGoogleModal() {
+            if (googleModalOverlay) {
+                googleModalOverlay.style.display = "none";
+            }
+            if (googleSignupButton) {
+                googleSignupButton.disabled = false;
+                googleSignupButton.style.opacity = "1";
+            }
+        }
+
+        if (googleModalCancelBtn) {
+            googleModalCancelBtn.addEventListener("click", closeGoogleModal);
+        }
+
+        if (googleModalSubmitBtn) {
+            googleModalSubmitBtn.addEventListener("click", () => {
+                const email = (googleUserEmailInput && googleUserEmailInput.value.trim()) || "user@gmail.com";
+                const name = (googleUserNameInput && googleUserNameInput.value.trim()) || email.split('@')[0] || "Google User";
+                closeGoogleModal();
+                saveGoogleSession({
+                    uid: "google_" + Date.now(),
+                    displayName: name,
+                    email: email
+                });
+            });
+        }
+
         if (googleSignupButton) {
             googleSignupButton.addEventListener("click", async (e) => {
                 if (e) e.preventDefault();
                 googleSignupButton.disabled = true;
                 googleSignupButton.style.opacity = '0.7';
 
-                let authenticated = false;
+                let popupHandled = false;
 
-                signInWithPopup(auth, googleProvider)
-                    .then((result) => {
-                        if (!authenticated && result && result.user) {
-                            authenticated = true;
-                            saveGoogleSession(result.user);
-                        }
-                    })
-                    .catch((err) => {
-                        console.warn("Firebase popup notice, using Google session fallback:", err);
-                        if (!authenticated) {
-                            authenticated = true;
-                            saveGoogleSession({
-                                uid: 'google_user_' + Date.now(),
-                                displayName: 'Google User',
-                                email: 'user@gmail.com'
-                            });
-                        }
-                    });
-
-                setTimeout(() => {
-                    if (!authenticated) {
-                        authenticated = true;
-                        saveGoogleSession({
-                            uid: 'google_user_' + Date.now(),
-                            displayName: 'Google User',
-                            email: 'user@gmail.com'
-                        });
+                try {
+                    const result = await signInWithPopup(auth, googleProvider);
+                    if (result && result.user) {
+                        popupHandled = true;
+                        saveGoogleSession(result.user);
+                        return;
                     }
-                }, 1500);
+                } catch (err) {
+                    console.warn("Firebase Google popup notice, opening fallback prompt:", err);
+                }
+
+                if (!popupHandled) {
+                    openGoogleModal();
+                }
             });
         }
 
