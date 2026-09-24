@@ -555,14 +555,14 @@ DOCUMENT TEXT:
                     "next_steps": next_steps,
                     "official_sources": [
                         {
-                            "title": "ಇಂಡಿಯಾ ಕೋಡ್ - ಕೇಂದ್ರ ಶಾಸನಗಳ ಪೋರ್ಟಲ್ (India Code)",
+                            "title": "ಇಂಡಿಯಾ ಕೋಡ್ - ಕೇಂದ್ರ ಶಾಸನಗಳ ಪೋರ್ಟಲ್ (India Code)" if is_kannada else "India Code - Central Statutory Portal",
                             "url": "https://www.indiacode.nic.in",
-                            "description": "ಭಾರತದ ಕೇಂದ್ರ ಹಾಗೂ ರಾಜ್ಯ ಕಾಯ್ದೆಗಳ ಅಧಿಕೃತ ಸರ್ಕಾರಿ ವೆಬ್‌ಸೈಟ್."
+                            "description": "ಭಾರತದ ಕೇಂದ್ರ ಹಾಗೂ ರಾಜ್ಯ ಕಾಯ್ದೆಗಳ ಅಧಿಕೃತ ಸರ್ಕಾರಿ ವೆಬ್‌ಸೈಟ್." if is_kannada else "Official government portal for Indian Acts and Laws."
                         },
                         {
-                            "title": "ರಾಷ್ಟ್ರೀಯ ಕಾನೂನು ಸೇವೆಗಳ ಪ್ರಾಧಿಕಾರ (NALSA)",
+                            "title": "ರಾಷ್ಟ್ರೀಯ ಕಾನೂನು ಸೇವೆಗಳ ಪ್ರಾಧಿಕಾರ (NALSA)" if is_kannada else "National Legal Services Authority (NALSA)",
                             "url": "https://nalsa.gov.in",
-                            "description": "ಉಚಿತ ಕಾನೂನು ನೆರವು ನೀಡುವ ಸರ್ಕಾರಿ ಪ್ರಾಧಿಕಾರ."
+                            "description": "ಉಚಿತ ಕಾನೂನು ನೆರವು ನೀಡುವ ಸರ್ಕಾರಿ ಪ್ರಾಧಿಕಾರ." if is_kannada else "Free Legal Aid Portal for Indian citizens."
                         }
                     ]
                 }
