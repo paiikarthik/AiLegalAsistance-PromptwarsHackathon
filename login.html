@@ -391,7 +391,7 @@
 
             <div id="message" class="message" role="alert"></div>
 
-            <button class="google" id="googleLogin">
+            <button type="button" class="google" id="googleLogin">
                 <svg viewBox="0 0 24 24">
                     <path
                         fill="#4285F4"
@@ -502,11 +502,12 @@
         }
 
         function save(user) {
+            const userName = user.displayName || user.name || (user.email ? user.email.split('@')[0] : "Legal User");
             localStorage.setItem(
                 "lawbuddyUser",
                 JSON.stringify({
-                    uid: user.uid,
-                    name: user.displayName || "",
+                    uid: user.uid || ('user_' + Date.now()),
+                    name: userName,
                     email: user.email || "",
                     photoURL: user.photoURL || ""
                 })
