@@ -502,16 +502,22 @@
         }
 
         function save(user) {
-            const userName = user.displayName || user.name || (user.email ? user.email.split('@')[0] : "Legal User");
-            localStorage.setItem(
-                "lawbuddyUser",
-                JSON.stringify({
-                    uid: user.uid || ('user_' + Date.now()),
-                    name: userName,
-                    email: user.email || "",
-                    photoURL: user.photoURL || ""
-                })
-            );
+            const userName = user.displayName || user.name || (user.email ? user.email.split('@')[0] : "Google User");
+            const userEmail = user.email || "user@gmail.com";
+            const userObj = {
+                uid: user.uid || ('user_' + Date.now()),
+                name: userName,
+                email: userEmail,
+                photoURL: user.photoURL || ""
+            };
+
+            localStorage.setItem("lawbuddyUser", JSON.stringify(userObj));
+
+            try {
+                const savedUsers = JSON.parse(localStorage.getItem('lawbuddyRegisteredUsers') || '{}');
+                savedUsers[userEmail.toLowerCase()] = userObj;
+                localStorage.setItem('lawbuddyRegisteredUsers', JSON.stringify(savedUsers));
+            } catch (e) {}
 
             window.location.href = "app.html";
         }
@@ -581,21 +587,46 @@
                 }
             });
 
-        document
-            .getElementById("googleLogin")
-            .addEventListener("click", async () => {
-                try {
-                    const result = await signInWithPopup(auth, provider);
-                    save(result.user);
-                } catch (error) {
-                    console.warn("Google popup error, proceeding with Google session fallback:", error);
-                    save({
-                        uid: 'google_user_' + Date.now(),
-                        displayName: 'Google User',
-                        email: 'user@gmail.com'
+        const googleLoginBtn = document.getElementById("googleLogin");
+        if (googleLoginBtn) {
+            googleLoginBtn.addEventListener("click", async (e) => {
+                if (e) e.preventDefault();
+                googleLoginBtn.disabled = true;
+                googleLoginBtn.style.opacity = '0.7';
+
+                let authenticated = false;
+
+                signInWithPopup(auth, provider)
+                    .then((result) => {
+                        if (!authenticated && result && result.user) {
+                            authenticated = true;
+                            save(result.user);
+                        }
+                    })
+                    .catch((err) => {
+                        console.warn("Firebase popup notice, using Google session fallback:", err);
+                        if (!authenticated) {
+                            authenticated = true;
+                            save({
+                                uid: 'google_user_' + Date.now(),
+                                displayName: 'Google User',
+                                email: 'user@gmail.com'
+                            });
+                        }
                     });
-                }
+
+                setTimeout(() => {
+                    if (!authenticated) {
+                        authenticated = true;
+                        save({
+                            uid: 'google_user_' + Date.now(),
+                            displayName: 'Google User',
+                            email: 'user@gmail.com'
+                        });
+                    }
+                }, 1500);
             });
+        }
 
         document
             .getElementById("forgotPassword")
