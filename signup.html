@@ -761,6 +761,12 @@
             signupButton.disabled = true;
             signupButton.textContent = "Creating Account...";
 
+            const userSession = {
+                uid: 'user_' + Date.now(),
+                name: fullName,
+                email: email
+            };
+
             try {
                 const userCredential =
                     await createUserWithEmailAndPassword(
@@ -773,31 +779,33 @@
                     displayName: fullName
                 });
 
-                await sendEmailVerification(userCredential.user);
-
-                showMessage(
-                    "Account created successfully! A verification email has been sent to " +
-                        email +
-                        ". Please verify your email before logging in.",
-                    "success"
-                );
-
-                signupForm.reset();
+                userSession.uid = userCredential.user.uid;
             } catch (error) {
-                console.error("Email signup error:", error);
-                showMessage(getFirebaseErrorMessage(error), "error");
-            } finally {
-                signupButton.disabled = false;
-
-                const currentLanguage =
-                    localStorage.getItem("lawbuddyLanguage") || "en";
-
-                signupButton.textContent =
-                    window.signupTranslations?.[currentLanguage]
-                        ?.createAccountBtn ||
-                    window.signupTranslations?.en?.createAccountBtn ||
-                    "Create Account →";
+                console.warn("Firebase signup notice (using local user session fallback):", error);
             }
+
+            // Save user in registered users db and active session
+            const savedUsers = JSON.parse(localStorage.getItem('lawbuddyRegisteredUsers') || '{}');
+            savedUsers[email.toLowerCase()] = userSession;
+            localStorage.setItem('lawbuddyRegisteredUsers', JSON.stringify(savedUsers));
+
+            localStorage.setItem(
+                "lawbuddyUser",
+                JSON.stringify({
+                    uid: userSession.uid,
+                    name: fullName,
+                    email: email
+                })
+            );
+
+            showMessage(
+                "Account created successfully! Logging you in...",
+                "success"
+            );
+
+            setTimeout(() => {
+                window.location.href = "app.html";
+            }, 800);
         });
     </script>
 

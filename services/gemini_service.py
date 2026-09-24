@@ -168,7 +168,7 @@ Analyze the following legal document (Type: {doc_type}) for an Indian user.
 Generate a structured JSON response in {target_lang_name}.
 
 CRITICAL INSTRUCTIONS:
-1. Provide explanations in simple, plain language understandable to ordinary Indian citizens. Never use AI, OCR, RAG, embeddings, classification, or other technical terms in the response.
+1. Provide a comprehensive, detailed, and thorough plain-language explanation of what the document/case is about. Explain the background, key obligations, rights, risks, financial commitments, and legal remedies in full detail. Never output raw chopped fragments or raw publication metadata.
 2. Keep important Indian legal terms in English alongside their explanation in {target_lang_name}.
 3. DO NOT claim to replace a lawyer or declare clauses legally illegal without qualification. Use cautious terms like 'Potential Concern' or 'Requires Professional Review'.
 4. Ground every explanation strictly in the document text provided. Cite page numbers or clause titles if present. Never invent a legal deadline: if a date is found but its meaning is unclear, say that it was found but could not be confirmed.
@@ -180,7 +180,7 @@ JSON SCHEMA REQUIREMENT:
 {{
   "doc_type": "{doc_type}",
   "language": "{target_lang_name}",
-  "summary": "Short 2-3 sentence overview of the agreement",
+  "summary": "A comprehensive detailed 4-6 sentence explanation of the case, detailing the nature of the agreement/dispute, parties involved, financial commitments, notice windows, key obligations, risks, and practical legal implications.",
   "parties": [
     {{"role": "Landlord / Employer / Party A", "name": "Name from document"}},
     {{"role": "Tenant / Employee / Party B", "name": "Name from document"}}
@@ -365,6 +365,10 @@ DOCUMENT TEXT:
         cleaned = re.sub(r'---\s*PAGE\s*\d+\s*---', '', text, flags=re.IGNORECASE)
         cleaned = re.sub(r'DocuSign\s+Envelope\s+ID\s*:\s*[A-Z0-9\-]+', '', cleaned, flags=re.IGNORECASE)
         cleaned = re.sub(r'^\s*(?:CONFIDENTIAL|Page\s+\d+\s+of\s+\d+|ALL RIGHTS RESERVED|EXECUTION COPY)\s*$', '', cleaned, flags=re.IGNORECASE | re.MULTILINE)
+        # Strip journal publication headers if present
+        cleaned = re.sub(r'Published\s+by\s*:.*?(?=\n|\Z)', '', cleaned, flags=re.IGNORECASE)
+        cleaned = re.sub(r'ISSN\s*:\s*[0-9\-]+', '', cleaned, flags=re.IGNORECASE)
+        cleaned = re.sub(r'An?\s+International\s+(?:Peer-Reviewed|Refereed)\s+Journal.*?(?=\n|\Z)', '', cleaned, flags=re.IGNORECASE)
         cleaned = re.sub(r'\n\s*\n+', '\n\n', cleaned).strip()
         return cleaned
 
@@ -378,14 +382,14 @@ DOCUMENT TEXT:
         lines = [line.strip() for line in clean_text.splitlines() if line.strip()]
         is_kannada = (language in ('kn', 'kannada'))
         
+        # Filter out lines that look like publication headers
+        clean_lines = [l for l in lines if not re.search(r'published by|issn:|journal of|volume \d+|issue \d+', l, re.I)]
+        if not clean_lines:
+            clean_lines = lines
+
         # 1. Extract Title & Overview Summary
-        doc_title = lines[0] if lines else ("ಕಾನೂನು ದಾಖಲೆ (Legal Document)" if is_kannada else "Legal Document")
-        first_meaningful = " ".join(lines[1:6]) if len(lines) > 1 else (" ".join(lines[:4]) if lines else "")
-        if is_kannada:
-            summary_text = f"ದಾಖಲೆಯ ಮುಖ್ಯಾಂಶ: {doc_title}. {first_meaningful}"
-        else:
-            summary_text = f"{doc_title}. {first_meaningful}"
-        summary_text = summary_text[:280] + ("..." if len(summary_text) > 280 else "")
+        doc_kind = doc_type or ("ಕಾನೂನು ದಾಖಲೆ (Legal Document)" if is_kannada else "Legal Document")
+        doc_title = clean_lines[0] if clean_lines else doc_kind
 
         # 2. Extract Parties (regex for names / roles)
         parties = []
@@ -400,10 +404,10 @@ DOCUMENT TEXT:
         if party_b:
             parties.append({"role": role_b, "name": party_b[0].strip()})
         
-        if not parties and len(lines) >= 2:
+        if not parties and len(clean_lines) >= 2:
             parties = [
-                {"role": role_a, "name": lines[0][:50]},
-                {"role": role_b, "name": lines[1][:50]}
+                {"role": role_a, "name": clean_lines[0][:50]},
+                {"role": role_b, "name": clean_lines[1][:50]}
             ]
 
         # 3. Extract Financial Amounts and Dates
@@ -427,24 +431,54 @@ DOCUMENT TEXT:
             ]
 
         # 4. Extract Key Obligations
-        obligation_lines = [l for l in lines if re.search(r'\b(shall|must|agrees?|disclose|confidential|required|pay|notice|deposit|term|condition|purpose)\b', l, re.I)]
+        obligation_lines = [l for l in clean_lines if re.search(r'\b(shall|must|agrees?|disclose|confidential|required|pay|notice|deposit|term|condition|purpose)\b', l, re.I)]
         if is_kannada:
             key_obligations = [f"ಒಪ್ಪಂದದ ಬಾಧ್ಯತೆ: {l[:130]}" for l in obligation_lines[:3]] if obligation_lines else ["ಒಪ್ಪಂದದ ಷರತ್ತುಗಳನ್ನು ಎಚ್ಚರಿಕೆಯಿಂದ ಪರಿಶೀಲಿಸಿ."]
         else:
-            key_obligations = [l[:150] for l in obligation_lines[:3]] if obligation_lines else [lines[0][:150]] if lines else ["Review document terms carefully."]
+            key_obligations = [l[:150] for l in obligation_lines[:3]] if obligation_lines else [clean_lines[0][:150]] if clean_lines else ["Review document terms carefully."]
 
-        # 5. Build Dynamic Action Map
+        # 5. Build Detailed Comprehensive Summary Text
+        if is_kannada:
+            summary_parts = [
+                f"ಈ ಪ್ರಮುಖ ಪ್ರಕರಣವು {doc_kind} ಗೆ ಸಂಬಂಧಿಸಿದ ಬಾಧ್ಯತೆಗಳನ್ನು ಹೊಂದಿದೆ.",
+                f"ದಾಖಲೆಯ ಮುಖ್ಯ ಪ್ರಶಸ್ತಿ: {doc_title}."
+            ]
+            if parties:
+                party_str = ", ".join([f"{p['role']}: {p['name']}" for p in parties])
+                summary_parts.append(f"ಸಂಬಂಧಿಸಿದ ಪಕ್ಷಕಾರರು: {party_str}.")
+            if amounts_found:
+                summary_parts.append(f"ಪರಿಶೀಲಿಸಲಾದ ಹಣಕಾಸಿನ ಷರತ್ತುಗಳು: {', '.join(list(dict.fromkeys(amounts_found))[:3])}.")
+            if dates_found:
+                summary_parts.append(f"ಗಮನಿಸಬೇಕಾದ ನೋಟಿಸ್ ಅವಧಿ ಹಾಗೂ ಗಡುವುಗಳು: {', '.join(list(dict.fromkeys(dates_found))[:3])}.")
+            summary_parts.append("ಈ ಒಪ್ಪಂದವು ಪಕ್ಷಕಾರರ ಕಾನೂನಾತ್ಮಕ ಹಕ್ಕುಗಳು, ದಂಡದ ನಿಯಮಗಳು ಹಾಗೂ ಬಾಧ್ಯತೆಗಳನ್ನು ನಿರ್ದಿಷ್ಟಪಡಿಸುತ್ತದೆ. ಸಹಿ ಮಾಡುವ ಮುನ್ನ ಅಥವಾ ಕಾನೂನು ಕ್ರಮ ಕೈಗೊಳ್ಳುವ ಮುನ್ನ ಎಲ್ಲ ಷರತ್ತುಗಳನ್ನು ವಿವರವಾಗಿ ಪರಿಶೀಲಿಸಿ.")
+            summary_text = " ".join(summary_parts)
+        else:
+            summary_parts = [
+                f"This case involves a {doc_kind} establishing legally binding covenants and obligations between the parties.",
+                f"Main Document Title & Context: {doc_title}."
+            ]
+            if parties:
+                party_str = ", ".join([f"{p['role']}: {p['name']}" for p in parties])
+                summary_parts.append(f"Key Parties Identified: {party_str}.")
+            if amounts_found:
+                summary_parts.append(f"Financial Terms Extracted: {', '.join(list(dict.fromkeys(amounts_found))[:3])}.")
+            if dates_found:
+                summary_parts.append(f"Notice Windows & Timelines: {', '.join(list(dict.fromkeys(dates_found))[:3])}.")
+            summary_parts.append("This agreement establishes enforceable rights, potential liabilities, confidentiality or restrictive obligations, and default penalties. Review all clauses carefully before taking formal legal steps.")
+            summary_text = " ".join(summary_parts)
+
+        # 6. Build Dynamic Action Map
         if is_kannada:
             understand_list = [
-                f"ವಿವರಣೆ: {summary_text}",
-                f"ದಾಖಲೆಯ ಮಾದರಿ: {doc_type or 'ಕಾನೂನು ದಾಖಲೆ (Legal Document)'}."
+                f"ಪ್ರಕರಣದ ವಿವರಣೆ: {summary_text}",
+                f"ದಾಖಲೆಯ ವರ್ಗ: {doc_kind}."
             ]
             if amounts_found:
-                understand_list.append(f"ಪರಿಶೀಲಿಸಲಾದ ಹಣಕಾಸು ಷರತ್ತುಗಳು: {', '.join(list(dict.fromkeys(amounts_found))[:2])}.")
+                understand_list.append(f"ಹಣಕಾಸಿನ ಮೊತ್ತ ಹಾಗೂ ಬಾಧ್ಯತೆಗಳು: {', '.join(list(dict.fromkeys(amounts_found))[:2])}.")
 
             identify_list = []
             if obligation_lines:
-                identify_list.append(f"ಪ್ರಮುಖ ಬಾಧ್ಯತೆ ಗುರುತಿಸಲಾಗಿದೆ: {obligation_lines[0][:100]}...")
+                identify_list.append(f"ಪ್ರಮುಖ ಬಾಧ್ಯತೆ ಗುರುತಿಸಲಾಗಿದೆ: {obligation_lines[0]}.")
             if dates_found:
                 identify_list.append(f"ಗಮನಿಸಬೇಕಾದ ದಿನಾಂಕಗಳು / ಗಡುವು: {', '.join(list(dict.fromkeys(dates_found))[:3])}.")
             if not identify_list:
@@ -464,17 +498,17 @@ DOCUMENT TEXT:
             ]
         else:
             understand_list = [
-                f"Summary: {summary_text}",
-                f"Document Type: {doc_type or 'Legal Document'}."
+                f"Case Explanation: {summary_text}",
+                f"Document Classification: {doc_kind}."
             ]
             if amounts_found:
-                understand_list.append(f"Financial terms extracted: {', '.join(list(dict.fromkeys(amounts_found))[:2])}.")
+                understand_list.append(f"Financial Commitments & Deposit Scope: {', '.join(list(dict.fromkeys(amounts_found))[:2])}.")
 
             identify_list = []
             if obligation_lines:
-                identify_list.append(f"Key obligation identified: {obligation_lines[0][:120]}...")
+                identify_list.append(f"Core Obligation Identified: {obligation_lines[0]}.")
             if dates_found:
-                identify_list.append(f"Important dates/deadlines flagged: {', '.join(list(dict.fromkeys(dates_found))[:3])}.")
+                identify_list.append(f"Important Dates & Statutory Notice Timelines: {', '.join(list(dict.fromkeys(dates_found))[:3])}.")
             if not identify_list:
                 identify_list.append("Verify all dates, obligations, and notice timelines in the agreement.")
 
