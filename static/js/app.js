@@ -1047,6 +1047,22 @@ function renderClauseRisks(risks) {
     });
 }
 
+
+// Helper function to convert AI ChatBot markdown formatting (**bold**, *italic*, [link](url), newlines) to clean HTML
+function formatMarkdownChatText(text) {
+    if (!text) return '';
+    let html = escapeHtml(text);
+    // Convert bold: **text** -> <strong>text</strong>
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    // Convert italic: *text* -> <em>text</em>
+    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    // Convert Markdown links: [label](url) -> <a href="url" target="_blank">label</a>
+    html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #2563eb; font-weight: 600; text-decoration: underline;">$1</a>');
+    // Convert line breaks to <br>
+    html = html.replace(/\n/g, '<br>');
+    return html;
+}
+
 // Grounded AI Chat Handler
 function initChatHandler() {
     window.sendChatMessage = async (presetQuestion) => {
@@ -1108,7 +1124,7 @@ function initChatHandler() {
             }
 
             const messageId = 'aiMsg_' + Date.now();
-            const formattedAnswer = escapeHtml(data.answer || 'No response generated.').replace(/\n/g, '<br>');
+            const formattedAnswer = formatMarkdownChatText(data.answer || 'No response generated.');
 
             chatBox.innerHTML += `
                 <div id="${messageId}" class="chat-bubble ai" style="background: #ffffff; border: 1px solid #cbd5e1; padding: 14px 16px; border-radius: 12px; margin-bottom: 12px; max-width: 85%; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">

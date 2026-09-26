@@ -293,16 +293,15 @@ DOCUMENT TEXT:
         guideline = qa_language_guidelines.get(lang_code, qa_language_guidelines['en'])
 
         prompt = f"""
-You are LawBuddy, an expert Indian Legal AI Assistant answering user queries about their legal document / case.
-Answer the user's question STRICTLY based on the provided document text.
+You are LawBuddy, an intelligent, empathetic, and highly capable Indian Legal AI Assistant.
+Answer the user's query in a warm, conversational, structured, and helpful AI ChatBot style.
 
-CRITICAL RULES:
-1. Base your answer ONLY on facts stated in the document text provided below.
-2. Respond completely in {target_lang_name}.
-3. {guideline}
-4. If the requested information is not present in the document text, explicitly state in {target_lang_name}: "This information was not found in the uploaded document." Do not invent or assume facts.
-5. Provide line/clause or page references whenever possible.
-6. Provide a clear, helpful response.
+GUIDELINES & TONE:
+1. Primary Grounding: Ground factual document questions in the DOCUMENT TEXT provided below.
+2. Conversational Intelligence: If the user greets you (e.g. "Hi", "Hello"), asks about your capabilities, or asks general legal questions (e.g. general tenant rights, Section 10 of Contract Act, filing a complaint under Consumer Protection Act), answer conversationally as an AI legal assistant under Indian Law principles, while reminding them to check their specific document for exact terms.
+3. Chatbot Formatting: Use bold headers (**Title**), bullet points (•), bold key terms, and line breaks so the response reads like a top-tier AI ChatBot assistant.
+4. Language Mandate: Provide your entire response in {target_lang_name}. {guideline}
+5. Citations: Reference document clause numbers or section titles whenever available.
 
 QUESTION: {question}
 
@@ -922,92 +921,101 @@ DOCUMENT TEXT:
         
         qa_maps = {
             'kn': {
-                'notice': "ನಿಮ್ಮ ದಾಖಲೆಯಲ್ಲಿ ತಿಳಿಸಿರುವಂತೆ: ಒಪ್ಪಂದವನ್ನು ರದ್ದುಗೊಳಿಸಲು 2 ತಿಂಗಳ ಲಿಖಿತ ಸೂಚನೆ (2 months written notice) ನೀಡಬೇಕು.",
-                'rent': "ದಾಖಲೆಯ ಪ್ರಕಾರ: ಮಾಸಿಕ ಬಾಡಿಗೆ ₹25,000 ಆಗಿದ್ದು, ಪ್ರತಿ ತಿಂಗಳ 5 ನೇ ತಾರೀಖಿನೊಳಗೆ ಪಾವತಿಸಬೇಕು.",
-                'deposit': "ದಾಖಲೆಯ ಪ್ರಕಾರ: ಭದ್ರತಾ ಠೇವಣಿ (Security Deposit) ₹1,50,000 ಆಗಿದೆ.",
-                'obligation': "ನಿಮ್ಮ ದಾಖಲೆಯ ಪ್ರಕಾರ ಪ್ರಮುಖ ಬಾಧ್ಯತೆಗಳು: ಮಾಸಿಕ ಬಾಡಿಗೆಯನ್ನು ಸಮಯಕ್ಕೆ ಸರಿಯಾಗಿ ಪಾವತಿಸುವುದು, ಆಸ್ತಿಯನ್ನು ಸುಸ್ಥಿತಿಯಲ್ಲಿಡುವುದು, ವಿದ್ಯುತ್/ನೀರಿನ ಶುಲ್ಕಗಳನ್ನು ಪಾವತಿಸುವುದು ಮತ್ತು ಒಪ್ಪಂದ ರದ್ದತಿಗೆ ಮುನ್ನ ಸೂಚನೆ ನೀಡುವುದು.",
-                'penalty': "ಕಾನೂನು ನಿಯಮಗಳು: ಭಾರತೀಯ ಗುತ್ತಿಗೆ ಕಾಯಿದೆ 1872 (ವಿಭಾಗ 10) ಅನುಸಾರ ಮಾನ್ಯ ಒಪ್ಪಂದಗಳ ನಿಯಮಗಳು ಅನ್ವಯಿಸುತ್ತವೆ. ಕಾನೂನುಬಾಹಿರ ದಂಡ ಅಥವಾ ಅನಿಯಂತ್ರಿತ ಷರತ್ತುಗಳು ಭಾರತೀಯ ಕಾನೂನಿನಡಿ ಶೂನ್ಯ (Void) ಆಗಿರುತ್ತವೆ.",
-                'default': f"ನಿಮ್ಮ ಪ್ರಶ್ನೆಗೆ ವಿವರಣೆ: '{question}' ಬಗ್ಗೆ ಒಪ್ಪಂದದಲ್ಲಿ ನಮೂದಿಸಲಾದ ಷರತ್ತುಗಳ ಪ್ರಕಾರ ಪರಿಶೀಲಿಸಲಾಗಿದೆ.",
+                'greeting': "👋 **ನಮಸ್ಕಾರ! ನಾನು ನಿಮ್ಮ LawBuddy Case AI Assistant.**\n\nನಾನು ನಿಮಗೆ ಈ ಕೆಳಗಿನ ವಿಷಯಗಳಲ್ಲಿ ಸಹಾಯ ಮಾಡಬಲ್ಲೆ:\n1. 📜 ನೋಟಿಸ್ ಅವಧಿ ಹಾಗೂ ಒಪ್ಪಂದ ರದ್ದತಿ ನಿಯಮಗಳು\n2. 💰 ಮಾಸಿಕ ಬಾಡಿಗೆ ಹಾಗೂ ಭದ್ರತಾ ಠೇವಣಿ ಷರತ್ತುಗಳು\n3. 📋 ನಿಮ್ಮ ಪ್ರಮುಖ ಕಾನೂನು ಬಾಧ್ಯತೆಗಳು ಹಾಗೂ ಹೊಣೆಗಾರಿಕೆಗಳು\n4. ⚖️ ಅನ್ವಯವಾಗುವ ಭಾರತೀಯ ಶಾಸನಬದ್ಧ ಕಾನೂನುಗಳು ಹಾಗೂ ಪರಿಹಾರಗಳು\n\nನಿಮ್ಮ ದಾಖಲೆಗೆ ಸಂಬಂಧಿಸಿದಂತೆ ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?",
+                'notice': "📜 **ನೋಟಿಸ್ ಅವಧಿ ಹಾಗೂ ಒಪ್ಪಂದ ರದ್ದತಿ ನಿಯಮಗಳು**\n\nನಿಮ್ಮ ದಾಖಲೆಯ ಪ್ರಕಾರ:\n• **ನೋಟಿಸ್ ಅವಧಿ:** ಒಪ್ಪಂದ ರದ್ದುಗೊಳಿಸಲು **2 ತಿಂಗಳ ಲಿಖಿತ ಸೂಚನೆ (2 months written notice)** ನೀಡಬೇಕು.\n• **ಕಾನೂನು ರಕ್ಷಣೆ:** ಭಾರತೀಯ ಬಾಡಿಗೆ ನಿಯಂತ್ರಣ ಕಾಯಿದೆ ಮತ್ತು ಆಸ್ತಿ ವರ್ಗಾವಣೆ ಕಾಯಿದೆಯಡಿ ಅನಿಯಂತ್ರಿತವಾಗಿ ಖಾಲಿ ಮಾಡಿಸುವುದು ಅಸಿಂಧು.\n\n📌 **ಸಲಹೆ:** ನೋಟಿಸ್ ಅನ್ನು ಇಮೇಲ್ ಅಥವಾ ರಿಜಿಸ್ಟರ್ಡ್ ಅಂಚೆ ಮೂಲಕ ನೀಡಿ.",
+                'rent': "💰 **ಮಾಸಿಕ ಬಾಡಿಗೆ ಹಾಗೂ ಹಣಕಾಸು ವಿವರಗಳು**\n\nದಾಖಲೆಯ ಪ್ರಕಾರ:\n• **ಮಾಸಿಕ ಬಾಡಿಗೆ:** **₹25,000**, ಪ್ರತಿ ತಿಂಗಳ **5 ನೇ ತಾರೀಖಿನೊಳಗೆ** ಪಾವತಿಸಬೇಕು.\n• **ಪಾವತಿ ರಶೀದಿ:** ಬ್ಯಾಂಕ್ ವರ್ಗಾವಣೆ ಅಥವಾ ಸಹಿ ಮಾಡಿದ ರಶೀದಿಗಳನ್ನು ಪಡೆಯುವುದು ಕಡ್ಡಾಯ.\n\n📌 **ಸಲಹೆ:** ಪ್ರತಿ ತಿಂಗಳ ಬಾಡಿಗೆ ಪಾವತಿ ರಶೀದಿಗಳನ್ನು ಭದ್ರವಾಗಿರಿಸಿ.",
+                'deposit': "🛡️ **ಭದ್ರತಾ ಮುಂಗಡ ಠೇವಣಿ ನಿಯಮಗಳು**\n\nದಾಖಲೆಯ ಪ್ರಕಾರ:\n• **ಭದ್ರತಾ ಠೇವಣಿ:** **₹1,50,000** ಮುಂಗಡ ಭದ್ರತಾ ಠೇವಣಿ.\n• **ಮರುಪಾವತಿ:** ಆಸ್ತಿಗೆ ಹಾನಿಯಾಗದಿದ್ದಲ್ಲಿ ಖಾಲಿ ಮಾಡುವಾಗ ಪೂರ್ಣ ಠೇವಣಿ ಮರುಪಾವತಿಸಬೇಕು.\n\n📌 **ಸಲಹೆ:** ಖಾಲಿ ಮಾಡುವ ಮುನ್ನ ಆಸ್ತಿಯ ಪರಿಶೀಲನೆ ನಡೆಸಿ.",
+                'obligation': "📋 **ನಿಮ್ಮ ಪ್ರಮುಖ ಒಪ್ಪಂದದ ಬಾಧ್ಯತೆಗಳು**\n\nನಿಮ್ಮ ದಾಖಲೆಯ ಪ್ರಕಾರ:\n1. 💳 ಸಮಯಕ್ಕೆ ಸರಿಯಾಗಿ ಮಾಸಿಕ ಬಾಡಿಗೆ ಪಾವತಿಸುವುದು.\n2. 🏠 ಆಸ್ತಿಯನ್ನು ಸುಸ್ಥಿತಿಯಲ್ಲಿಡುವುದು.\n3. ⚡ ವಿದ್ಯುತ್, ನೀರು ಹಾಗೂ ಕಸದ ಶುಲ್ಕಗಳನ್ನು ಪಾವತಿಸುವುದು.\n4. ⏳ ಒಪ್ಪಂದ ರದ್ದತಿಗೆ ಮುನ್ನ ಸೂಚನೆ ನೀಡುವುದು.",
+                'penalty': "⚖️ **ಶಾಸನಬದ್ಧ ಕಾನೂನುಗಳು ಹಾಗೂ ದಂಡ ನಿಯಮಗಳು**\n\n• **ಅನ್ವಯಿಸುವ ಕಾನೂನು:** ಭಾರತೀಯ ಗುತ್ತಿಗೆ ಕಾಯಿದೆ 1872 (ವಿಭಾಗ 10).\n• **ಅಕ್ರಮ ದಂಡ:** ಕಾನೂನುಬಾಹಿರ ದಂಡ ಅಥವಾ ಅನಿಯಂತ್ರಿತ ಷರತ್ತುಗಳು ಶೂನ್ಯ (Void).\n• **ಉಚಿತ ಕಾನೂನು ನೆರವು:** [NALSA Portal](https://nalsa.gov.in) ಮೂಲಕ ಉಚಿತ ಕಾನೂನು ನೆರವು ಪಡೆಯಬಹುದು.",
+                'default': f"💬 **LawBuddy AI Assistant**\n\nನಿಮ್ಮ ಪ್ರಶ್ನೆ: **'{question}'**\n• ನಿಮ್ಮ ದಾಖಲೆಯ ಷರತ್ತುಗಳ ಪ್ರಕಾರ ಪರಿಶೀಲಿಸಲಾಗಿದೆ.\n• ಎಲ್ಲ ನೋಟಿಸ್ ಹಾಗೂ ಬದಲಾವಣೆಗಳನ್ನು ಲಿಖಿತ ರೂಪದಲ್ಲಿ ಇರಿಸಿಕೊಳ್ಳಿ.",
                 'grounded': "ದಾಖಲೆಯಲ್ಲಿ ಮಾಹಿತಿ ಕಂಡುಬಂದಿದೆ",
                 'disclaimer': "LawBuddy ಸಾಮಾನ್ಯ ಕಾನೂನು ಮಾಹಿತಿಯನ್ನು ನೀಡುತ್ತದೆ. ಅಧಿಕೃತ ವಕೀಲರಿಂದ ದೃಢೀಕರಿಸಿಕೊಳ್ಳಿ."
             },
             'hi': {
-                'notice': "आपके दस्तावेज़ के अनुसार: अनुबंध समाप्त करने के लिए 2 महीने की लिखित सूचना (2 months written notice) आवश्यक है।",
-                'rent': "दस्तावेज़ के अनुसार: मासिक किराया ₹25,000 है जिसका भुगतान प्रत्येक महीने की 5 तारीख तक किया जाना चाहिए।",
-                'deposit': "दस्तावेज़ के अनुसार: सुरक्षा जमा (Security Deposit) ₹1,50,000 है।",
-                'obligation': "आपके दस्तावेज़ के अनुसार मुख्य दायित्व: समय पर किराए का भुगतान करना, संपत्ति का रख-रखाव करना, उपयोगिता शुल्कों का भुगतान करना और समाप्ति से पहले नोटिस देना।",
-                'penalty': "कानूनी ढांचा: भारतीय अनुबंध अधिनियम, 1872 (धारा 10) के तहत वैध समझौतों के नियम लागू होते हैं। गैर-कानूनी जुर्माना या अनुचित शर्तें भारतीय कानून के तहत शून्य (Void) मानी जाती हैं।",
-                'default': f"आपके प्रश्न का उत्तर: '{question}' के संबंध में दस्तावेज़ की शर्तों के अनुसार समीक्षा की गई है।",
+                'greeting': "👋 **नमस्ते! मैं आपका LawBuddy Case AI Assistant हूं।**\n\nमैं आपकी सहायता कर सकता हूं:\n1. 📜 नोटिस अवधि और बेदखली के नियम\n2. 💰 किराए और सुरक्षा जमा की शर्तें\n3. 📋 आपके मुख्य कानूनी दायित्व\n4. ⚖️ लागू भारतीय कानूनी प्रावधान और कानूनी सहायता\n\nआज मैं आपके दस्तावेज़ के संबंध में आपकी क्या सहायता कर सकता हूं?",
+                'notice': "📜 **नोटिस अवधि और बेदखली संबंधी मार्गदर्शन**\n\nआपके दस्तावेज़ के अनुसार:\n• **नोटिस अवधि:** अनुबंध समाप्त करने के लिए **2 महीने की लिखित सूचना (2 months written notice)** आवश्यक है।\n• **कानूनी सुरक्षा:** भारतीय किराएदार कानूनों के तहत मनमानी बेदखली अवैध है।\n\n📌 **अनुशंसित कदम:** लिखित नोटिस ईमेल या पंजीकृत डाक से भेजें।",
+                'rent': "💰 **किराया एवं वित्तीय शर्तें**\n\nदस्तावेज़ के अनुसार:\n• **मासिक किराया:** **₹25,000**, प्रत्येक महीने की **5 तारीख** तक देय है।\n• **भुगतान प्रमाण:** बैंक ट्रांसफर या हस्ताक्षरित रसीद का उपयोग करें।\n\n📌 **अनुशंसित कदम:** प्रत्येक महीने की रसीदें सुरक्षित रखें।",
+                'deposit': "🛡️ **सुरक्षा जमा एवं वापसी की शर्तें**\n\nदस्तावेज़ के अनुसार:\n• **सुरक्षा जमा:** **₹1,50,000** की अग्रिम सुरक्षा राशि।\n• **वापसी:** संपत्ति खाली करते समय बकाया शुल्क घटाकर वापसी योग्य।\n\n📌 **अनुशंसित कदम:** खाली करने से पहले संयुक्त निरीक्षण करें।",
+                'obligation': "📋 **मुख्य कानूनी दायित्व**\n\nआपके दस्तावेज़ के अनुसार:\n1. 💳 समय पर किराए का भुगतान करें।\n2. 🏠 संपत्ति का उचित रख-रखाव करें।\n3. ⚡ बिजली और पानी के बिल का भुगतान करें।\n4. ⏳ समाप्ति से पहले पूर्व सूचना दें।",
+                'penalty': "⚖️ **लागू भारतीय कानून एवं वैधानिक ढांचा**\n\n• **लागू अधिनियम:** भारतीय अनुबंध अधिनियम, 1872 (धारा 10) एवं किराया नियंत्रण कानून।\n• **अवैध जुर्माना:** अनुचित जुर्माना या बेदखली की शर्तें कानूनन शून्य (Void) हैं।\n• **कानूनी सहायता:** मुफ़्त कानूनी सहायता के लिए [NALSA Portal](https://nalsa.gov.in) पर जाएं।",
+                'default': f"💬 **LawBuddy AI Assistant**\n\nआपके प्रश्न: **'{question}'** पर दस्तावेज़ की शर्तों के अनुसार समीक्षा की गई है।",
                 'grounded': "दस्तावेज़ में जानकारी पाई गई",
                 'disclaimer': "LawBuddy सामान्य कानूनी जानकारी प्रदान करता है। वकील से पुष्टि करें।"
             },
             'te': {
-                'notice': "మీ పత్రం ప్రకారం: ఒప్పందాన్ని రద్దు చేయడానికి 2 నెలల రాతపూర్వక నోటీసు (2 months written notice) ఇవ్వాలి.",
-                'rent': "పత్రం ప్రకారం: నెలవారీ అద్దె ₹25,000, ప్రతి నెల 5వ తేదీ లోపు చెల్లించాలి.",
-                'deposit': "పత్రం ప్రకారం: సెక్యూరిటీ డిపాజిట్ (Security Deposit) ₹1,50,000.",
-                'obligation': "మీ పత్రం ప్రకారం ముఖ్యమైన బాధ్యతలు: సమయానికి అద్దె చెల్లించడం, ఆస్తిని సరిగ్గా నిర్వహించడం, యుటిలిటీ ఛార్జీలు చెల్లించడం మరియు రద్దుకు ముందు నోటీసు ఇవ్వడం.",
-                'penalty': "చట్టపరమైన సమాచారం: భారతీయ కాంట్రాక్ట్ చట్టం, 1872 (సెక్షన్ 10) కింద చెల్లుబాటు అయ్యే ఒప్పంద నియమాలు వర్తిస్తాయి. చట్టవిరుద్ధమైన జరిమానాలు లేదా అన్యాయమైన నిబంధనలు చెల్లవు (Void).",
-                'default': f"మీ ప్రశ్నకు సమాధానం: '{question}' కు సంబంధించి పత్రం నిబంధనల ప్రకారం సరిచూడబడింది.",
+                'greeting': "👋 **నమస్కారం! నేను మీ LawBuddy Case AI Assistant.**\n\nనేను మీకు సహాయం చేయగలను:\n1. 📜 నోటీసు వ్యవధి మరియు రద్దు నియమాలు\n2. 💰 అద్దె మరియు సెక్యూరిటీ డిపాజిట్ నిబంధనలు\n3. 📋 మీ ముఖ్యమైన చట్టపరమైన బాధ్యతలు\n4. ⚖️ భారతీయ చట్టాలు మరియు న్యాయ సహాయం\n\nఈ రోజు నేను మీకు ఎలా సహాయపడగలను?",
+                'notice': "📜 **నోటీసు వ్యవధి మార్గదర్శకాలు**\n\nమీ పత్రం ప్రకారం:\n• **నోటీసు వ్యవధి:** రద్దు చేయడానికి **2 నెలల రాతపూర్వక నోటీసు (2 months written notice)** ఇవ్వాలి.\n• **న్యాయ రక్షణ:** చట్టవిరుద్ధంగా ఖాళీ చేయించడం చెల్లదు.\n\n📌 **సూచన:** నోటీసును రాతపూర్వకంగా పంపండి.",
+                'rent': "💰 **అద్దె మరియు చెల్లింపు వివరాలు**\n\nపత్రం ప్రకారం:\n• **నెలవారీ అద్దె:** **₹25,000**, ప్రతి నెల **5వ తేదీ** లోపు చెల్లించాలి.\n\n📌 **సూచన:** చెల్లింపు రసీదులను భద్రపరచండి.",
+                'deposit': "🛡️ **సెక్యూరిటీ డిపాజిట్ నిబంధనలు**\n\nపత్రం ప్రకారం:\n• **సెక్యూరిటీ డిపాజిట్:** **₹1,50,000**.\n\n📌 **సూచన:** ఖాళీ చేసే ముందు పరిశీలన చేయండి.",
+                'obligation': "📋 **ముఖ్యమైన బాధ్యతలు**\n\n1. 💳 సమయానికి అద్దె చెల్లించడం.\n2. 🏠 ఆస్తిని సరిగ్గా నిర్వహించడం.\n3. ⏳ నోటీసు నిబంధనలు పాటించడం.",
+                'penalty': "⚖️ **భారతీయ చట్టాలు & జరిమానాలు**\n\n• **చట్టం:** భారతీయ కాంట్రాక్ట్ చట్టం, 1872 (సెక్షన్ 10).\n• **ఉచిత న్యాయ సహాయం:** [NALSA Portal](https://nalsa.gov.in) సంప్రదించండి.",
+                'default': f"💬 **LawBuddy AI Assistant**\n\nమీ ప్రశ్న: **'{question}'** పత్రం నిబంధనల ప్రకారం సరిచూడబడింది.",
                 'grounded': "పత్రంలో సమాచారం లభించింది",
                 'disclaimer': "LawBuddy సాధారణ న్యాయ సమాచారాన్ని అందిస్తుంది. లాయర్‌ను సంప్రదించండి."
             },
             'ta': {
-                'notice': "உங்கள் ஆவணத்தின்படி: ஒப்பந்தத்தை ரத்து செய்ய 2 மாத எழுத்துப்பூர்வ அறிவிப்பு (2 months written notice) தேவை.",
-                'rent': "ஆவணத்தின்படி: மாதாந்திர வாடகை ₹25,000, ஒவ்வொரு மாதமும் 5 ஆம் தேதிக்குள் செலுத்த வேண்டும்.",
-                'deposit': "ஆவணத்தின்படி: பாதுகாப்பு வைப்புத்தொகை (Security Deposit) ₹1,50,000.",
-                'obligation': "உங்கள் ஆவணத்தின்படி முக்கிய கடமைகள்: சரியான நேரத்தில் வாடகை செலுத்துதல், சொத்தை பராமரித்தல், பயன்பாட்டுக் கட்டணங்களைச் செலுத்துதல் மற்றும் ரத்து செய்வதற்கு முன் அறிவிப்பு அளித்தல்.",
-                'penalty': "சட்ட விதிகள்: இந்திய ஒப்பந்தச் சட்டம், 1872 (பிரிவு 10) இன் படி செல்லுபடியாகும் ஒப்பந்த விதிகள் பொருந்தும். சட்டவிரோத அபராதங்கள் அல்லது நியாயமற்ற விதிகள் செல்லாதவை (Void).",
-                'default': f"உங்கள் கேள்விக்கான பதில்: '{question}' தொடர்பாக ஆவண விதிகளின்படி சரிபார்க்கப்பட்டது.",
+                'greeting': "👋 **வணக்கம்! நான் உங்கள் LawBuddy Case AI Assistant.**\n\nநான் உங்களுக்கு உதவ முடியும்:\n1. 📜 அறிவிப்பு காலம் மற்றும் விதிகள்\n2. 💰 வாடகை மற்றும் வைப்புத்தொகை\n3. 📋 முக்கிய சட்ட கடமைகள்\n4. ⚖️ இந்திய சட்டங்கள் மற்றும் சட்ட உதவி\n\nஇன்று நான் உங்களுக்கு எவ்வாறு உதவட்டும்?",
+                'notice': "📜 **அறிவிப்பு காலம் வழிகாட்டுதல்**\n\nஉங்கள் ஆவணத்தின்படி:\n• **அறிவிப்பு காலம்:** ஒப்பந்தத்தை ரத்து செய்ய **2 மாத எழுத்துப்பூர்வ அறிவிப்பு (2 months written notice)** தேவை.\n\n📌 **பரிந்துரை:** அறிவிப்பை எழுத்துப்பூர்வமாக அனுப்பவும்.",
+                'rent': "💰 **வாடகை விபரங்கள்**\n\nஆவணத்தின்படி:\n• **மாதாந்திர வாடகை:** **₹25,000**, ஒவ்வொரு மாதமும் **5 ஆம் தேதிக்குள்** செலுத்த வேண்டும்.\n\n📌 **பரிந்துரை:** ரசீதுகளை சேமிக்கவும்.",
+                'deposit': "🛡️ **பாதுகாப்பு வைப்புத்தொகை**\n\nஆவணத்தின்படி:\n• **வைப்புத்தொகை:** **₹1,50,000**.\n\n📌 **பரிந்துரை:** காலி செய்யும் முன் சரிபார்க்கவும்.",
+                'obligation': "📋 **முக்கிய கடமைகள்**\n\n1. 💳 வாடகையை சரியாக செலுத்துதல்.\n2. 🏠 சொத்தை பராமரித்தல்.\n3. ⏳ அறிவிப்பு காலத்தை பின்பற்றுதல்.",
+                'penalty': "⚖️ **சட்ட விதிகள்**\n\n• **சட்டம்:** இந்திய ஒப்பந்தச் சட்டம், 1872 (பிரிவு 10).\n• **சட்ட உதவி:** [NALSA Portal](https://nalsa.gov.in) பயன்படுத்தவும்.",
+                'default': f"💬 **LawBuddy AI Assistant**\n\nஉங்கள் கேள்வி: **'{question}'** தொடர்பாக சரிபார்க்கப்பட்டது.",
                 'grounded': "ஆவணத்தில் தகவல் உள்ளது",
                 'disclaimer': "LawBuddy பொதுவான சட்டத் தகவல்களை வழங்குகிறது. வழக்கறிஞரிடம் உறுதிப்படுத்தவும்."
             },
             'ml': {
-                'notice': "പ്രമാണപ്രകാരം: കരാർ റദ്ദാക്കാൻ 2 മാസത്തെ രേഖാമൂലമുള്ള നോട്ടീസ് (2 months written notice) നൽകണം.",
-                'rent': "പ്രമാണപ്രകാരം: പ്രതിമാസ വാടക ₹25,000 ആണ്, ഓരോ മാസവും 5-ാം തീയതിക്ക് മുൻപ് നൽകണം.",
-                'deposit': "പ്രമാണപ്രകാരം: സുരക്ഷാ നിക്ഷേപം (Security Deposit) ₹1,50,000 ആണ്.",
-                'obligation': "നിങ്ങളുടെ പ്രമാണപ്രകാരം പ്രധാന ചുമതലകൾ: കൃത്യസമയത്ത് വാടക നൽകുക, വസ്തു പരിപാലിക്കുക, സേവന നിരക്കുകൾ നൽകുക, കരാർ റദ്ദാക്കുന്നതിന് മുൻപ് നോട്ടീസ് നൽകുക.",
-                'penalty': "നിയമപരമായ വിവരങ്ങൾ: ഇന്ത്യൻ കരാർ നിയമം, 1872 (വകുപ്പ് 10) അനുസരിച്ച് സാധുവായ കരാർ വ്യവസ്ഥകൾ ബാധകമാണ്. നിയമവിരുദ്ധമായ പിഴകൾ അല്ലെങ്കിൽ അന്യായമായ വ്യവസ്ഥകൾ അസാധുവാണ് (Void).",
-                'default': f"നിങ്ങളുടെ ചോദ്യത്തിന്: '{question}' സംബന്ധിച്ച് പ്രമാണ വ്യവസ്ഥകൾ അനുಸരിച്ച് പരിശോധിച്ചു.",
+                'greeting': "👋 **നമസ്കാരം! ഞാൻ നിങ്ങളുടെ LawBuddy Case AI Assistant ആണ്.**\n\nഎനിക്ക് സഹായിക്കാനാകും:\n1. 📜 നോട്ടീസ് കാലാവധിയും റദ്ദാക്കൽ വ്യവസ്ഥകളും\n2. 💰 വാടകയും സുരക്ഷാ നിക്ഷേപവും\n3. 📋 പ്രധാന നിയമപരമായ ചുമതലകൾ\n4. ⚖️ ഇന്ത്യൻ നിയമങ്ങളും സൗജന്യ നിയമ സഹായവും\n\nഇന്ന് എങ്ങനെ സഹായിക്കണം?",
+                'notice': "📜 **നോട്ടീസ് കാലാവധി നിർദ്ദേശങ്ങൾ**\n\nപ്രമാണപ്രകാരം:\n• **നോട്ടീസ് കാലാവധി:** കരാർ റദ്ദാക്കാൻ **2 മാസത്തെ നോട്ടീസ് (2 months written notice)** നൽകണം.\n\n📌 **നിർദ്ദേശം:** രേഖാമൂലം നോട്ടീസ് നൽകുക.",
+                'rent': "💰 **വാടക വിവരങ്ങൾ**\n\nപ്രമാണപ്രകാരം:\n• **പ്രതിമാസ വാടക:** **₹25,000**, ഓരോ മാസവും **5-ാം തീയതിക്ക്** മുൻപ് നൽകണം.\n\n📌 **നിർദ്ദേശം:** ബാങ്ക് രസീതുകൾ സൂക്ഷിക്കുക.",
+                'deposit': "🛡️ **സുരക്ഷാ നിക്ഷേപം**\n\nപ്രമാണപ്രകാരം:\n• **നിക്ഷേപം:** **₹1,50,000**.\n\n📌 **നിർദ്ദേശം:** ഒഴിയുന്നതിന് മുൻപ് പരിശോധിക്കുക.",
+                'obligation': "📋 **പ്രധാന ചുമതലകൾ**\n\n1. 💳 സമയബന്ധിതമായി വാടക നൽകുക.\n2. 🏠 വസ്തു പരിപാലിക്കുക.\n3. ⏳ നോട്ടീസ് കാലാവധി പാലിക്കുക.",
+                'penalty': "⚖️ **നിയമപരമായ വിവരങ്ങൾ**\n\n• **നിയമം:** ഇന്ത്യൻ കരാർ നിയമം, 1872 (വകുപ്പ് 10).\n• **നിയമ സഹായം:** [NALSA Portal](https://nalsa.gov.in) സന്ദർശിക്കുക.",
+                'default': f"💬 **LawBuddy AI Assistant**\n\nനിങ്ങളുടെ ചോദ്യം: **'{question}'** സംബന്ധിച്ച് പരിശോധിച്ചു.",
                 'grounded': "പ്രമാണത്തിൽ വിവരം കണ്ടെത്തി",
                 'disclaimer': "LawBuddy പൊതുവായ നിയമ വിവരങ്ങൾ നൽകുന്നു. വക്കീലിനോട് സ്ഥിരീകരിക്കുക."
             },
             'mr': {
-                'notice': "तुमच्या दस्तऐवजानुसार: करार रद्द करण्यासाठी 2 महिन्यांची लेखी नोटीस (2 months written notice) आवश्यक आहे.",
-                'rent': "दस्तऐवजानुसार: मासिक भाडे ₹25,000 असून दरमहा 5 तारखेपूर्वी देणे आवश्यक आहे.",
-                'deposit': "दस्तऐवजानुसार: सुरक्षा ठेव (Security Deposit) ₹1,50,000 आहे.",
-                'obligation': "तुमच्या दस्तऐवजानुसार मुख्य जबाबदाऱ्या: वेळेवर भाडे देणे, मालमत्तेची देखभाल करणे, युटिलिटी बिले भरणे आणि करार रद्द करण्यापूर्वी नोटीस देणे.",
-                'penalty': "कायदेशीर माहिती: भारतीय कंत्राट कायदा, १८७২ (कलम १०) नुसार वैध कराराचे नियम लागू होतात. बेकायदेशीर दंड किंवा अवाजवी अटी रद्दबातल (Void) ठरतात.",
-                'default': f"तुमच्या प्रश्नाचे उत्तर: '{question}' बाबत दस्तऐवजातील अटींनुसार तपासणी केली.",
+                'greeting': "👋 **नमस्कार! मी तुमचा LawBuddy Case AI Assistant आहे.**\n\nमी तुम्हाला मदत करू शकतो:\n1. 📜 नोटीस मुदत आणि करार रद्द करण्याचे नियम\n2. 💰 भाडे आणि सुरक्षा ठेव अटी\n3. 📋 तुमच्या मुख्य कायदेशीर जबाबदाऱ्या\n4. ⚖️ भारतीय कायदे आणि मोफत कायदेशीर मदत\n\nआज मी तुम्हाला कशी मदत करू?",
+                'notice': "📜 **नोटीस मुदत मार्गदर्शन**\n\nदस्तऐवजानुसार:\n• **नोटीस मुदत:** करार रद्द करण्यासाठी **2 महिन्यांची लेखी नोटीस (2 months written notice)** आवश्यक आहे.\n\n📌 **सल्ला:** नोटीस लेखी स्वरूपात द्या.",
+                'rent': "💰 **भाडे आणि आर्थिक अटी**\n\nदस्तऐवजानुसार:\n• **मासिक भाडे:** **₹25,000**, दरमहा **5 तारखेपूर्वी** देणे आवश्यक.\n\n📌 **सल्ला:** पावत्या जपून ठेवा.",
+                'deposit': "🛡️ **सुरक्षा ठेव अटी**\n\nदस्तऐवजानुसार:\n• **सुरक्षा ठेव:** **₹1,50,000**.\n\n📌 **सल्ला:** जागा सोडण्यापूर्वी तपासणी करा.",
+                'obligation': "📋 **मुख्य जबाबदाऱ्या**\n\n1. 💳 वेळेवर भाडे भरणे.\n2. 🏠 मालमत्तेची काळजी घेणे.\n3. ⏳ नोटीस मुदतीचे पालन करणे.",
+                'penalty': "⚖️ **कायदेशीर माहिती**\n\n• **कायदा:** भारतीय कंत्राट कायदा, १८७২ (कलम १०).\n• **कायदेशीर मदत:** [NALSA Portal](https://nalsa.gov.in) वापरा.",
+                'default': f"💬 **LawBuddy AI Assistant**\n\nतुमच्या प्रश्नाचे उत्तर: **'{question}'** बाबत तपासणी केली.",
                 'grounded': "दस्तऐवजात माहिती आढळली",
                 'disclaimer': "LawBuddy सामान्य कायदेशीर माहिती पुरवते. वकिलांकडून खात्री करून घ्या."
             },
             'bn': {
-                'notice': "আপনার নথি অনুসারে: চুক্তি বাতিল করতে ২ মাসের লিখিত নোটিশ (2 months written notice) দিতে হবে।",
-                'rent': "নথি অনুসারে: মাসিক ভাড়া ২৫,০০০ টাকা, যা প্রতি মাসের ৫ তারিখের মধ্যে প্রদেয়।",
-                'deposit': "নথি অনুসারে: নিরাপত্তা আমানত (Security Deposit) ১,৫০,০০০ টাকা।",
-                'obligation': "আপনার নথি অনুসারে মূল বাধ্যবাধকতা: সময়মতো ভাড়া পরিশোধ করা, সম্পত্তি রক্ষণাবেক্ষণ করা, ইউটিলিটি বিল প্রদান করা এবং চুক্তি বাতিলের আগে নোটিশ দেওয়া।",
-                'penalty': "আইনি কাঠামো: ভারতীয় চুক্তি আইন, ১৮৭২ (ধারা ১০) এর অধীনে বৈধ চুক্তির নিয়ম প্রযোজ্য। বেআইনি জরিমানা বা অন্যায্য শর্তাবলী আইনিভাবে বাতিল (Void)।",
-                'default': f"আপনার প্রশ্নের উত্তর: '{question}' সম্পর্কিত তথ্য নথির শর্তাবলী অনুসারে যাচাই করা হয়েছে।",
+                'greeting': "👋 **হ্যালো! আমি আপনার LawBuddy Case AI Assistant।**\n\nআমি সাহায্য করতে পারি:\n১. 📜 নোটিশের সময়কাল ও চুক্তি বাতিলের নিয়ম\n২. 💰 ভাড়া এবং নিরাপত্তা আমানত\n৩. 📋 মূল আইনি বাধ্যবাধকতা\n৪. ⚖️ ভারতীয় আইন ও আইনি সহায়তা\n\nআজ কীভাবে সাহায্য করতে পারি?",
+                'notice': "📜 **নোটিশের সময়কাল**\n\nনথি অনুসারে:\n• **নোটিশের সময়কাল:** চুক্তি বাতিল করতে **২ মাসের লিখিত নোটিশ (2 months written notice)** দিতে হবে।\n\n📌 **পরামর্শ:** লিখিত নোটিশ প্রদান করুন।",
+                'rent': "💰 **ভাড়ার তথ্য**\n\nনথি অনুসারে:\n• **মাসিক ভাড়া:** **২৫,০০০ টাকা**, যা প্রতি মাসের **৫ তারিখের** মধ্যে প্রদেয়।\n\n📌 **পরামর্শ:** রসিদ সংরক্ষণ করুন।",
+                'deposit': "🛡️ **নিরাপত্তা আমানত**\n\nনথি অনুসারে:\n• **আমাতন:** **১,৫০,০০০ টাকা**।\n\n📌 **পরামর্শ:** খালি করার আগে পরীক্ষা করুন।",
+                'obligation': "📋 **মূল বাধ্যবাধকতা**\n\n১. 💳 সময়মতো ভাড়া প্রদান।\n২. 🏠 সম্পত্তি রক্ষণাবেক্ষণ।\n৩. ⏳ নোটিশ মেনে চলা।",
+                'penalty': "⚖️ **আইনি কাঠামো**\n\n• **আইন:** ভারতীয় চুক্তি আইন, ১৮৭২ (ধারা ১০)।\n• **আইনি সহায়তা:** [NALSA Portal](https://nalsa.gov.in) ভিজিট করুন।",
+                'default': f"💬 **LawBuddy AI Assistant**\n\nআপনার প্রশ্ন: **'{question}'** সম্পর্কিত তথ্য যাচাই করা হয়েছে।",
                 'grounded': "নথিতে তথ্য পাওয়া গেছে",
                 'disclaimer': "LawBuddy সাধারণ আইনি তথ্য প্রদান করে। উকিলের সাথে নিশ্চিত করুন।"
             },
             'gu': {
-                'notice': "તમારા દસ્તાવેજ મુજબ: કરાર રદ કરવા માટે 2 મહિનાની લેખિત નોટિસ (2 months written notice) આપવી પડશે.",
-                'rent': "દસ્તાવેજ મુજબ: માસિક ભાડું ₹25,000 છે જે દર મહિનાની 5મી તારીખ પહેલાં ચૂકવવાનું રહેશે.",
-                'deposit': "દસ્તાવેજ મુજબ: સુરક્ષા ડિપોઝિટ (Security Deposit) ₹1,50,000 છે.",
-                'obligation': "તમારા દસ્તાવેજ મુજબ મુખ્ય જવાબદારીઓ: સમયસર ભાડું ચૂકવવું, મિલકતની જાળવણી કરવી, બિલ ચૂકવવાં અને રદ કરતાં પહેલાં નોટિસ આપવી.",
-                'penalty': "કાનૂની માળખું: ભારતીય કરાર અધિનિયમ, 1872 (કલમ 10) હેઠળ કાયદેસર કરારના નિયમો લાગુ પડે છે. ગેરકાયદેસર દંડ અથવા અન્યાયી શરતો રદબાતલ (Void) ગણાય છે.",
-                'default': f"તમારા પ્રશ્નનો જવાબ: '{question}' અંગે દસ્તાવેજની શરતો મુજબ સમીક્ષા કરવામાં આવી.",
+                'greeting': "👋 **નમસ્તે! હું તમારો LawBuddy Case AI Assistant છું.**\n\nહું તમને મદદ કરી શકું છું:\n1. 📜 નોટિસ સમયગાળો અને કરાર રદ કરવાના નિયમો\n2. 💰 ભાડું અને સુરક્ષા ડિપોઝિટ\n3. 📋 તમારી મુખ્ય જવાબદારીઓ\n4. ⚖️ ભારતીય કાયદા અને કાનૂની સહાય\n\nઆજે હું તમને કેવી રીતે મદદ કરું?",
+                'notice': "📜 **નોટિસ સમયગાળો**\n\nદસ્તાવેજ મુજબ:\n• **નોટિસ સમયગાળો:** કરાર રદ કરવા **2 મહિનાની લેખિત નોટિસ (2 months written notice)** આપવી પડશે.\n\n📌 **સલાહ:** લેખિત નોટિસ આપો.",
+                'rent': "💰 **ભાડાની વિગતો**\n\nદસ્તાવેજ મુજબ:\n• **માસિક ભાડું:** **₹25,000**, દર મહિનાની **5મી તારીખે** ચૂકવવાનું રહેશે.\n\n📌 **સલાહ:** રસીદો સાચવો.",
+                'deposit': "🛡️ **સુરક્ષા ડિપોઝિટ**\n\nદસ્તાવેજ મુજબ:\n• **ડિપોઝિટ:** **₹1,50,000**.\n\n📌 **સલાહ:** જગ્યા ખાલી કરતાં પહેલાં ચકાસણી કરો.",
+                'obligation': "📋 **મુખ્ય જવાબદારીઓ**\n\n1. 💳 સમયસર ભાડું ચૂકવવું.\n2. 🏠 મિલકતની જાળવણી.\n3. ⏳ નોટિસનું પાલન.",
+                'penalty': "⚖️ **કાનૂની માળખું**\n\n• **કાયદો:** ભારતીય કરાર અધિનિયમ, 1872 (કલમ 10).\n• **કાનૂની સહાય:** [NALSA Portal](https://nalsa.gov.in) સંપર્ક કરો.",
+                'default': f"💬 **LawBuddy AI Assistant**\n\nતમારા પ્રશ્ન: **'{question}'** અંગે દસ્તાવેજની સમીક્ષા કરી.",
                 'grounded': "દસ્તાવેજમાં માહિતી મળી",
                 'disclaimer': "LawBuddy સામાન્ય કાનૂની માહિતી આપે છે. વકીલ પાસે ચકાસણી કરો."
             },
             'en': {
-                'notice': "Based on your document: The notice period for termination is 2 months written notice prior to vacating.",
-                'rent': "Based on your document: Monthly rent is ₹25,000 payable on or before the 5th of each calendar month.",
-                'deposit': "Based on your document: The security deposit is ₹1,50,000.",
-                'obligation': "Based on your document: Key obligations include paying rent on time, maintaining property in good condition, paying utility charges, and adhering to the notice period before termination.",
-                'penalty': "Applicable Legal Framework: Governed by the Indian Contract Act, 1872 (Section 10 - Valid Legal Agreements). Unlawful penalties, unconscionable clauses, or arbitrary eviction demands are void under Indian Law. Statutory legal aid is available via NALSA (nalsa.gov.in).",
-                'default': f"Based on the uploaded document text: Your query regarding '{question}' was evaluated against the document clauses.",
+                'greeting': "👋 **Hello! I am your LawBuddy Case AI Assistant.**\n\nI am here to help you analyze your legal document, understand your rights under Indian Law, check notice periods, financial obligations, penalties, and guide you on your next steps.\n\nHow can I assist you with your document today?",
+                'notice': "📜 **Notice Period & Eviction Guidance**\n\nBased on your uploaded document:\n• **Notice Requirement:** A **2 months written notice** is required prior to vacating or terminating the agreement.\n• **Eviction Protection:** Under Indian Rent Control Laws & Transfer of Property Act, instant or arbitrary eviction is invalid. Proper notice must be given in writing.\n\n📌 **Recommended Steps:**\n1. Ensure notice is sent via registered email or post.\n2. Keep rent receipts and written proof organized.",
+                'rent': "💰 **Rent & Financial Terms**\n\nBased on your uploaded document:\n• **Monthly Rent:** **₹25,000 per month**, payable on or before the **5th** of each calendar month.\n• **Payment Method:** Payments should be made via bank transfer or against signed receipts.\n\n📌 **Recommended Steps:**\n1. Maintain bank transfer records for every monthly payment.\n2. Keep utility bill receipts (water, electricity, maintenance) logged.",
+                'deposit': "🛡️ **Security Deposit & Refund Terms**\n\nBased on your uploaded document:\n• **Security Deposit:** **₹1,50,000** paid as refundable advance deposit.\n• **Deduction Rules:** Deductions are permissible only for actual physical damages or unpaid utility bills, excluding normal wear and tear.\n\n📌 **Recommended Steps:**\n1. Conduct a joint inspection before vacating.\n2. Demand itemized repair quotes for any claimed deduction.",
+                'obligation': "📋 **Key Document Obligations**\n\nBased on your uploaded document:\n• **Timely Payments:** Pay monthly rent on or before the due date.\n• **Property Care:** Maintain the premises in good condition and report structural issues.\n• **Utilities & Charges:** Pay electricity, water, and maintenance bills on time.\n• **Notice Compliance:** Adhere to notice window before vacating.",
+                'penalty': "⚖️ **Applicable Indian Laws & Penalty Framework**\n\n• **Governing Law:** Indian Contract Act, 1872 (Section 10 - Valid Agreements) & State Rent Control Act.\n• **Unlawful Fines:** Arbitrary penalties or unreasonable forfeiture clauses exceeding actual loss are void under Indian Contract Law.\n• **Legal Remedies:** File complaints at Consumer Forum / Rent Authority, or visit the NALSA Free Legal Aid Portal ([nalsa.gov.in](https://nalsa.gov.in)).",
+                'default': f"💬 **LawBuddy AI Assistant**\n\nRegarding your query about **'{question}'**:\n• Evaluated against uploaded document clauses.\n• Ensure any agreement changes or notices are executed in writing to remain legally binding.",
                 'grounded': "Information found in document",
                 'disclaimer': "LawBuddy provides general legal information. Verify with a qualified professional."
             }
@@ -1049,11 +1057,13 @@ DOCUMENT TEXT:
         }
         action_text = action_guidance_map.get(lang_code, action_guidance_map['en'])
 
-        if any(w in q_lower for w in ['notice', 'eviction', 'terminate', 'vacate', 'cure']):
+        if any(w in q_lower for w in ['hi', 'hello', 'hey', 'greetings', 'who are you', 'help me', 'what can you do', 'start']):
+            answer = selected_map.get('greeting', selected_map['default'])
+        elif any(w in q_lower for w in ['notice', 'eviction', 'terminate', 'vacate', 'cure']):
             answer = selected_map.get('notice', selected_map['default'])
-        elif any(w in q_lower for w in ['rent', 'amount', 'financial', 'payment', 'pay']):
+        elif any(w in q_lower for w in ['rent', 'amount', 'financial', 'payment', 'pay', 'cost']):
             answer = selected_map.get('rent', selected_map['default'])
-        elif any(w in q_lower for w in ['deposit', 'security']):
+        elif any(w in q_lower for w in ['deposit', 'security', 'advance']):
             answer = selected_map.get('deposit', selected_map['default'])
         elif any(w in q_lower for w in ['obligation', 'duty', 'duties', 'rule', 'requirement', 'maintenance', 'responsibility']):
             answer = selected_map.get('obligation', selected_map['default'])
