@@ -29,19 +29,21 @@ class TestAPIEndpoints(unittest.TestCase):
         self.app_context.pop()
 
     def test_user_signup_and_login_validation(self):
+        import time
         # Invalid payload (empty email/password)
         res = self.client.post('/api/user/signup', json={"email": "", "password": ""})
         self.assertEqual(res.status_code, 400)
         self.assertIn("error", res.get_json())
 
-        # Valid signup
-        res = self.client.post('/api/user/signup', json={"email": "testuser_api@example.com", "password": "password123", "name": "API User"})
+        # Valid signup with unique email
+        test_email = f"testuser_{int(time.time())}@example.com"
+        res = self.client.post('/api/user/signup', json={"email": test_email, "password": "password123", "name": "API User"})
         self.assertIn(res.status_code, (200, 201))
         data = res.get_json()
         self.assertEqual(data.get("status"), "success")
 
         # Login with correct password
-        res = self.client.post('/api/user/login', json={"email": "testuser_api@example.com", "password": "password123"})
+        res = self.client.post('/api/user/login', json={"email": test_email, "password": "password123"})
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.get_json().get("status"), "success")
 

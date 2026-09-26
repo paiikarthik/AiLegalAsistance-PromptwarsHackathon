@@ -62,17 +62,20 @@ def apply_security_headers(response):
     else:
         response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
 
-    # Gzip response compression for high network performance
-    accept_encoding = request.headers.get('Accept-Encoding', '')
-    if 'gzip' in accept_encoding.lower() and response.status_code == 200 and not response.headers.get('Content-Encoding'):
-        if response.mimetype in ('application/json', 'text/html', 'text/css', 'application/javascript'):
-            raw_data = response.get_data()
-            if len(raw_data) > 300:
-                compressed_data = gzip.compress(raw_data)
-                if len(compressed_data) < len(raw_data):
-                    response.set_data(compressed_data)
-                    response.headers['Content-Encoding'] = 'gzip'
-                    response.headers['Content-Length'] = len(compressed_data)
+    # Safe Gzip response compression for high network performance
+    try:
+        accept_encoding = request.headers.get('Accept-Encoding', '')
+        if 'gzip' in accept_encoding.lower() and response.status_code == 200 and not response.headers.get('Content-Encoding') and not getattr(response, 'direct_passthrough', False):
+            if response.mimetype in ('application/json', 'text/html', 'text/css', 'application/javascript'):
+                raw_data = response.get_data()
+                if len(raw_data) > 300:
+                    compressed_data = gzip.compress(raw_data)
+                    if len(compressed_data) < len(raw_data):
+                        response.set_data(compressed_data)
+                        response.headers['Content-Encoding'] = 'gzip'
+                        response.headers['Content-Length'] = str(len(compressed_data))
+    except Exception as err:
+        logger.debug(f"Gzip compression skipped safely: {err}")
 
     return response
 
