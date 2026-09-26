@@ -2,7 +2,7 @@ import os
 import sqlite3
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 logger = logging.getLogger("lawbuddy")
 
@@ -99,6 +99,13 @@ class DatabaseService:
                 )
             """)
 
+            
+            # Create efficiency indexes for database performance
+            cursor.execute("CREATE INDEX IF NOT EXISTS idx_user_docs_user_id ON user_documents(user_id);")
+            cursor.execute("CREATE INDEX IF NOT EXISTS idx_user_facts_user_id ON user_case_facts(user_id);")
+            cursor.execute("CREATE INDEX IF NOT EXISTS idx_user_chat_user_id ON user_chat_history(user_id);")
+            cursor.execute("CREATE INDEX IF NOT EXISTS idx_user_evidence_user_id ON user_case_evidence(user_id);")
+
             conn.commit()
             logger.info(f"SQLite database initialized at {DB_PATH}")
         except Exception as e:
@@ -119,7 +126,7 @@ class DatabaseService:
             if cursor.fetchone():
                 return None, "This email is already registered. Please log in instead."
             
-            now = datetime.utcnow().isoformat()
+            now = datetime.now(timezone.utc).isoformat()
             cursor.execute("""
                 INSERT INTO users (user_id, email, name, password, auth_provider, created_at, last_login)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -149,7 +156,7 @@ class DatabaseService:
             if user.get("password") and user["password"] != password:
                 return False, None, "Invalid email or password. Please try again."
             
-            now = datetime.utcnow().isoformat()
+            now = datetime.now(timezone.utc).isoformat()
             cursor.execute("UPDATE users SET last_login = ? WHERE user_id = ?", (now, user["user_id"]))
             conn.commit()
             
@@ -173,7 +180,7 @@ class DatabaseService:
         conn = get_db_connection()
         try:
             cursor = conn.cursor()
-            now = datetime.utcnow().isoformat()
+            now = datetime.now(timezone.utc).isoformat()
             cursor.execute("""
                 INSERT INTO users (user_id, email, name, password, auth_provider, created_at, last_login)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -197,7 +204,7 @@ class DatabaseService:
         conn = get_db_connection()
         try:
             cursor = conn.cursor()
-            now = datetime.utcnow().isoformat()
+            now = datetime.now(timezone.utc).isoformat()
             analysis_str = json.dumps(analysis) if isinstance(analysis, (dict, list)) else (analysis or "")
             
             cursor.execute("""
@@ -223,7 +230,7 @@ class DatabaseService:
         conn = get_db_connection()
         try:
             cursor = conn.cursor()
-            now = datetime.utcnow().isoformat()
+            now = datetime.now(timezone.utc).isoformat()
             analysis_str = json.dumps(analysis) if isinstance(analysis, (dict, list)) else (analysis or "")
             cursor.execute("""
                 UPDATE user_documents

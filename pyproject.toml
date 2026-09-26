@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lawbuddy-ai"
+version = "1.0.0"
+description = "AI-Powered Plain-Language Legal Document Simplification & Case Assistance Platform"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    { name = "Karthik Pai" }
+]
+dependencies = [
+    "flask",
+    "pytest",
+    "pytest-cov"
+]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -v"
+testpaths = [
+    "tests"
+]
