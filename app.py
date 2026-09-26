@@ -661,11 +661,13 @@ def chat_with_document():
         return jsonify({"error": "Question parameter is required"}), 400
 
     cached_doc = DOCUMENT_CACHE[doc_id]
-    relevant_chunks = RAGService.retrieve_relevant_chunks(cached_doc["chunks"], question, top_k=3)
-    context_text = "\n\n".join([f"[{c['ref']}]: {c['text']}" for c in relevant_chunks])
+    relevant_chunks = RAGService.retrieve_relevant_chunks(cached_doc["chunks"], question, top_k=5)
+    chunk_context = "\n\n".join([f"[{c['ref']}]: {c['text']}" for c in relevant_chunks])
+    full_doc_text = cached_doc.get("raw_text", "")
+    combined_context = f"{full_doc_text[:12000]}\n\n=== RELEVANT CLAUSES ===\n{chunk_context}"
 
     response = gemini_service.answer_question(
-        text=context_text,
+        text=combined_context,
         question=question,
         language=language
     )

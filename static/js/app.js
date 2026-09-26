@@ -1130,7 +1130,7 @@ function initChatHandler() {
                 <div id="${messageId}" class="chat-bubble ai" style="background: #ffffff; border: 1px solid #cbd5e1; padding: 14px 16px; border-radius: 12px; margin-bottom: 12px; max-width: 85%; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                         <strong style="color: #1e293b;">⚖️ LawBuddy Case AI Assistant:</strong>
-                        <button class="btn btn-secondary" style="font-size: 11px; padding: 2px 8px;" onclick="speakChatText(this)" title="Read aloud">🔊 Read Aloud</button>
+                        
                     </div>
                     <p style="margin: 4px 0 0 0; color: #334155; line-height: 1.5;" class="chat-answer-text">${formattedAnswer}</p>
                     ${sourcesHtml}
@@ -1169,22 +1169,6 @@ function initChatHandler() {
         `;
     };
 
-    window.speakChatText = (btnElement) => {
-        if (!window.speechSynthesis) {
-            showNotification('Read-aloud is not available in this browser.', true);
-            return;
-        }
-        const bubble = btnElement.closest('.chat-bubble');
-        const textEl = bubble ? bubble.querySelector('.chat-answer-text') : null;
-        const text = textEl ? textEl.innerText : '';
-        if (!text) return;
-
-        speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        const voiceMap = { en: 'en-IN', kn: 'kn-IN', hi: 'hi-IN', ml: 'ml-IN', te: 'te-IN', mr: 'mr-IN', bn: 'bn-IN', gu: 'gu-IN', ta: 'ta-IN' };
-        utterance.lang = voiceMap[window.appState ? window.appState.selectedLanguage : 'kn'] || 'en-IN';
-        speechSynthesis.speak(utterance);
-    };
 }
 
 // Side-by-Side Comparison Handler
