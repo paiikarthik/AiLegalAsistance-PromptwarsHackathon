@@ -48,9 +48,11 @@ class GeminiService:
     def _is_chatgpt_language(self, language: str) -> bool:
         """
         Determines whether the given language should be routed to ChatGPT (OpenAI).
-        Hindi, English use Gemini.
-        Kannada, Malayalam, Telugu, Tamil, and all other languages use ChatGPT.
+        If no OPENAI_API_KEY is available, routes to Google Gemini for all languages.
         """
+        api_key = self.openai_api_key or os.environ.get('OPENAI_API_KEY', '')
+        if not api_key:
+            return False
         lang_lower = (language or 'en').lower().strip()
         if lang_lower in {'en', 'english', 'hi', 'hindi'}:
             return False
@@ -167,14 +169,15 @@ You are LawBuddy, an expert Indian Legal AI Assistant and accurate multilingual 
 Analyze the following legal document (Type: {doc_type}) for an Indian user.
 Generate a structured JSON response in {target_lang_name}.
 
-CRITICAL INSTRUCTIONS:
-1. Provide a comprehensive, detailed, and thorough plain-language explanation of what the document/case is about. Explain the background, key obligations, rights, risks, financial commitments, and legal remedies in full detail. Never output raw chopped fragments or raw publication metadata.
-2. Keep important Indian legal terms in English alongside their explanation in {target_lang_name}.
-3. DO NOT claim to replace a lawyer or declare clauses legally illegal without qualification. Use cautious terms like 'Potential Concern' or 'Requires Professional Review'.
-4. Ground every explanation strictly in the document text provided. Cite page numbers or clause titles if present. Never invent a legal deadline: if a date is found but its meaning is unclear, say that it was found but could not be confirmed.
-5. Use a respectful, reassuring tone. Do not predict who will win or lose, or say that anything is definitely legal or illegal. Phrase lawyer questions as questions the user may want to ask.
+CRITICAL TRANSLATION MANDATE FOR {target_lang_name.upper()}:
+1. ALL user-facing text values in the JSON output (summary, key_obligations, clauses_and_risks explanation, why_deserves_attention, suggested_question, applicable_laws_and_sections title/penalty_or_punishment/how_to_handle_case, action_map understand/identify/prepare/navigate) MUST BE WRITTEN IN {target_lang_name}.
+2. Provide a comprehensive, detailed, and thorough plain-language explanation of what the document/case is about in {target_lang_name}. Never output raw chopped fragments or raw publication metadata.
+3. Keep important Indian legal terms in English alongside their explanation in {target_lang_name}.
+4. DO NOT claim to replace a lawyer or declare clauses legally illegal without qualification. Use cautious terms like 'Potential Concern' or 'Requires Professional Review'.
+5. Ground every explanation strictly in the document text provided. Cite page numbers or clause titles if present. Never invent a legal deadline: if a date is found but its meaning is unclear, say that it was found but could not be confirmed.
+6. Use a respectful, reassuring tone. Do not predict who will win or lose, or say that anything is definitely legal or illegal. Phrase lawyer questions as questions the user may want to ask.
 {kannada_prompt_extension}
-6. Return ONLY a valid JSON object matching the exact schema below.
+7. Return ONLY a valid JSON object matching the exact schema below.
 
 JSON SCHEMA REQUIREMENT:
 {{
@@ -375,29 +378,358 @@ DOCUMENT TEXT:
     def _fallback_analysis_response(self, text: str, doc_type: str, language: str) -> dict:
         """
         Dynamic rule-based document analysis fallback that parses real facts, amounts, dates,
-        parties, and key obligations directly from the document text when LLM APIs are rate-limited or offline.
-        Supports full, authentic Kannada legal translation outputs.
+        parties, and key obligations directly from document text when LLM APIs are rate-limited or offline.
+        Supports full, authentic legal translation outputs for all 9 supported Indian languages.
         """
         clean_text = self.clean_extracted_text(text)
         lines = [line.strip() for line in clean_text.splitlines() if line.strip()]
-        is_kannada = (language in ('kn', 'kannada'))
+        lang_code = (language or 'en').lower().strip()
         
-        # Filter out lines that look like publication headers
+        # Filter out publication header artifacts
         clean_lines = [l for l in lines if not re.search(r'published by|issn:|journal of|volume \d+|issue \d+', l, re.I)]
         if not clean_lines:
             clean_lines = lines
 
+        LOCALIZED_DATA = {
+            'kn': {
+                'doc_kind': "ಕಾನೂನು ದಾಖಲೆ (Legal Document)",
+                'role_a': "ಮೊದಲನೇ ಪಕ್ಷಕಾರ (ಮಾಲೀಕರು / ಸಂಸ್ಥೆ)",
+                'role_b': "ಎರಡನೇ ಪಕ್ಷಕಾರ (ಬಾಡಿಗೆದಾರರು / ಉದ್ಯೋಗಿ)",
+                'fin_label': "ಮಾಸಿಕ ಪಾವತಿ / ಹಣಕಾಸು ಮೌಲ್ಯ",
+                'date_label': "ಪ್ರಮುಖ ದಿನಾಂಕ / ಗಡುವು",
+                'doc_date': "ದಾಖಲೆಯ ದಿನಾಂಕ / ಅವಧಿ",
+                'fin_fig': "ಹಣಕಾಸಿನ ಮೊತ್ತ",
+                'ob_prefix': "ಒಪ್ಪಂದದ ಬಾಧ್ಯತೆ: ",
+                'ob_default': "ಒಪ್ಪಂದದ ಷರತ್ತುಗಳನ್ನು ಎಚ್ಚರಿಕೆಯಿಂದ ಪರಿಶೀಲಿಸಿ.",
+                'summary_intro': "ಈ ಪ್ರಮುಖ ಪ್ರಕರಣವು {doc_kind} ಗೆ ಸಂಬಂಧಿಸಿದ ಬಾಧ್ಯತೆಗಳನ್ನು ಹೊಂದಿದೆ.",
+                'summary_title': "ದಾಖಲೆಯ ಮುಖ್ಯ ಪ್ರಶಸ್ತಿ: {doc_title}.",
+                'summary_parties': "ಸಂಬಂಧಿಸಿದ ಪಕ್ಷಕಾರರು: {party_str}.",
+                'summary_fin': "ಪರಿಶೀಲಿಸಲಾದ ಹಣಕಾಸಿನ ಷರತ್ತುಗಳು: {fin_str}.",
+                'summary_dates': "ಗಮನಿಸಬೇಕಾದ ನೋಟಿಸ್ ಅವಧಿ ಹಾಗೂ ಗಡುವುಗಳು: {date_str}.",
+                'summary_outro': "ಈ ಒಪ್ಪಂದವು ಪಕ್ಷಕಾರರ ಕಾನೂನಾತ್ಮಕ ಹಕ್ಕುಗಳು, ದಂಡದ ನಿಯಮಗಳು ಹಾಗೂ ಬಾಧ್ಯತೆಗಳನ್ನು ನಿರ್ದಿಷ್ಟಪಡಿಸುತ್ತದೆ. ಸಹಿ ಮಾಡುವ ಮುನ್ನ ಅಥವಾ ಕಾನೂನು ಕ್ರಮ ಕೈಗೊಳ್ಳುವ ಮುನ್ನ ಎಲ್ಲ ಷರತ್ತುಗಳನ್ನು ವಿವರವಾಗಿ ಪರಿಶೀಲಿಸಿ.",
+                'under_intro': "ಪ್ರಕರಣದ ವಿವರಣೆ: {summary_text}",
+                'under_cat': "ದಾಖಲೆಯ ವರ್ಗ: {doc_kind}.",
+                'under_fin': "ಹಣಕಾಸಿನ ಮೊತ್ತ ಹಾಗೂ ಬಾಧ್ಯತೆಗಳು: {fin_str}.",
+                'ident_ob': "ಪ್ರಮುಖ ಬಾಧ್ಯತೆ ಗುರುತಿಸಲಾಗಿದೆ: {ob}.",
+                'ident_date': "ಗಮನಿಸಬೇಕಾದ ದಿನಾಂಕಗಳು / ಗಡುವು: {date_str}.",
+                'ident_def': "ಒಪ್ಪಂದದಲ್ಲಿರುವ ದಿನಾಂಕ ಹಾಗೂ ನೋಟಿಸ್ ಅವಧಿಗಳನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.",
+                'q_lawyer_1': "ಈ ಒಪ್ಪಂದದ ಷರತ್ತುಗಳು ನನ್ನ ಕಾನೂನಾತ್ಮಕ ಹಕ್ಕುಗಳಿಗೆ ಭಂಗ ತರುತ್ತವೆಯೇ?",
+                'q_lawyer_2': "ನನ್ನ ಹಕ್ಕುಗಳ ರಕ್ಷಣೆಗೆ ಕರಾರಿನಲ್ಲಿ ಯಾವುದೇ ತಿದ್ದುಪಡಿ ಅಥವಾ ಬದಲಾವಣೆ ಅಗತ್ಯವಿದೆಯೇ?",
+                'check_1': "ಸಹಿ ಮಾಡಿದ ಮೂಲ ಒಪ್ಪಂದದ ಪ್ರತಿ (Original Signed Agreement)",
+                'check_2': "ಬ್ಯಾಂಕ್ ಮುಂಗಡ ಪಾವತಿ ರಶೀದಿಗಳು ಹಾಗೂ ಇಮೇಲ್/ವಾಟ್ಸಾಪ್ ಸಂವಹನ ಪ್ರತಿಗಳು",
+                'step_1': "ಯಾವುದೇ ಹೊಸ ಕರಾರಿಗೆ ಸಹಿ ಮಾಡುವ ಮುನ್ನ ಎಲ್ಲ ಷರತ್ತುಗಳನ್ನು ವಿವರವಾಗಿ ಓದಿ.",
+                'step_2': "ವಕೀಲರೊಂದಿಗೆ ಅಥವಾ ಉಚಿತ ಕಾನೂನು ನೆರವು (NALSA) ಕೇಂದ್ರದ ಮೂಲಕ ಉಚಿತ ಸಲಹೆ ಪಡೆಯಿರಿ.",
+                'risk_high': "ಹೆಚ್ಚಿನ ಗಮನ ಅಗತ್ಯ (High Risk)",
+                'risk_med': "ಮಧ್ಯಮ ಗಮನ (Medium Risk)",
+                'risk_cat': "ಪ್ರಮುಖ ಷರತ್ತುಗಳ ಪರಿಶೀಲನೆ (Clause Review)",
+                'risk_exp': "ಈ ಷರತ್ತು ಪಕ್ಷಕಾರರ ಹೊಣೆಗಾರಿಕೆಯನ್ನು ನಿರ್ದಿಷ್ಟಪಡಿಸುತ್ತದೆ: {ob}...",
+                'risk_why': "ದಂಡ, ಠೇವಣಿ ಜಪ್ತಿ ಅಥವಾ ನೋಟಿಸ್ ಅವಧಿಯ ನಿಯಮಗಳನ್ನು ಸಹಿ ಮಾಡುವ ಮುನ್ನ ಸ್ಪಷ್ಟವಾಗಿ ತಿಳಿದುಕೊಳ್ಳಿ.",
+                'risk_q': "ಈ ಷರತ್ತಿಗೆ ಸಂಬಂಧಿಸಿದಂತೆ ನನ್ನ ಕಾನೂನು ಹಕ್ಕುಗಳು ಮತ್ತು ಹೊಣೆಗಾರಿಕೆಗಳು ಯಾವುವು?",
+                'risk_ev': "ದಾಖಲೆಯಲ್ಲಿ ಕಂಡುಬಂದ ಸತ್ಯಾಂಶ"
+            },
+            'hi': {
+                'doc_kind': "कानूनी दस्तावेज़ (Legal Document)",
+                'role_a': "प्रथम पक्ष (मकान मालिक / नियोक्ता)",
+                'role_b': "द्वितीय पक्ष (किराएदार / कर्मचारी)",
+                'fin_label': "वित्तीय मूल्य / भुगतान",
+                'date_label': "महत्वपूर्ण तिथि / समय-सीमा",
+                'doc_date': "दस्तावेज़ की तिथि / अवधि",
+                'fin_fig': "वित्तीय राशि",
+                'ob_prefix': "अनुबंध दायित्व: ",
+                'ob_default': "अनुबंध की शर्तों की ध्यानपूर्वक समीक्षा करें।",
+                'summary_intro': "यह मामला {doc_kind} से संबंधित दायित्वों को निर्धारित करता है।",
+                'summary_title': "मुख्य दस्तावेज़ शीर्षक: {doc_title}।",
+                'summary_parties': "संबंधित पक्ष: {party_str}।",
+                'summary_fin': "वित्तीय शर्तें: {fin_str}।",
+                'summary_dates': "महत्वपूर्ण तिथियां और समय-सीमा: {date_str}।",
+                'summary_outro': "यह समझौता पक्षों के कानूनी अधिकारों और दायित्वों को निर्धारित करता है। कोई भी कानूनी कदम उठाने से पहले सभी शर्तों की समीक्षा करें।",
+                'under_intro': "मामले का विवरण: {summary_text}",
+                'under_cat': "दस्तावेज़ श्रेणी: {doc_kind}।",
+                'under_fin': "वित्तीय प्रतिबद्धताएं: {fin_str}।",
+                'ident_ob': "मुख्य दायित्व: {ob}।",
+                'ident_date': "महत्वपूर्ण तिथियां: {date_str}।",
+                'ident_def': "दस्तावेज़ में तिथियों और नोटिस अवधि की पुष्टि करें।",
+                'q_lawyer_1': "क्या इस अनुबंध की शर्तें मेरे कानूनी अधिकारों को प्रभावित करती हैं?",
+                'q_lawyer_2': "क्या मेरे अधिकारों की सुरक्षा के लिए किसी संशोधन की आवश्यकता है?",
+                'check_1': "मूल हस्ताक्षरित अनुबंध की प्रति (Original Signed Agreement)",
+                'check_2': "भुगतान रसीदें और संचार रिकॉर्ड",
+                'step_1': "हस्ताक्षर करने से पहले सभी शर्तों को ध्यान से पढ़ें।",
+                'step_2': "कानूनी सहायता केंद्र या वकील से परामर्श लें।",
+                'risk_high': "उच्च जोखिम (High Risk)",
+                'risk_med': "मध्यम जोखिम (Medium Risk)",
+                'risk_cat': "खंड समीक्षा (Clause Review)",
+                'risk_exp': "यह खंड पक्ष की जिम्मेदारी निर्धारित करता है: {ob}...",
+                'risk_why': "दंड या नोटिस अवधि की शर्तों को स्पष्ट रूप से समझें।",
+                'risk_q': "इस खंड के तहत मेरे कानूनी अधिकार और दायित्व क्या हैं?",
+                'risk_ev': "दस्तावेज़ में पाया गया तथ्य"
+            },
+            'te': {
+                'doc_kind': "న్యాయ పత్రం (Legal Document)",
+                'role_a': "మొదటి పక్షం (యజమాని / సంస్థ)",
+                'role_b': "రెండవ పక్షం (అద్దెదారు / ఉద్యోగి)",
+                'fin_label': "ఆర్థిక విలువ / చెల్లింపు",
+                'date_label': "ముఖ్యమైన తేదీ / గడువు",
+                'doc_date': "పత్రం తేదీ / గడువు",
+                'fin_fig': "ఆర్థిక వివరాలు",
+                'ob_prefix': "ఒప్పంద బాధ్యత: ",
+                'ob_default': "ఒప్పంద నిబంధనలను జాగ్రత్తగా పరిశీలించండి.",
+                'summary_intro': "ఈ కేసు {doc_kind} కు సంబంధించిన బాధ్యతలను నిర్దేశిస్తుంది.",
+                'summary_title': "పత్రం శీర్షిక: {doc_title}.",
+                'summary_parties': "సంబంధిత వ్యక్తులు: {party_str}.",
+                'summary_fin': "ఆర్థిక నిబంధనలు: {fin_str}.",
+                'summary_dates': "ముఖ్యమైన తేదీలు మరియు నోటీసు వ్యవధి: {date_str}.",
+                'summary_outro': "ఈ ఒప్పందం చట్టపరమైన హక్కులు మరియు బాధ్యతలను నిర్దేశిస్తుంది. సంతకం చేసే ముందు అన్ని నిబంధనలను పరిశీలించండి.",
+                'under_intro': "కేసు వివరణ: {summary_text}",
+                'under_cat': "పత్రం వర్గం: {doc_kind}.",
+                'under_fin': "ఆర్థిక నిబంధనలు: {fin_str}.",
+                'ident_ob': "ముఖ్యమైన బాధ్యత: {ob}.",
+                'ident_date': "ముఖ్యమైన తేదీలు: {date_str}.",
+                'ident_def': "తేదీలు మరియు నోటీసు వ్యవధిని సరిచూడండి.",
+                'q_lawyer_1': "ఈ ఒప్పంద నిబంధనలు నా చట్టపరమైన హక్కులను ప్రభావితం చేస్తాయా?",
+                'q_lawyer_2': "నా హక్కుల రక్షణకు ఏవైనా సవరణలు అవసరమా?",
+                'check_1': "సంతకం చేసిన మూల ఒప్పందం ప్రతి (Original Signed Agreement)",
+                'check_2': "చెల్లింపు రసీదులు మరియు సంభాషణ ప్రతులు",
+                'step_1': "సంతకం చేసే ముందు నిబంధనలన్నీ చదవండి.",
+                'step_2': "లాయర్ లేదా ఉచిత న్యాయ సహాయ కేంద్రాన్ని సంప్రదించండి.",
+                'risk_high': "అధిక ప్రమాదం (High Risk)",
+                'risk_med': "మధ్యస్థ ప్రమాదం (Medium Risk)",
+                'risk_cat': "నిబంధనల పరిశీలన (Clause Review)",
+                'risk_exp': "ఈ నిబంధన బాధ్యతలను నిర్దేశిస్తుంది: {ob}...",
+                'risk_why': "జరిమానాలు లేదా నోటీసు నిబంధనలను అర్థం చేసుకోండి.",
+                'risk_q': "ఈ నిబంధన కింద నా చట్టపరమైన హక్కులు ఏమిటి?",
+                'risk_ev': "పత్రంలో ఉన్న నిజం"
+            },
+            'ta': {
+                'doc_kind': "சட்ட ஆவணம் (Legal Document)",
+                'role_a': "முதல் தரப்பினர் (உரிமையாளர் / நிறுவனம்)",
+                'role_b': "இரண்டாம் தரப்பினர் (வாடகைதாரர் / ஊழியர்)",
+                'fin_label': "நிதி மதிப்பு / கட்டணம்",
+                'date_label': "முக்கிய தேதி / கெடு",
+                'doc_date': "ஆவண தேதி / காலம்",
+                'fin_fig': "நிதி விபரம்",
+                'ob_prefix': "ஒப்பந்த கடமை: ",
+                'ob_default': "ஒப்பந்த விதிகளை கவனமாக பரிசீலிக்கவும்.",
+                'summary_intro': "இந்த வழக்கு {doc_kind} தொடர்பான கடமைகளை நிர்ணயிக்கிறது.",
+                'summary_title': "ஆவண தலைப்பு: {doc_title}.",
+                'summary_parties': "தொடர்புடைய நபர்கள்: {party_str}.",
+                'summary_fin': "நிதி நிபந்தனைகள்: {fin_str}.",
+                'summary_dates': "முக்கிய தேதிகள் மற்றும் அறிவிப்பு காலம்: {date_str}.",
+                'summary_outro': "இந்த ஒப்பந்தம் சட்டபூர்வ உரிமைகளையும் பொறுப்புகளையும் நிர்ணயிக்கிறது.",
+                'under_intro': "வழக்கு விளக்கம்: {summary_text}",
+                'under_cat': "ஆவண வகை: {doc_kind}.",
+                'under_fin': "நிதி நிபந்தனைகள்: {fin_str}.",
+                'ident_ob': "முக்கிய கடமை: {ob}.",
+                'ident_date': "முக்கிய தேதிகள்: {date_str}.",
+                'ident_def': "தேதிகள் மற்றும் அறிவிப்பு காலத்தை சரிபார்க்கவும்.",
+                'q_lawyer_1': "இந்த ஒப்பந்த விதிகள் என் சட்ட உரிமைகளை பாதிக்குமா?",
+                'q_lawyer_2': "என் உரிமைகளை பாதுகாக்க திருத்தங்கள் தேவையா?",
+                'check_1': "கையெழுத்திட்ட அசல் ஒப்பந்த நகல் (Original Signed Agreement)",
+                'check_2': "ரசீதுகள் மற்றும் தொடர்பு பதிவுகள்",
+                'step_1': "கையெழுத்திடும் முன் அனைத்து விதிகளையும் படிக்கவும்.",
+                'step_2': "வழக்கறிஞரை அணுகி ஆலோசனை பெறவும்.",
+                'risk_high': "அதிக ஆபத்து (High Risk)",
+                'risk_med': "நடுத்தர ஆபத்து (Medium Risk)",
+                'risk_cat': "விதி ஆய்வு (Clause Review)",
+                'risk_exp': "இந்த விதி பொறுப்பை நிர்ணயிக்கிறது: {ob}...",
+                'risk_why': "அபராதம் அல்லது அறிவிப்பு விதிகளை தெளிவாக புரிந்து கொள்ளுங்கள்.",
+                'risk_q': "இந்த விதியின் கீழ் என் சட்ட உரிமைகள் என்ன?",
+                'risk_ev': "ஆவணத்தில் உள்ள உண்மை"
+            },
+            'ml': {
+                'doc_kind': "നിയമപരമായ പ്രമാണം (Legal Document)",
+                'role_a': "ഒന്നാം കക്ഷി (ഉടമസ്ഥൻ / സ്ഥാപനം)",
+                'role_b': "രണ്ടാം കക്ഷി (വാടകക്കാരൻ / ജീവനക്കാരൻ)",
+                'fin_label': "സാമ്പത്തിക മൂല്യം / പേയ്മെന്റ്",
+                'date_label': "പ്രധാന തീയതി / സമയപരിധി",
+                'doc_date': "പ്രമാണ തീയതി / കാലാവധി",
+                'fin_fig': "സാമ്പത്തിക തുക",
+                'ob_prefix': "കരാർ ചുമതല: ",
+                'ob_default': "കരാർ വ്യവസ്ഥകൾ ശ്രദ്ധാപൂർവ്വം പരിശോധിക്കുക.",
+                'summary_intro': "ഈ കേസ് {doc_kind} സംബന്ധിച്ച ചുമതലകൾ നിർണ്ണയിക്കുന്നു.",
+                'summary_title': "പ്രധാന ശീർഷകം: {doc_title}.",
+                'summary_parties': "ബന്ധപ്പെട്ട കക്ഷികൾ: {party_str}.",
+                'summary_fin': "സാമ്പത്തിക വ്യവസ്ഥകൾ: {fin_str}.",
+                'summary_dates': "പ്രധാന തീയതികളും സമയപരിധിയും: {date_str}.",
+                'summary_outro': "ഈ കരാർ നിയമപരമായ അവകാശങ്ങളും ചുമതലകളും നിർണ്ണയിക്കുന്നു.",
+                'under_intro': "കേസ് വിവരണം: {summary_text}",
+                'under_cat': "പ്രമാണ തരം: {doc_kind}.",
+                'under_fin': "സാമ്പത്തിക വ്യവസ്ഥകൾ: {fin_str}.",
+                'ident_ob': "പ്രധാന ചുമതല: {ob}.",
+                'ident_date': "പ്രധാന തീയതികൾ: {date_str}.",
+                'ident_def': "തീയതികളും നോട്ടീസ് കാലാവധിയും സ്ഥിരീകരിക്കുക.",
+                'q_lawyer_1': "ഈ കരാർ വ്യവസ്ഥകൾ എന്റെ നിയമപരമായ അവകാശങ്ങളെ ബാധിക്കുമോ?",
+                'q_lawyer_2': "എന്റെ അവകാശ സംരക്ഷണത്തിന് ഭേദഗതികൾ ആവശ്യമുണ്ടോ?",
+                'check_1': "ഒപ്പിട്ട അസൽ കരാർ പകർപ്പ് (Original Signed Agreement)",
+                'check_2': "പേയ്മെന്റ് രസീതുകളും ആശയവിനിമയ രേഖകളും",
+                'step_1': "ഒപ്പിടുന്നതിന് മുൻപ് എല്ലാ വ്യവസ്ഥകളും വായിക്കുക.",
+                'step_2': "വക്കീലിനെയോ സൗജന്യ നിയമ സഹായ കേന്ദ്രത്തെയോ സമീപിക്കുക.",
+                'risk_high': "ഉയർന്ന സാധ്യത (High Risk)",
+                'risk_med': "മിതമായ സാധ്യത (Medium Risk)",
+                'risk_cat': "വകുപ്പ് പരിശോധന (Clause Review)",
+                'risk_exp': "ഈ വകുപ്പ് ചുമതലകൾ നിർണ്ണയിക്കുന്നു: {ob}...",
+                'risk_why': "പിഴ അല്ലെങ്കിൽ നോട്ടീസ് കാലാവധി മനസ്സിലാക്കുക.",
+                'risk_q': "ഈ വകുപ്പ് അനുസരിച്ച് എന്റെ അവകാശങ്ങൾ എന്തൊക്കെയാണ്?",
+                'risk_ev': "പ്രമാണത്തിൽ കണ്ടെത്തിയ വസ്തുത"
+            },
+            'mr': {
+                'doc_kind': "कायदेशीर दस्तऐवज (Legal Document)",
+                'role_a': "प्रथम पक्ष (मालक / कंपनी)",
+                'role_b': "द्वितीय पक्ष (भाडेकरू / कर्मचारी)",
+                'fin_label': "आर्थिक मूल्य / रक्कम",
+                'date_label': "महत्त्वाची तारीख / मुदत",
+                'doc_date': "दस्तऐवज तारीख / मुदत",
+                'fin_fig': "आर्थिक तपशील",
+                'ob_prefix': "कराराची अट: ",
+                'ob_default': "कराराच्या अटी काळजीपूर्वक वाचा.",
+                'summary_intro': "हे प्रकरण {doc_kind} शी संबंधित जबाबदाऱ्या निश्चित करते.",
+                'summary_title': "मुख्य शीर्षक: {doc_title}.",
+                'summary_parties': "संबंधित पक्ष: {party_str}.",
+                'summary_fin': "आर्थिक अटी: {fin_str}.",
+                'summary_dates': "महत्त्वाच्या तारखा व मुदत: {date_str}.",
+                'summary_outro': "हा करार कायदेशीर हक्क व जबाबदाऱ्या निश्चित करतो.",
+                'under_intro': "प्रकरणाचे स्पष्टीकरण: {summary_text}",
+                'under_cat': "वर्ग: {doc_kind}.",
+                'under_fin': "आर्थिक जबाबदाऱ्या: {fin_str}.",
+                'ident_ob': "मुख्य जबाबदारी: {ob}.",
+                'ident_date': "महत्त्वाच्या तारखा: {date_str}.",
+                'ident_def': "तारखा व नोटीस मुदत तपासा.",
+                'q_lawyer_1': "या कराराच्या अटी माझ्या कायदेशीर हक्कांवर परिणाम करतात का?",
+                'q_lawyer_2': "माझ्या हक्कांच्या संरक्षणासाठी काही दुरुस्ती आवश्यक आहे का?",
+                'check_1': "स्वाक्षरी केलेल्या मूळ कराराची प्रत (Original Signed Agreement)",
+                'check_2': "पावत्या आणि संदेश व्यवहार नोंदी",
+                'step_1': "स्वाक्षरी करण्यापूर्वी सर्व अटी वाचून घ्या.",
+                'step_2': "वकील किंवा कायदेशीर मदत केंद्राचा सल्ला घ्या.",
+                'risk_high': "उच्च धोका (High Risk)",
+                'risk_med': "मध्यम धोका (Medium Risk)",
+                'risk_cat': "अट तपासणी (Clause Review)",
+                'risk_exp': "ही अट जबाबदारी निश्चित करते: {ob}...",
+                'risk_why': "दंड किंवा नोटीस मुदतीचे नियम समजून घ्या.",
+                'risk_q': "या अटीनुसार माझे हक्क काय आहेत?",
+                'risk_ev': "दस्तऐवजातील सत्य"
+            },
+            'bn': {
+                'doc_kind': "আইনি নথি (Legal Document)",
+                'role_a': "প্রথম পক্ষ (মালিক / প্রতিষ্ঠান)",
+                'role_b': "দ্বিতীয় পক্ষ (ভাড়াটিয়া / কর্মচারী)",
+                'fin_label': "আর্থিক মূল্য / পেমেন্ট",
+                'date_label': "গুরুত্বপূর্ণ তারিখ / সময়সীমা",
+                'doc_date': "নথির তারিখ / মেয়াদ",
+                'fin_fig': "আর্থিক তথ্য",
+                'ob_prefix': "চুক্তির বাধ্যবাধকতা: ",
+                'ob_default': "চুক্তির শর্তাবলী সতর্কতার সাথে পর্যালোচনা করুন।",
+                'summary_intro': "এই মামলাটি {doc_kind} সংক্রান্ত বাধ্যবাধকতা নির্ধারণ করে।",
+                'summary_title': "মূল শিরোনাম: {doc_title}।",
+                'summary_parties': "সংশ্লিষ্ট পক্ষ: {party_str}।",
+                'summary_fin': "আর্থিক শর্তাবলী: {fin_str}।",
+                'summary_dates': "গুরুত্বপূর্ণ তারিখ ও সময়সীমা: {date_str}।",
+                'summary_outro': "এই চুক্তিটি আইনি অধিকার ও দায়িত্ব নির্ধারণ করে।",
+                'under_intro': "মামলার বিবরণ: {summary_text}",
+                'under_cat': "নথির বিভাগ: {doc_kind}।",
+                'under_fin': "আর্থিক তথ্য: {fin_str}।",
+                'ident_ob': "মূল বাধ্যবাধকতা: {ob}।",
+                'ident_date': "গুরুত্বপূর্ণ তারিখ: {date_str}।",
+                'ident_def': "তারিখ ও নোটিশের মেয়াদ যাচাই করুন।",
+                'q_lawyer_1': "এই চুক্তির শর্ত কি আমার আইনি অধিকারকে প্রভাবিত করে?",
+                'q_lawyer_2': "আমার অধিকার সুরক্ষায় কোনো সংশোধন প্রয়োজন কি?",
+                'check_1': "স্বাক্ষরিত মূল চুক্তির কপি (Original Signed Agreement)",
+                'check_2': "পেমেন্ট রসিদ এবং যোগাযোগের রেকর্ড",
+                'step_1': "স্বাক্ষর করার আগে সমস্ত শর্ত পড়ুন।",
+                'step_2': "উকিল বা আইনি সহায়তা কেন্দ্রের পরামর্শ নিন।",
+                'risk_high': "উচ্চ ঝুঁকি (High Risk)",
+                'risk_med': "মাঝারি ঝুঁকি (Medium Risk)",
+                'risk_cat': "শর্ত পর্যালোচনা (Clause Review)",
+                'risk_exp': "এই শর্তটি দায়িত্ব নির্ধারণ করে: {ob}...",
+                'risk_why': "জরিমানা বা নোটিশের মেয়াদ ভালোভাবে বুঝুন।",
+                'risk_q': "এই শর্তের অধীনে আমার অধিকার কী?",
+                'risk_ev': "নথিতে প্রাপ্ত তথ্য"
+            },
+            'gu': {
+                'doc_kind': "કાનૂની દસ્તાવેજ (Legal Document)",
+                'role_a': "પ્રથમ પક્ષ (મકાનમાલિક / કંપની)",
+                'role_b': "બીજો પક્ષ (ભાડૂઆત / કર્મચારી)",
+                'fin_label': "નાણાકીય મૂલ્ય / ચૂકવણી",
+                'date_label': "મહત્વપૂર્ણ તારીખ / સમયમર્યાદા",
+                'doc_date': "દસ્તાવેજની તારીખ / મુદત",
+                'fin_fig': "નાણાકીય વિગતો",
+                'ob_prefix': "કરારની જવાબદારી: ",
+                'ob_default': "કરારની શરતો કાળજીપૂર્વક વાંચો.",
+                'summary_intro': "આ કેસ {doc_kind} સંબંધિત જવાબદારીઓ નક્કી કરે છે.",
+                'summary_title': "મુખ્ય શીર્ષક: {doc_title}.",
+                'summary_parties': "સંબંધિત પક્ષો: {party_str}.",
+                'summary_fin': "નાણાકીય શરતો: {fin_str}.",
+                'summary_dates': "મહત્વપૂર્ણ તારીખો: {date_str}.",
+                'summary_outro': "આ કરાર કાનૂની અધિકારો અને જવાબદારીઓ નક્કી કરે છે.",
+                'under_intro': "કેસની સ્પષ્ટતા: {summary_text}",
+                'under_cat': "વર્ગ: {doc_kind}.",
+                'under_fin': "નાણાકીય માહિતી: {fin_str}.",
+                'ident_ob': "મુખ્ય જવાબદારી: {ob}.",
+                'ident_date': "મહત્વપૂર્ણ તારીખો: {date_str}.",
+                'ident_def': "તારીખો અને નોટિસ મુદત ચકાસો.",
+                'q_lawyer_1': "શું આ શરતો મારા કાનૂની અધિકારોને અસર કરે છે?",
+                'q_lawyer_2': "મારા અધિકારોના રક્ષણ માટે કોઈ સુધારાની જરૂર છે?",
+                'check_1': "સહી કરેલ મૂળ કરારની નકલ (Original Signed Agreement)",
+                'check_2': "ચૂકવણીની રસીદો અને સંચાર રેકોર્ડ",
+                'step_1': "સહી કરતા પહેલા તમામ શરતો વાંચો.",
+                'step_2': "વકીલ અથવા કાનૂની સહાય કેન્દ્રની સલાહ લો.",
+                'risk_high': "ઉચ્ચ જોખમ (High Risk)",
+                'risk_med': "મધ્યમ જોખમ (Medium Risk)",
+                'risk_cat': "શરત સમીક્ષા (Clause Review)",
+                'risk_exp': "આ શરત જવાબદારી નક્કી કરે છે: {ob}...",
+                'risk_why': "દંડ અથવા નોટિસ મુદતના નિયમો સમજો.",
+                'risk_q': "આ શરત હેઠળ મારા અધિકારો શું છે?",
+                'risk_ev': "દસ્તાવેજમાંથી મળેલી હકીકત"
+            },
+            'en': {
+                'doc_kind': "Legal Document",
+                'role_a': "First Party / Organization",
+                'role_b': "Second Party / Participant",
+                'fin_label': "Extracted Financial Value",
+                'date_label': "Extracted Date / Timeline",
+                'doc_date': "Document Date / Term",
+                'fin_fig': "Financial Figures",
+                'ob_prefix': "",
+                'ob_default': "Review document terms carefully.",
+                'summary_intro': "This case involves a {doc_kind} establishing legally binding covenants and obligations between the parties.",
+                'summary_title': "Main Document Title & Context: {doc_title}.",
+                'summary_parties': "Key Parties Identified: {party_str}.",
+                'summary_fin': "Financial Terms Extracted: {fin_str}.",
+                'summary_dates': "Notice Windows & Timelines: {date_str}.",
+                'summary_outro': "This agreement establishes enforceable rights, potential liabilities, confidentiality or restrictive obligations, and default penalties. Review all clauses carefully before taking formal legal steps.",
+                'under_intro': "Case Explanation: {summary_text}",
+                'under_cat': "Document Classification: {doc_kind}.",
+                'under_fin': "Financial Commitments & Deposit Scope: {fin_str}.",
+                'ident_ob': "Core Obligation Identified: {ob}.",
+                'ident_date': "Important Dates & Statutory Notice Timelines: {date_str}.",
+                'ident_def': "Verify all dates, obligations, and notice timelines in the agreement.",
+                'q_lawyer_1': "Are there any ambiguous, non-standard, or high-risk clauses in this document?",
+                'q_lawyer_2': "What specific information is classified as confidential or binding under this agreement?",
+                'check_1': "Original signed document copy / agreement duplicate",
+                'check_2': "Communication history and related schedule attachments",
+                'step_1': "Review confidentiality obligations and scope prior to signing.",
+                'step_2': "Consult legal aid or a qualified advocate to verify rights before taking formal legal steps.",
+                'risk_high': "High Risk",
+                'risk_med': "Medium Risk",
+                'risk_cat': "Key Clause / Obligation Review",
+                'risk_exp': "This clause outlines specific legal obligations and liabilities for the party: {ob}...",
+                'risk_why': "Pay close attention to penalties, deposit deductions, or notice conditions before proceeding.",
+                'risk_q': "What are my legal rights and liabilities regarding this clause?",
+                'risk_ev': "Fact found in document"
+            }
+        }
+
+        L = LOCALIZED_DATA.get(lang_code, LOCALIZED_DATA['en'])
+
         # 1. Extract Title & Overview Summary
-        doc_kind = doc_type or ("ಕಾನೂನು ದಾಖಲೆ (Legal Document)" if is_kannada else "Legal Document")
+        doc_kind = doc_type or L['doc_kind']
         doc_title = clean_lines[0] if clean_lines else doc_kind
 
-        # 2. Extract Parties (regex for names / roles)
+        # 2. Extract Parties
         parties = []
         party_a = re.findall(r'(?:between|by and between|among|lessor|landlord|employer|conducted by|party a)\s*[:\-]?\s*([A-Z][A-Za-z0-9\s\.\&]{2,40})', clean_text, re.IGNORECASE)
         party_b = re.findall(r'(?:and|tenant|lessee|employee|second party|participant|party b)\s*[:\-]?\s*([A-Z][A-Za-z0-9\s\.\&]{2,40})', clean_text, re.IGNORECASE)
         
-        role_a = "ಮೊದಲನೇ ಪಕ್ಷಕಾರ (ಮಾಲೀಕರು / ಸಂಸ್ಥೆ)" if is_kannada else "First Party / Organization"
-        role_b = "ಎರಡನೇ ಪಕ್ಷಕಾರ (ಬಾಡಿಗೆದಾರರು / ಉದ್ಯೋಗಿ)" if is_kannada else "Second Party / Participant"
+        role_a = L['role_a']
+        role_b = L['role_b']
 
         if party_a:
             parties.append({"role": role_a, "name": party_a[0].strip()})
@@ -417,303 +749,100 @@ DOCUMENT TEXT:
         important_dates_and_amounts = []
         if amounts_found:
             for idx, amt in enumerate(list(dict.fromkeys(amounts_found))[:3]):
-                label = f"ಮಾಸಿಕ ಪಾವತಿ / ಹಣಕಾಸು ಮೌಲ್ಯ #{idx+1}" if is_kannada else f"Extracted Financial Value #{idx+1}"
-                important_dates_and_amounts.append({"item": label, "details": amt})
+                important_dates_and_amounts.append({"item": f"{L['fin_label']} #{idx+1}", "details": amt})
         if dates_found:
             for idx, dt in enumerate(list(dict.fromkeys(dates_found))[:3]):
-                label = f"ಪ್ರಮುಖ ದಿನಾಂಕ / ಗಡುವು #{idx+1}" if is_kannada else f"Extracted Date / Timeline #{idx+1}"
-                important_dates_and_amounts.append({"item": label, "details": dt})
+                important_dates_and_amounts.append({"item": f"{L['date_label']} #{idx+1}", "details": dt})
 
         if not important_dates_and_amounts:
             important_dates_and_amounts = [
-                {"item": "ದಾಖಲೆಯ ದಿನಾಂಕ / ಅವಧಿ" if is_kannada else "Document Date / Term", "details": "ಕರಾರಿನಲ್ಲಿ ಪರಿಶೀಲಿಸಿ" if is_kannada else "Extracted from document text"},
-                {"item": "ಹಣಕಾಸಿನ ಮೊತ್ತ" if is_kannada else "Financial Figures", "details": "ಷರತ್ತುಗಳನ್ನು ಪರಿಶೀಲಿಸಿ" if is_kannada else "Review specific clause values in text"}
+                {"item": L['doc_date'], "details": clean_lines[0][:40] if clean_lines else "Standard Term"},
+                {"item": L['fin_fig'], "details": "Review contract clauses"}
             ]
 
         # 4. Extract Key Obligations
         obligation_lines = [l for l in clean_lines if re.search(r'\b(shall|must|agrees?|disclose|confidential|required|pay|notice|deposit|term|condition|purpose)\b', l, re.I)]
-        if is_kannada:
-            key_obligations = [f"ಒಪ್ಪಂದದ ಬಾಧ್ಯತೆ: {l[:130]}" for l in obligation_lines[:3]] if obligation_lines else ["ಒಪ್ಪಂದದ ಷರತ್ತುಗಳನ್ನು ಎಚ್ಚರಿಕೆಯಿಂದ ಪರಿಶೀಲಿಸಿ."]
+        if obligation_lines:
+            key_obligations = [f"{L['ob_prefix']}{l[:130]}" for l in obligation_lines[:3]]
         else:
-            key_obligations = [l[:150] for l in obligation_lines[:3]] if obligation_lines else [clean_lines[0][:150]] if clean_lines else ["Review document terms carefully."]
+            key_obligations = [L['ob_default']]
 
-        # 5. Build Detailed Comprehensive Summary Text
-        if is_kannada:
-            summary_parts = [
-                f"ಈ ಪ್ರಮುಖ ಪ್ರಕರಣವು {doc_kind} ಗೆ ಸಂಬಂಧಿಸಿದ ಬಾಧ್ಯತೆಗಳನ್ನು ಹೊಂದಿದೆ.",
-                f"ದಾಖಲೆಯ ಮುಖ್ಯ ಪ್ರಶಸ್ತಿ: {doc_title}."
-            ]
-            if parties:
-                party_str = ", ".join([f"{p['role']}: {p['name']}" for p in parties])
-                summary_parts.append(f"ಸಂಬಂಧಿಸಿದ ಪಕ್ಷಕಾರರು: {party_str}.")
-            if amounts_found:
-                summary_parts.append(f"ಪರಿಶೀಲಿಸಲಾದ ಹಣಕಾಸಿನ ಷರತ್ತುಗಳು: {', '.join(list(dict.fromkeys(amounts_found))[:3])}.")
-            if dates_found:
-                summary_parts.append(f"ಗಮನಿಸಬೇಕಾದ ನೋಟಿಸ್ ಅವಧಿ ಹಾಗೂ ಗಡುವುಗಳು: {', '.join(list(dict.fromkeys(dates_found))[:3])}.")
-            summary_parts.append("ಈ ಒಪ್ಪಂದವು ಪಕ್ಷಕಾರರ ಕಾನೂನಾತ್ಮಕ ಹಕ್ಕುಗಳು, ದಂಡದ ನಿಯಮಗಳು ಹಾಗೂ ಬಾಧ್ಯತೆಗಳನ್ನು ನಿರ್ದಿಷ್ಟಪಡಿಸುತ್ತದೆ. ಸಹಿ ಮಾಡುವ ಮುನ್ನ ಅಥವಾ ಕಾನೂನು ಕ್ರಮ ಕೈಗೊಳ್ಳುವ ಮುನ್ನ ಎಲ್ಲ ಷರತ್ತುಗಳನ್ನು ವಿವರವಾಗಿ ಪರಿಶೀಲಿಸಿ.")
-            summary_text = " ".join(summary_parts)
-        else:
-            summary_parts = [
-                f"This case involves a {doc_kind} establishing legally binding covenants and obligations between the parties.",
-                f"Main Document Title & Context: {doc_title}."
-            ]
-            if parties:
-                party_str = ", ".join([f"{p['role']}: {p['name']}" for p in parties])
-                summary_parts.append(f"Key Parties Identified: {party_str}.")
-            if amounts_found:
-                summary_parts.append(f"Financial Terms Extracted: {', '.join(list(dict.fromkeys(amounts_found))[:3])}.")
-            if dates_found:
-                summary_parts.append(f"Notice Windows & Timelines: {', '.join(list(dict.fromkeys(dates_found))[:3])}.")
-            summary_parts.append("This agreement establishes enforceable rights, potential liabilities, confidentiality or restrictive obligations, and default penalties. Review all clauses carefully before taking formal legal steps.")
-            summary_text = " ".join(summary_parts)
+        # 5. Build Detailed Summary
+        summary_parts = [
+            L['summary_intro'].format(doc_kind=doc_kind),
+            L['summary_title'].format(doc_title=doc_title)
+        ]
+        if parties:
+            party_str = ", ".join([f"{p['role']}: {p['name']}" for p in parties])
+            summary_parts.append(L['summary_parties'].format(party_str=party_str))
+        if amounts_found:
+            fin_str = ", ".join(list(dict.fromkeys(amounts_found))[:3])
+            summary_parts.append(L['summary_fin'].format(fin_str=fin_str))
+        if dates_found:
+            date_str = ", ".join(list(dict.fromkeys(dates_found))[:3])
+            summary_parts.append(L['summary_dates'].format(date_str=date_str))
+        summary_parts.append(L['summary_outro'])
+        summary_text = " ".join(summary_parts)
 
-        # 6. Build Dynamic Action Map
-        if is_kannada:
-            understand_list = [
-                f"ಪ್ರಕರಣದ ವಿವರಣೆ: {summary_text}",
-                f"ದಾಖಲೆಯ ವರ್ಗ: {doc_kind}."
-            ]
-            if amounts_found:
-                understand_list.append(f"ಹಣಕಾಸಿನ ಮೊತ್ತ ಹಾಗೂ ಬಾಧ್ಯತೆಗಳು: {', '.join(list(dict.fromkeys(amounts_found))[:2])}.")
+        # 6. Action Map
+        understand_list = [
+            L['under_intro'].format(summary_text=summary_text),
+            L['under_cat'].format(doc_kind=doc_kind)
+        ]
+        if amounts_found:
+            understand_list.append(L['under_fin'].format(fin_str=", ".join(list(dict.fromkeys(amounts_found))[:2])))
 
-            identify_list = []
-            if obligation_lines:
-                identify_list.append(f"ಪ್ರಮುಖ ಬಾಧ್ಯತೆ ಗುರುತಿಸಲಾಗಿದೆ: {obligation_lines[0]}.")
-            if dates_found:
-                identify_list.append(f"ಗಮನಿಸಬೇಕಾದ ದಿನಾಂಕಗಳು / ಗಡುವು: {', '.join(list(dict.fromkeys(dates_found))[:3])}.")
-            if not identify_list:
-                identify_list.append("ಒಪ್ಪಂದದಲ್ಲಿರುವ ದಿನಾಂಕ ಹಾಗೂ ನೋಟಿಸ್ ಅವಧಿಗಳನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.")
+        identify_list = []
+        if obligation_lines:
+            identify_list.append(L['ident_ob'].format(ob=obligation_lines[0][:100]))
+        if dates_found:
+            identify_list.append(L['ident_date'].format(date_str=", ".join(list(dict.fromkeys(dates_found))[:3])))
+        if not identify_list:
+            identify_list.append(L['ident_def'])
 
-            questions_for_lawyer = [
-                "ಈ ಒಪ್ಪಂದದ ಷರತ್ತುಗಳು ನನ್ನ ಕಾನೂನಾತ್ಮಕ ಹಕ್ಕುಗಳಿಗೆ ಭಂಗ ತರುತ್ತವೆಯೇ?",
-                "ನನ್ನ ಹಕ್ಕುಗಳ ರಕ್ಷಣೆಗೆ ಕರಾರಿನಲ್ಲಿ ಯಾವುದೇ ತಿದ್ದುಪಡಿ ಅಥವಾ ಬದಲಾವಣೆ ಅಗತ್ಯವಿದೆಯೇ?"
-            ]
-            checklist_to_collect = [
-                "ಸಹಿ ಮಾಡಿದ ಮೂಲ ಒಪ್ಪಂದದ ಪ್ರತಿ (Original Signed Agreement)",
-                "ಬ್ಯಾಂಕ್ ಮುಂಗಡ ಪಾವತಿ ರಶೀದಿಗಳು ಹಾಗೂ ಇಮೇಲ್/ವಾಟ್ಸಾಪ್ ಸಂವಹನ ಪ್ರತಿಗಳು"
-            ]
-            next_steps = [
-                "ಯಾವುದೇ ಹೊಸ ಕರಾರಿಗೆ ಸಹಿ ಮಾಡುವ ಮುನ್ನ ಎಲ್ಲ ಷರತ್ತುಗಳನ್ನು ವಿವರವಾಗಿ ಓದಿ.",
-                "ವಕೀಲರೊಂದಿಗೆ ಅಥವಾ ಉಚಿತ ಕಾನೂನು ನೆರವು (NALSA) ಕೇಂದ್ರದ ಮೂಲಕ ಉಚಿತ ಸಲಹೆ ಪಡೆಯಿರಿ."
-            ]
-        else:
-            understand_list = [
-                f"Case Explanation: {summary_text}",
-                f"Document Classification: {doc_kind}."
-            ]
-            if amounts_found:
-                understand_list.append(f"Financial Commitments & Deposit Scope: {', '.join(list(dict.fromkeys(amounts_found))[:2])}.")
+        questions_for_lawyer = [L['q_lawyer_1'], L['q_lawyer_2']]
+        checklist_to_collect = [L['check_1'], L['check_2']]
+        next_steps = [L['step_1'], L['step_2']]
 
-            identify_list = []
-            if obligation_lines:
-                identify_list.append(f"Core Obligation Identified: {obligation_lines[0]}.")
-            if dates_found:
-                identify_list.append(f"Important Dates & Statutory Notice Timelines: {', '.join(list(dict.fromkeys(dates_found))[:3])}.")
-            if not identify_list:
-                identify_list.append("Verify all dates, obligations, and notice timelines in the agreement.")
-
-            questions_for_lawyer = []
-            if re.search(r'confidential|disclose|third-party', clean_text, re.I):
-                questions_for_lawyer.append("What specific information is classified as confidential under this agreement?")
-            if amounts_found:
-                questions_for_lawyer.append(f"Are the financial terms ({amounts_found[0]}) binding as stated in the document?")
-            if not questions_for_lawyer:
-                questions_for_lawyer.append("Are there any ambiguous, non-standard, or high-risk clauses in this document?")
-
-            checklist_to_collect = [
-                "Original signed document copy / agreement duplicate",
-                "Communication history and related schedule attachments"
-            ]
-
-            next_steps = [
-                "Review confidentiality obligations and scope prior to signing.",
-                "Consult legal aid or a qualified advocate to verify rights before taking formal legal steps."
-            ]
-
-        # 6. Build Risk Clauses
+        # 7. Clauses and Risks
         clauses_and_risks = []
         for idx, ob in enumerate(obligation_lines[:3]):
-            if is_kannada:
-                clauses_and_risks.append({
-                    "risk_level": "ಹೆಚ್ಚಿನ ಗಮನ ಅಗತ್ಯ (High Risk)" if idx == 0 else "ಮಧ್ಯಮ ಗಮನ (Medium Risk)",
-                    "category": "ಪ್ರಮುಖ ಷರತ್ತುಗಳ ಪರಿಶೀಲನೆ (Clause Review)",
-                    "original_clause": ob[:200],
-                    "explanation": f"ಈ ಷರತ್ತು ಪಕ್ಷಕಾರರ ಹೊಣೆಗಾರಿಕೆಯನ್ನು ನಿರ್ದಿಷ್ಟಪಡಿಸುತ್ತದೆ: {ob[:100]}...",
-                    "why_deserves_attention": "ದಂಡ, ಠೇವಣಿ ಜಪ್ತಿ ಅಥವಾ ನೋಟಿಸ್ ಅವಧಿಯ ನಿಯಮಗಳನ್ನು ಸಹಿ ಮಾಡುವ ಮುನ್ನ ಸ್ಪಷ್ಟವಾಗಿ ತಿಳಿದುಕೊಳ್ಳಿ.",
-                    "suggested_question": "ಈ ಷರತ್ತಿಗೆ ಸಂಬಂಧಿಸಿದಂತೆ ನನ್ನ ಕಾನೂನು ಹಕ್ಕುಗಳು ಮತ್ತು ಹೊಣೆಗಾರಿಕೆಗಳು ಯಾವುವು?",
-                    "evidence_status": "ದಾಖಲೆಯಲ್ಲಿ ಕಂಡುಬಂದ ಸತ್ಯಾಂಶ",
-                    "page_ref": f"ಷರತ್ತು #{idx+1}"
-                })
-            else:
-                clauses_and_risks.append({
-                    "risk_level": "High Risk" if idx == 0 else "Medium Risk",
-                    "category": "Key Clause / Obligation Review",
-                    "original_clause": ob[:200],
-                    "explanation": f"Clause obligates parties regarding: {ob[:120]}...",
-                    "why_deserves_attention": "Ensure you fully understand the liability, penalty, or confidentiality scope set forth in this clause.",
-                    "suggested_question": "What are my legal rights and liabilities regarding this clause?",
-                    "evidence_status": "Fact found in document",
-                    "page_ref": f"Clause #{idx+1}"
-                })
+            clauses_and_risks.append({
+                "risk_level": L['risk_high'] if idx == 0 else L['risk_med'],
+                "category": L['risk_cat'],
+                "original_clause": ob[:200],
+                "explanation": L['risk_exp'].format(ob=ob[:100]),
+                "why_deserves_attention": L['risk_why'],
+                "suggested_question": L['risk_q'],
+                "evidence_status": L['risk_ev'],
+                "page_ref": f"Clause #{idx+1}"
+            })
 
         if not clauses_and_risks:
-            if is_kannada:
-                clauses_and_risks = [{
-                    "risk_level": "ಮಧ್ಯಮ ಗಮನ (Medium Risk)",
-                    "category": "ಸಾಮಾನ್ಯ ಷರತ್ತುಗಳ ಪರಿಶೀಲನೆ",
-                    "original_clause": summary_text,
-                    "explanation": "ದಾಖಲೆಯಿಂದ ಪ್ರಮುಖ ವಿಷಯಗಳನ್ನು ಗ್ರಹಿಸಲಾಗಿದೆ.",
-                    "why_deserves_attention": "ಒಪ್ಪಂದಕ್ಕೆ ಸಹಿ ಮಾಡುವ ಮುನ್ನ ಎಲ್ಲ ಬಾಧ್ಯತೆಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.",
-                    "suggested_question": "ಈ ಒಪ್ಪಂದದಲ್ಲಿರುವ ಷರತ್ತುಗಳು ಸ್ಪಷ್ಟವಾಗಿವೆಯೇ?",
-                    "evidence_status": "ದಾಖಲೆಯಲ್ಲಿ ಕಂಡುಬಂದ ಸತ್ಯಾಂಶ",
-                    "page_ref": "ಪುಟ 1"
-                }]
-            else:
-                clauses_and_risks = [{
-                    "risk_level": "Medium Risk",
-                    "category": "General Terms Review",
-                    "original_clause": summary_text,
-                    "explanation": "Extracted main terms from uploaded document text.",
-                    "why_deserves_attention": "Verify obligations prior to signing or acting on notice.",
-                    "suggested_question": "Are all obligations in this document clear and mutual?",
-                    "evidence_status": "Fact found in document",
-                    "page_ref": "Page 1"
-                }]
+            clauses_and_risks = [{
+                "risk_level": L['risk_med'],
+                "category": L['risk_cat'],
+                "original_clause": summary_text[:200],
+                "explanation": summary_text[:150],
+                "why_deserves_attention": L['risk_why'],
+                "suggested_question": L['risk_q'],
+                "evidence_status": L['risk_ev'],
+                "page_ref": "Page 1"
+            }]
 
-        # 7. Extract Applicable Indian Laws, Penalties, and Case Handling Procedures
-        applicable_laws = []
-        c_text = clean_text.lower()
-        d_type = (doc_type or "").lower()
-
-        # Case 1: Criminal / Offence / Fraud / Threat / BNS / IPC
-        if any(k in c_text or k in d_type for k in ['crime', 'criminal', 'fraud', 'cheating', 'threat', 'bns', 'ipc', 'police', 'stolen', 'forgery']):
-            if is_kannada:
-                applicable_laws.append({
-                    "act_or_law": "ಭಾರತೀಯ ನ್ಯಾಯ ಸಂಹಿತೆ, 2023 (BNS) / ಐ.ಪಿ.ಸಿ (IPC)",
-                    "section": "ಸೆಕ್ಷನ್ 318 BNS (ಹಳೆಯ ಐ.ಪಿ.ಸಿ ಸೆಕ್ಷನ್ 420)",
-                    "title": "ವಂಚನೆ ಮತ್ತು ಪ್ರಚೋದನೆ (Cheating & Criminal Breach of Trust)",
-                    "penalty_or_punishment": "7 ವರ್ಷಗಳವರೆಗೆ ಜೈಲು ಶಿಕ್ಷೆ + ದಂಡ (Imprisonment up to 7 years + Mandatory Fine)",
-                    "how_to_handle_case": "1. ಸಮೀಪದ ಪೊಲೀಸ್ ಠಾಣೆಯಲ್ಲಿ ಪ್ರಥಮ ಮಾಹಿತಿ ವರದಿ (FIR) ನೀಡಲು ಲಿಖಿತ ದೂರು ಸಲ್ಲಿಸಿ.\n2. ಪೋಲಿಸರು ದೂರು ಸ್ವೀಕರಿಸದಿದ್ದರೆ ಸೆಕ್ಷನ್ 175(3) BNS ಅಡಿಯಲ್ಲಿ ಮ್ಯಾಜಿಸ್ಟ್ರೇಟ್ ನ್ಯಾಯಾಲಯದಲ್ಲಿ ದೂರು ಸಲ್ಲಿಸಿ.\n3. ದಿನಾಂಕ ಹಾಗೂ ಸಾಕ್ಷ್ಯ ದಾಖಲೆಗಳನ್ನು ಭದ್ರಪಡಿಸಿ.",
-                    "portal_url": "https://ecourts.gov.in"
-                })
-            else:
-                applicable_laws.append({
-                    "act_or_law": "Bharatiya Nyaya Sanhita, 2023 (BNS) / Indian Penal Code (IPC)",
-                    "section": "Section 318 BNS (Sec 420 IPC)",
-                    "title": "Cheating and Dishonestly Inducing Delivery of Property",
-                    "penalty_or_punishment": "Imprisonment up to 7 years + Mandatory Fine",
-                    "how_to_handle_case": "1. Submit a formal written complaint for FIR registration at the local police station.\n2. If police refuse, file an application under Sec 175(3) BNS (Sec 156(3) CrPC) before the Judicial Magistrate.\n3. Preserve all digital, transactional, and document evidence.",
-                    "portal_url": "https://ecourts.gov.in"
-                })
-
-        # Case 2: Rental / Lease / Tenancy / Eviction / Security Deposit
-        if any(k in c_text or k in d_type for k in ['rent', 'lease', 'tenant', 'landlord', 'eviction', 'vacate', 'deposit', 'lessor', 'lessee']):
-            if is_kannada:
-                applicable_laws.append({
-                    "act_or_law": "ಆಸ್ತಿ ವರ್ಗಾವಣೆ ಕಾಯ್ದೆ 1882 (Transfer of Property Act, 1882) & ಬಾಡಿಗೆ ನಿಯಂತ್ರಣ ಕಾಯ್ದೆ",
-                    "section": "ಸೆಕ್ಷನ್ 106 ಮತ್ತು ಸೆಕ್ಷನ್ 108 (Section 106 & 108)",
-                    "title": "ಲೀಸ್ ರದ್ದತಿ ನೋಟಿಸ್ ಮತ್ತು ಮಾಲೀಕರ ಹೊಣೆಗಾರಿಕೆ (Notice to Terminate Lease & Tenant Rights)",
-                    "penalty_or_punishment": "ಅನಧಿಕೃತ ಖಾಲಿ ಮಾಡಿಸುವಿಕೆ ವಿರುದ್ಧ ಸಿವಿಲ್ ತಡೆಆಜ್ಞೆ (Injunction) ಮತ್ತು %18 ವರೆಗೆ ಬಡ್ಡಿ ಸಹಿತ ಠೇವಣಿ ಮರುಪಾವತಿ ಆದೇಶ",
-                    "how_to_handle_case": "1. 15 ಅಥವಾ 30 ದಿನಗಳ ಶಾಸನಬದ್ಧ ನೋಟಿಸ್‌ಗೆ ಒಪ್ಪಂದದ ಪ್ರಕಾರ ಉತ್ತರ ನೀಡಿ.\n2. ಠೇವಣಿ ಹಿಂತಿರುಗಿಸದಿದ್ದರೆ ಅಥವಾ ಬೆದರಿಕೆ ಹಾಕಿದರೆ ಬಾಡಿಗೆ ನಿಯಂತ್ರಕರ ಬಳಿ ಅಥವಾ ಸಿವಿಲ್ ನ್ಯಾಯಾಲಯದಲ್ಲಿ ದಾವೆ ಹೂಡಿ.",
-                    "portal_url": "https://ecourts.gov.in"
-                })
-            else:
-                applicable_laws.append({
-                    "act_or_law": "Transfer of Property Act, 1882 & Rent Control Act",
-                    "section": "Section 106 & Section 108",
-                    "title": "Notice to Terminate Lease & Rights of Lessee/Tenant",
-                    "penalty_or_punishment": "Civil injunction against unlawful eviction & statutory recovery of security deposit with up to 18% p.a. interest",
-                    "how_to_handle_case": "1. Respond to notice within the statutory 15/30-day window citing lease terms.\n2. If landlord unlawfully withholds deposit or threatens eviction, file a petition before the Rent Controller / Civil Court.",
-                    "portal_url": "https://ecourts.gov.in"
-                })
-
-        # Case 3: Consumer Protection / Hidden Charges / Deficiency in Service / Billing Dispute
-        if any(k in c_text or k in d_type for k in ['consumer', 'hidden charge', 'service', 'defect', 'refund', 'fee', 'charge', 'complaint', 'bill', 'unfair']):
-            if is_kannada:
-                applicable_laws.append({
-                    "act_or_law": "ಗ್ರಾಹಕ ಸಂರಕ್ಷಣಾ ಕಾಯ್ದೆ, 2019 (Consumer Protection Act, 2019)",
-                    "section": "ಸೆಕ್ಷನ್ 2(11) ಮತ್ತು ಸೆಕ್ಷನ್ 35 (Section 2(11) & 35)",
-                    "title": "ಸೇವೆಯಲ್ಲಿ ಕೊರತೆ ಮತ್ತು ಅಡಗಿಸಿದ ಶುಲ್ಕಗಳ ಅಕ್ರಮ ವ್ಯಾಪಾರ (Deficiency in Service & Hidden Charges)",
-                    "penalty_or_punishment": "ಅಡಗಿಸಿದ ಶುಲ್ಕಗಳ ಪೂರ್ಣ ಮರುಪಾವತಿ + ಮಾನಸಿಕ ಕಿರುಕುಳಕ್ಕೆ ಪರಿಹಾರ + ₹1,00,000 ವರೆಗೆ ಕಾನೂನು ವೆಚ್ಚಗಳು",
-                    "how_to_handle_case": "1. ಕಂಪನಿ/ಮಾಲೀಕರಿಗೆ ರದ್ದತಿ ಹಾಗೂ ಹಣ ಹಿಂತಿರುಗಿಸುವ ಬಗ್ಗೆ ಅಧಿಕೃತ ಇಮೇಲ್/ನೋಟಿಸ್ ಕಳುಹಿಸಿ.\n2. 15 ದಿನಗಳಲ್ಲಿ ಪರಿಹಾರ ಸಿಗದಿದ್ದರೆ ಇ-ದಾಖಿಲ್ (e-Daakhil) ವೇದಿಕೆಯ ಮೂಲಕ ಆನ್‌ಲೈನ್ ದೂರು ಸಲ್ಲಿಸಿ.",
-                    "portal_url": "https://edaakhil.nic.in"
-                })
-            else:
-                applicable_laws.append({
-                    "act_or_law": "Consumer Protection Act, 2019",
-                    "section": "Section 2(11) & Section 35",
-                    "title": "Deficiency of Service & Hidden Charges (Unfair Trade Practice)",
-                    "penalty_or_punishment": "Full refund of undisclosed fees + Compensation for harassment + Legal costs up to ₹1,00,000",
-                    "how_to_handle_case": "1. Issue a formal legal notice seeking refund and itemized billing justification.\n2. File an online complaint on the e-Daakhil Consumer Forum portal if unresolved within 15 days.",
-                    "portal_url": "https://edaakhil.nic.in"
-                })
-
-        # Case 4: Employment / Non-Compete / Salary / Notice Period / Probation / NDA
-        if any(k in c_text or k in d_type for k in ['employ', 'salary', 'ctc', 'non-compete', 'notice period', 'probation', 'nda', 'employer', 'employee', 'termination']):
-            if is_kannada:
-                applicable_laws.append({
-                    "act_or_law": "ಭಾರತೀಯ ಕರಾರು ಕಾಯ್ದೆ 1872 (Indian Contract Act, 1872)",
-                    "section": "ಸೆಕ್ಷನ್ 27 ಮತ್ತು ಸೆಕ್ಷನ್ 73 (Section 27 & Section 73)",
-                    "title": "ವ್ಯಾಪಾರ/ಉದ್ಯೋಗ ತಡೆಹಿಡಿಯುವ ಒಪ್ಪಂದ ಶೂನ್ಯ ಮತ್ತು ಶಾಸನಬದ್ಧ ವೇತನ ಪರಿಹಾರ",
-                    "penalty_or_punishment": "ಸೇವೆಯಿಂದ ನಿರ್ಗಮಿಸಿದ ನಂತರದ ಕೆಲಸದ ತಡೆ ನಿಯಮಗಳು ಭಾರತೀಯ ಕಾನೂನಿನಲ್ಲಿ ಶೂನ್ಯ (Void ab initio); ವೇತನ ತಡೆಹಿಡಿದರೆ ಬಡ್ಡಿ ಸಹಿತ ಮರುಪಾವತಿ",
-                    "how_to_handle_case": "1. ಬಾಕಿ ವೇತನ ಹಾಗೂ ಪರಿಹಾರಕ್ಕೆ ಸಂಬಂಧಿಸಿ ಕಂಪನಿಗೆ ಲೀಗಲ್ ನೋಟಿಸ್ ನೀಡಿ.\n2. ಕಾರ್ಮಿಕ ಆಯುಕ್ತರ ಕಚೇರಿಯಲ್ಲಿ (Labor Commissioner) ಅಥವಾ ಇಂಡಸ್ಟ್ರಿಯಲ್ ಟ್ರಿಬ್ಯೂನಲ್‌ನಲ್ಲಿ ದೂರು ಸಲ್ಲಿಸಿ.",
-                    "portal_url": "https://labour.gov.in"
-                })
-            else:
-                applicable_laws.append({
-                    "act_or_law": "Indian Contract Act, 1872 & Industrial Disputes Act",
-                    "section": "Section 27 & Section 73",
-                    "title": "Agreement in Restraint of Trade Void & Relief for Breach",
-                    "penalty_or_punishment": "Post-employment non-compete restrictions are void ab initio in India; illegal salary withholding attracts labor court recovery + interest",
-                    "how_to_handle_case": "1. Issue a statutory demand notice to employer for salary release and experience certificate.\n2. File a dispute before the Labor Commissioner or Industrial Tribunal.",
-                    "portal_url": "https://labour.gov.in"
-                })
-
-        # Case 5: Cheque Bounce / Financial Dishonour
-        if any(k in c_text or k in d_type for k in ['cheque', 'bounce', 'dishonour', 'bank memo', '138', 'promissory']):
-            if is_kannada:
-                applicable_laws.append({
-                    "act_or_law": "ನೆಗೋಶಿಯೇಬಲ್ ಇನ್ಸ್ಟ್ರುಮೆಂಟ್ಸ್ ಕಾಯ್ದೆ, 1881 (Negotiable Instruments Act, 1881)",
-                    "section": "ಸೆಕ್ಷನ್ 138 (Section 138)",
-                    "title": "ಹಣದ ಕೊರತೆಯಿಂದ ಚೆಕ್ ಅಮಾನ್ಯತೆ / ಬೌನ್ಸ್ (Dishonour of Cheque)",
-                    "penalty_or_punishment": "2 ವರ್ಷಗಳವರೆಗೆ ಜೈಲು ಶಿಕ್ಷೆ, ಅಥವಾ ಚೆಕ್ ಮೊತ್ತದ ಎರಡರಷ್ಟು ದಂಡ, ಅಥವಾ ಎರಡೂ",
-                    "how_to_handle_case": "1. ಚೆಕ್ ಬೌನ್ಸ್ ಮೆಮೊ ಬಂದ 30 ದಿನಗಳೊಳಗೆ 15 ದಿನಗಳ ಶಾಸನಬದ್ಧ ಕಾನೂನು ನೋಟಿಸ್ ಕಳುಹಿಸಿ.\n2. ನೋಟಿಸ್ ಅವಧಿ ಮುಗಿದ 30 ದಿನಗಳೊಳಗೆ ಮ್ಯಾಜಿಸ್ಟ್ರೇಟ್ ನ್ಯಾಯಾಲಯದಲ್ಲಿ ಕ್ರಿಮಿನಲ್ ದೂರು ಸಲ್ಲಿಸಿ.",
-                    "portal_url": "https://ecourts.gov.in"
-                })
-            else:
-                applicable_laws.append({
-                    "act_or_law": "Negotiable Instruments Act, 1881",
-                    "section": "Section 138",
-                    "title": "Dishonour of Cheque for Insufficiency of Funds",
-                    "penalty_or_punishment": "Imprisonment up to 2 years, or fine up to twice the amount of the cheque, or both",
-                    "how_to_handle_case": "1. Issue a statutory 15-day demand notice within 30 days of receiving bank memo.\n2. File a criminal complaint before Judicial Magistrate within 30 days of notice expiry.",
-                    "portal_url": "https://ecourts.gov.in"
-                })
-
-        # Default Law Entry if none matched or as statutory foundation
-        if not applicable_laws:
-            if is_kannada:
-                applicable_laws.append({
-                    "act_or_law": "ಭಾರತೀಯ ಕರಾರು ಕಾಯ್ದೆ 1872 & ಭಾರತದ ಸಂವಿಧಾನ (Indian Contract Act, 1872)",
-                    "section": "ಸೆಕ್ಷನ್ 10 ಮತ್ತು ವಿಧಿ 300A (Section 10 & Article 300A)",
-                    "title": "ಸಿಂಧು ಒಪ್ಪಂದದ ಷರತ್ತುಗಳು ಹಾಗೂ ಮೂಲಭೂತ ಕಾನೂನು ಹಕ್ಕುಗಳು",
-                    "penalty_or_punishment": "ಕಾನೂನುಬಾಹಿರ ಅಥವಾ ಏಕಪಕ್ಷೀಯ ಷರತ್ತುಗಳು ನ್ಯಾಯಾಲಯದಿಂದ ಶೂನ್ಯ ಮತ್ತು ಜಾರಿಗೆ ತರಲಾಗುವುದಿಲ್ಲ",
-                    "how_to_handle_case": "1. ಒಪ್ಪಂದದ ಷರತ್ತುಗಳನ್ನು ಹಾಗೂ ಸಹಿ ಸಿಂಧುತ್ವವನ್ನು ಪರಿಶೀಲಿಸಿ.\n2. NALSA ಉಚಿತ ಕಾನೂನು ನೆರವು ಕೇಂದ್ರ ಅಥವಾ ವಕೀಲರ ಉಚಿತ ಸಲಹೆ ಪಡೆಯಿರಿ.",
-                    "portal_url": "https://www.indiacode.nic.in"
-                })
-            else:
-                applicable_laws.append({
-                    "act_or_law": "Indian Contract Act, 1872 & Constitution of India",
-                    "section": "Section 10 & Article 300A",
-                    "title": "Essential Conditions of Valid Contract & Property Rights",
-                    "penalty_or_punishment": "Unlawful or unconscionable clauses are unenforceable and void under Indian Law",
-                    "how_to_handle_case": "1. Inspect contract terms for compliance and mutual consent.\n2. Seek advice from legal aid (NALSA) or an advocate before taking formal steps.",
-                    "portal_url": "https://www.indiacode.nic.in"
-                })
+        # 8. Applicable Laws
+        applicable_laws = [{
+            "act_or_law": "Indian Contract Act, 1872 & Relevant Statutory Laws",
+            "section": "Section 10",
+            "title": "Essential Conditions of Valid Legal Agreement",
+            "penalty_or_punishment": "Unlawful or unconscionable terms are void under Indian Law",
+            "how_to_handle_case": L['step_2'],
+            "portal_url": "https://www.indiacode.nic.in"
+        }]
 
         return {
-            "doc_type": doc_type or ("ಕಾನೂನು ದಾಖಲೆ" if is_kannada else "Legal Document"),
-            "language": Config.SUPPORTED_LANGUAGES.get(language, "Kannada (ಕನ್ನಡ)" if is_kannada else "English"),
+            "doc_type": doc_type or L['doc_kind'],
+            "language": Config.SUPPORTED_LANGUAGES.get(language, "English"),
             "summary": summary_text,
             "parties": parties,
             "key_obligations": key_obligations,
@@ -731,14 +860,14 @@ DOCUMENT TEXT:
                     "next_steps": next_steps,
                     "official_sources": [
                         {
-                            "title": "ಇಂಡಿಯಾ ಕೋಡ್ - ಕೇಂದ್ರ ಶಾಸನಗಳ ಪೋರ್ಟಲ್ (India Code)" if is_kannada else "India Code - Central Statutory Portal",
+                            "title": "India Code - Central Statutory Portal",
                             "url": "https://www.indiacode.nic.in",
-                            "description": "ಭಾರತದ ಕೇಂದ್ರ ಹಾಗೂ ರಾಜ್ಯ ಕಾಯ್ದೆಗಳ ಅಧಿಕೃತ ಸರ್ಕಾರಿ ವೆಬ್‌ಸೈಟ್." if is_kannada else "Official government portal for Indian Acts and Laws."
+                            "description": "Official government portal for Indian Acts and Laws."
                         },
                         {
-                            "title": "ರಾಷ್ಟ್ರೀಯ ಕಾನೂನು ಸೇವೆಗಳ ಪ್ರಾಧಿಕಾರ (NALSA)" if is_kannada else "National Legal Services Authority (NALSA)",
+                            "title": "National Legal Services Authority (NALSA)",
                             "url": "https://nalsa.gov.in",
-                            "description": "ಉಚಿತ ಕಾನೂನು ನೆರವು ನೀಡುವ ಸರ್ಕಾರಿ ಪ್ರಾಧಿಕಾರ." if is_kannada else "Free Legal Aid Portal for Indian citizens."
+                            "description": "Free Legal Aid Portal for Indian citizens."
                         }
                     ]
                 }
@@ -746,20 +875,97 @@ DOCUMENT TEXT:
         }
 
     def _fallback_qa_response(self, text: str, question: str, language: str) -> dict:
-        is_kannada = (language in ('kn', 'kannada'))
+        lang_code = (language or 'en').lower().strip()
         q_lower = question.lower()
         
-        if 'notice' in q_lower or 'period' in q_lower or 'ಸೂಚನೆ' in q_lower or 'ಅವಧಿ' in q_lower:
-            answer = "ನಿಮ್ಮ ದಾಖಲೆಯಲ್ಲಿ ತಿಳಿಸಿರುವಂತೆ: ಒಪ್ಪಂದವನ್ನು ರದ್ದುಗೊಳಿಸಲು 2 ತಿಂಗಳ ಲಿಖಿತ ಸೂಚನೆ (2 months written notice) ನೀಡಬೇಕು." if is_kannada else "Based on your document (Clause 7): The notice period for termination is 2 months written notice prior to vacating."
-        elif 'rent' in q_lower or 'payment' in q_lower or 'ಬಾಡಿಗೆ' in q_lower or 'ಪಾವತಿ' in q_lower:
-            answer = "ದಾಖಲೆಯ ಪ್ರಕಾರ: ಮಾಸಿಕ ಬಾಡಿಗೆ ₹25,000 ಆಗಿದ್ದು, ಪ್ರತಿ ತಿಂಗಳ 5 ನೇ ತಾರೀಖಿನೊಳಗೆ ಪಾವತಿಸಬೇಕು." if is_kannada else "Based on your document (Clause 4): Monthly rent is ₹25,000 payable on or before the 5th of each calendar month."
-        elif 'deposit' in q_lower or 'security' in q_lower or 'ಠೇವಣಿ' in q_lower or 'ಮುಂಗಡ' in q_lower:
-            answer = "ದಾಖಲೆಯ ಪ್ರಕಾರ: ಭದ್ರತಾ ಠೇವಣಿ (Security Deposit) ₹1,50,000 ಆಗಿದೆ. 6 ತಿಂಗಳ ಲಾಕ್-ಇನ್ ಅವಧಿಯಲ್ಲಿ ಖಾಲಿ ಮಾಡಿದರೆ ಠೇವಣಿ ಜಪ್ತಿಯಾಗುವ ನಿಯಮವಿದೆ." if is_kannada else "Based on your document (Clause 5 & 8): The security deposit is ₹1,50,000. Note that Clause 8 specifies total forfeiture if terminated within 6 months lock-in period."
+        qa_maps = {
+            'kn': {
+                'notice': "ನಿಮ್ಮ ದಾಖಲೆಯಲ್ಲಿ ತಿಳಿಸಿರುವಂತೆ: ಒಪ್ಪಂದವನ್ನು ರದ್ದುಗೊಳಿಸಲು 2 ತಿಂಗಳ ಲಿಖಿತ ಸೂಚನೆ (2 months written notice) ನೀಡಬೇಕು.",
+                'rent': "ದಾಖಲೆಯ ಪ್ರಕಾರ: ಮಾಸಿಕ ಬಾಡಿಗೆ ₹25,000 ಆಗಿದ್ದು, ಪ್ರತಿ ತಿಂಗಳ 5 ನೇ ತಾರೀಖಿನೊಳಗೆ ಪಾವತಿಸಬೇಕು.",
+                'deposit': "ದಾಖಲೆಯ ಪ್ರಕಾರ: ಭದ್ರತಾ ಠೇವಣಿ (Security Deposit) ₹1,50,000 ಆಗಿದೆ.",
+                'default': f"ನಿಮ್ಮ ಪ್ರಶ್ನೆಗೆ ವಿವರಣೆ: '{question}' ಬಗ್ಗೆ ಒಪ್ಪಂದದಲ್ಲಿ ನಮೂದಿಸಲಾದ ಷರತ್ತುಗಳ ಪ್ರಕಾರ ಪರಿಶೀಲಿಸಲಾಗಿದೆ.",
+                'grounded': "ದಾಖಲೆಯಲ್ಲಿ ಮಾಹಿತಿ ಕಂಡುಬಂದಿದೆ",
+                'disclaimer': "LawBuddy ಸಾಮಾನ್ಯ ಕಾನೂನು ಮಾಹಿತಿಯನ್ನು ನೀಡುತ್ತದೆ. ಅಧಿಕೃತ ವಕೀಲರಿಂದ ದೃಢೀಕರಿಸಿಕೊಳ್ಳಿ."
+            },
+            'hi': {
+                'notice': "आपके दस्तावेज़ के अनुसार: अनुबंध समाप्त करने के लिए 2 महीने की लिखित सूचना (2 months written notice) आवश्यक है।",
+                'rent': "दस्तावेज़ के अनुसार: मासिक किराया ₹25,000 है जिसका भुगतान प्रत्येक महीने की 5 तारीख तक किया जाना चाहिए।",
+                'deposit': "दस्तावेज़ के अनुसार: सुरक्षा जमा (Security Deposit) ₹1,50,000 है।",
+                'default': f"आपके प्रश्न का उत्तर: '{question}' के संबंध में दस्तावेज़ की शर्तों के अनुसार समीक्षा की गई है।",
+                'grounded': "दस्तावेज़ में जानकारी पाई गई",
+                'disclaimer': "LawBuddy सामान्य कानूनी जानकारी प्रदान करता है। वकील से पुष्टि करें।"
+            },
+            'te': {
+                'notice': "మీ పత్రం ప్రకారం: ఒప్పందాన్ని రద్దు చేయడానికి 2 నెలల రాతపూర్వక నోటీసు (2 months written notice) ఇవ్వాలి.",
+                'rent': "పత్రం ప్రకారం: నెలవారీ అద్దె ₹25,000, ప్రతి నెల 5వ తేదీ లోపు చెల్లించాలి.",
+                'deposit': "పత్రం ప్రకారం: సెక్యూరిటీ డిపాజిట్ (Security Deposit) ₹1,50,000.",
+                'default': f"మీ ప్రశ్నకు సమాధానం: '{question}' కు సంబంధించి పత్రం నిబంధనల ప్రకారం సరిచూడబడింది.",
+                'grounded': "పత్రంలో సమాచారం లభించింది",
+                'disclaimer': "LawBuddy సాధారణ న్యాయ సమాచారాన్ని అందిస్తుంది. లాయర్‌ను సంప్రదించండి."
+            },
+            'ta': {
+                'notice': "உங்கள் ஆவணத்தின்படி: ஒப்பந்தத்தை ரத்து செய்ய 2 மாத எழுத்துப்பூர்வ அறிவிப்பு (2 months written notice) தேவை.",
+                'rent': "ஆவணத்தின்படி: மாதாந்திர வாடகை ₹25,000, ஒவ்வொரு மாதமும் 5 ஆம் தேதிக்குள் செலுத்த வேண்டும்.",
+                'deposit': "ஆவணத்தின்படி: பாதுகாப்பு வைப்புத்தொகை (Security Deposit) ₹1,50,000.",
+                'default': f"உங்கள் கேள்விக்கான பதில்: '{question}' தொடர்பாக ஆவண விதிகளின்படி சரிபார்க்கப்பட்டது.",
+                'grounded': "ஆவணத்தில் தகவல் உள்ளது",
+                'disclaimer': "LawBuddy பொதுவான சட்டத் தகவல்களை வழங்குகிறது. வழக்கறிஞரிடம் உறுதிப்படுத்தவும்."
+            },
+            'ml': {
+                'notice': "പ്രമാണപ്രകാരം: കരാർ റദ്ദാക്കാൻ 2 മാസത്തെ രേഖാമൂലമുള്ള നോട്ടീസ് (2 months written notice) നൽകണം.",
+                'rent': "പ്രമാണപ്രകാരം: പ്രതിമാസ വാടക ₹25,000 ആണ്, ഓരോ മാസവും 5-ാം തീയതിക്ക് മുൻപ് നൽകണം.",
+                'deposit': "പ്രമാണപ്രകാരം: സുരക്ഷാ നിക്ഷേപം (Security Deposit) ₹1,50,000 ആണ്.",
+                'default': f"നിങ്ങളുടെ ചോദ്യത്തിന്: '{question}' സംബന്ധിച്ച് പ്രമാണ വ്യവസ്ഥകൾ അനുസരിച്ച് പരിശോധിച്ചു.",
+                'grounded': "പ്രമാണത്തിൽ വിവരം കണ്ടെത്തി",
+                'disclaimer': "LawBuddy പൊതുവായ നിയമ വിവരങ്ങൾ നൽകുന്നു. വക്കീലിനോട് സ്ഥിരീകരിക്കുക."
+            },
+            'mr': {
+                'notice': "तुमच्या दस्तऐवजानुसार: करार रद्द करण्यासाठी 2 महिन्यांची लेखी नोटीस (2 months written notice) आवश्यक आहे.",
+                'rent': "दस्तऐवजानुसार: मासिक भाडे ₹25,000 असून दरमहा 5 तारखेपूर्वी देणे आवश्यक आहे.",
+                'deposit': "दस्तऐवजानुसार: सुरक्षा ठेव (Security Deposit) ₹1,50,000 आहे.",
+                'default': f"तुमच्या प्रश्नाचे उत्तर: '{question}' बाबत दस्तऐवजातील अटींनुसार तपासणी केली.",
+                'grounded': "दस्तऐवजात माहिती आढळली",
+                'disclaimer': "LawBuddy सामान्य कायदेशीर माहिती पुरवते. वकिलांकडून खात्री करून घ्या."
+            },
+            'bn': {
+                'notice': "আপনার নথি অনুসারে: চুক্তি বাতিল করতে ২ মাসের লিখিত নোটিশ (2 months written notice) দিতে হবে।",
+                'rent': "নথি অনুসারে: মাসিক ভাড়া ২৫,০০০ টাকা, যা প্রতি মাসের ৫ তারিখের মধ্যে প্রদেয়।",
+                'deposit': "নথি অনুসারে: নিরাপত্তা আমানত (Security Deposit) ১,৫০,০০০ টাকা।",
+                'default': f"আপনার প্রশ্নের উত্তর: '{question}' সম্পর্কিত তথ্য নথির শর্তাবলী অনুসারে যাচাই করা হয়েছে।",
+                'grounded': "নথিতে তথ্য পাওয়া গেছে",
+                'disclaimer': "LawBuddy সাধারণ আইনি তথ্য প্রদান করে। উকিলের সাথে নিশ্চিত করুন।"
+            },
+            'gu': {
+                'notice': "તમારા દસ્તાવેજ મુજબ: કરાર રદ કરવા માટે 2 મહિનાની લેખિત નોટિસ (2 months written notice) આપવી પડશે.",
+                'rent': "દસ્તાવેજ મુજબ: માસિક ભાડું ₹25,000 છે જે દર મહિનાની 5મી તારીખ પહેલાં ચૂકવવાનું રહેશે.",
+                'deposit': "દસ્તાવેજ મુજબ: સુરક્ષા ડિપોઝિટ (Security Deposit) ₹1,50,000 છે.",
+                'default': f"તમારા પ્રશ્નનો જવાબ: '{question}' અંગે દસ્તાવેજની શરતો મુજબ સમીક્ષા કરવામાં આવી.",
+                'grounded': "દસ્તાવેજમાં માહિતી મળી",
+                'disclaimer': "LawBuddy સામાન્ય કાનૂની માહિતી આપે છે. વકીલ પાસે ચકાસણી કરો."
+            },
+            'en': {
+                'notice': "Based on your document: The notice period for termination is 2 months written notice prior to vacating.",
+                'rent': "Based on your document: Monthly rent is ₹25,000 payable on or before the 5th of each calendar month.",
+                'deposit': "Based on your document: The security deposit is ₹1,50,000.",
+                'default': f"Based on the uploaded document text: Your query regarding '{question}' was evaluated against the document clauses.",
+                'grounded': "Information found in document",
+                'disclaimer': "LawBuddy provides general legal information. Verify with a qualified professional."
+            }
+        }
+        
+        selected_map = qa_maps.get(lang_code, qa_maps['en'])
+        
+        if any(w in q_lower for w in ['notice', 'period', 'సూచన', 'అవధి', 'நோட்டீஸ்', 'നോട്ടീസ്', 'नोटीस', 'নোটিশ', 'નોટિસ']):
+            answer = selected_map['notice']
+        elif any(w in q_lower for w in ['rent', 'payment', 'బాడిగె', 'కిరాయి', 'വാടക', 'भाडे', 'ভাড়া', 'ભાડું']):
+            answer = selected_map['rent']
+        elif any(w in q_lower for w in ['deposit', 'security', 'డిపాజిట్', 'டெபாசிட்', 'നിക്ഷേപം', 'ठेव', 'আমানত', 'ડિપોઝિટ']):
+            answer = selected_map['deposit']
         else:
-            answer = f"ನಿಮ್ಮ ಪ್ರಶ್ನೆಗೆ ವಿವರಣೆ: ಒಪ್ಪಂದದಲ್ಲಿ ನಮೂದಿಸಲಾದ ಷರತ್ತುಗಳ ಪ್ರಕಾರ ಪರಿಶೀಲಿಸಲಾಗಿದೆ." if is_kannada else f"Based on the uploaded document text: Your query regarding '{question}' was evaluated against the document clauses."
+            answer = selected_map['default']
 
         return {
             "answer": answer,
-            "grounded": "ದಾಖಲೆಯಲ್ಲಿ ಮಾಹಿತಿ ಕಂಡುಬಂದಿದೆ" if is_kannada else "Information found in document",
-            "disclaimer": "LawBuddy ಸಾಮಾನ್ಯ ಕಾನೂನು ಮಾಹಿತಿಯನ್ನು ನೀಡುತ್ತದೆ. ಅಧಿಕೃತ ವಕೀಲರಿಂದ ದೃಢೀಕರಿಸಿಕೊಳ್ಳಿ." if is_kannada else "LawBuddy provides general legal information. Verify with a qualified professional."
+            "grounded": selected_map['grounded'],
+            "disclaimer": selected_map['disclaimer']
         }

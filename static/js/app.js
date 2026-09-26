@@ -726,14 +726,30 @@ function renderCaseReadiness(data) {
     const dates = data.important_dates_and_amounts || [];
     const checklist = data.action_map?.prepare?.checklist_to_collect || [];
     const questions = data.action_map?.prepare?.questions_for_lawyer || [];
+    const lang = window.appState ? (window.appState.selectedLanguage || 'en') : 'en';
+
+    const READINESS_LABELS = {
+        kn: { title: "ನೀವು ಸಿದ್ಧರಾಗಿದ್ದೀರಾ?", desc: "ವಕೀಲರ ಚರ್ಚೆಗೆ ಬೇಕಾದ ಪ್ರಮುಖ ಮಾಹಿತಿಯನ್ನು ಇಲ್ಲಿದೆ.", docs: "📄 ದಾಖಲೆಗಳು", dates: "🕐 ಪ್ರಮುಖ ದಿನಾಂಕಗಳು", items: "📋 ಸಿದ್ಧವಾಗಿಟ್ಟುಕೊಳ್ಳಬೇಕಾದ ಅಂಶಗಳು", q: "❓ ವಕೀಲರ ಪ್ರಶ್ನೆಗಳು", ready: "ಸಿದ್ಧವಾಗಿದೆ", missing: "ಲಭ್ಯವಿಲ್ಲ" },
+        hi: { title: "क्या आप तैयार हैं?", desc: "वकील परामर्श के लिए आवश्यक जानकारी यहाँ उपलब्ध है।", docs: "📄 दस्तावेज़", dates: "🕐 महत्वपूर्ण तिथियां", items: "📋 तैयार रखने योग्य वस्तुएं", q: "❓ वकील के प्रश्न", ready: "तैयार है", missing: "अनुपलब्ध" },
+        te: { title: "మీరు సిద్ధంగా ఉన్నారా?", desc: "లాయర్ సంప్రదింపులకు అవసరమైన సమాచారం ఇక్కడ ఉంది.", docs: "📄 పత్రాలు", dates: "🕐 ముఖ్యమైన తేదీలు", items: "📋 సిద్ధంగా ఉంచుకోవలసినవి", q: "❓ లాయర్ ప్రశ్నలు", ready: "సిద్ధంగా ఉంది", missing: "లేవు" },
+        ta: { title: "நீங்கள் தயாராக இருக்கிறீர்களா?", desc: "வழக்கறிஞர் ஆலோசனைக்கு தேவையான விவரங்கள் இங்கே.", docs: "📄 ஆவணங்கள்", dates: "🕐 முக்கிய தேதிகள்", items: "📋 தயார் செய்ய வேண்டியவை", q: "❓ வழக்கறிஞர் கேள்விகள்", ready: "தயாராக உள்ளது", missing: "இல்லை" },
+        ml: { title: "നിങ്ങൾ തയ്യാറാണോ?", desc: "വക്കീൽ കൂടിയാലോചനയ്ക്ക് ആവശ്യമായ വിവരങ്ങൾ ഇവിടെയുണ്ട്.", docs: "📄 പ്രമാണങ്ങൾ", dates: "🕐 പ്രധാന തീയതികൾ", items: "📋 തയ്യാറാക്കി വെക്കേണ്ട കാര്യങ്ങൾ", q: "❓ വക്കീൽ ചോദ്യങ്ങൾ", ready: "സജ്ജമാണ്", missing: "ഇല്ല" },
+        mr: { title: "तुम्ही तयार आहात का?", desc: "वकील सल्ल्यासाठी आवश्यक माहिती येथे उपलब्ध आहे.", docs: "📄 दस्तऐवज", dates: "🕐 महत्त्वाच्या तारखा", items: "📋 तयार ठेवण्याच्या गोष्टी", q: "❓ वकिलांचे प्रश्न", ready: "तयार आहे", missing: "नाही" },
+        bn: { title: "আপনি কি প্রস্তুত?", desc: "উকিলের সাথে পরামর্শের জন্য প্রয়োজনীয় তথ্য নিচে দেওয়া হলো।", docs: "📄 নথি", dates: "🕐 গুরুত্বপূর্ণ তারিখ", items: "📋 প্রস্তুত রাখার জিনিসপত্র", q: "❓ উকিলের প্রশ্নাবলী", ready: "প্রস্তুত", missing: "অনুপস্থিত" },
+        gu: { title: "શું તમે તૈયાર છો?", desc: "વકીલની સલાહ માટે જરૂરી માહિતી અહીં ઉપલબ્ધ છે.", docs: "📄 દસ્તાવેજો", dates: "🕐 મહત્વપૂર્ણ તારીખો", items: "📋 તૈયાર રાખવાની બાબતો", q: "❓ વકીલના પ્રશ્નો", ready: "તૈયાર છે", missing: "અનુપલબ્ધ" },
+        en: { title: "Are you prepared?", desc: "You're almost ready for a lawyer consultation. Here is what to keep in one place.", docs: "📄 Documents", dates: "🕐 Important dates", items: "📋 Things to keep ready", q: "❓ Questions for lawyer", ready: "Ready to check", missing: "Missing" }
+    };
+
+    const L = READINESS_LABELS[lang] || READINESS_LABELS['en'];
+
     container.innerHTML = `
-        <h3>Are you prepared?</h3>
-        <p>You're almost ready for a lawyer consultation. Here is what to keep in one place.</p>
+        <h3>${L.title}</h3>
+        <p>${L.desc}</p>
         <div class="readiness-grid">
-            <div><strong>📄 Documents</strong><span>${checklist.length ? 'Ready to check' : 'Missing'}</span></div>
-            <div><strong>🕐 Important dates</strong><span>${dates.length ? 'Ready to check' : 'Missing'}</span></div>
-            <div><strong>📋 Things to keep ready</strong><span>${checklist.length ? 'Ready to check' : 'Missing'}</span></div>
-            <div><strong>❓ Questions for lawyer</strong><span>${questions.length ? 'Ready' : 'Missing'}</span></div>
+            <div><strong>${L.docs}</strong><span>${checklist.length ? L.ready : L.missing}</span></div>
+            <div><strong>${L.dates}</strong><span>${dates.length ? L.ready : L.missing}</span></div>
+            <div><strong>${L.items}</strong><span>${checklist.length ? L.ready : L.missing}</span></div>
+            <div><strong>${L.q}</strong><span>${questions.length ? L.ready : L.missing}</span></div>
         </div>`;
 }
 

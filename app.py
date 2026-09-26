@@ -956,7 +956,7 @@ def explain_word():
     # 1. Check local dictionary first
     if word in LEGAL_GLOSSARY:
         dict_entry = LEGAL_GLOSSARY[word]
-        lang_key = 'kn' if language in ('kn', 'kannada') else 'en'
+        lang_key = language if language in dict_entry else ('kn' if language in ('kn', 'kannada') else 'en')
         info = dict_entry.get(lang_key, dict_entry.get('en', list(dict_entry.values())[0]))
         return jsonify({
             "word": info.get("word", word.title()),
