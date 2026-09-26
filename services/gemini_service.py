@@ -170,7 +170,7 @@ Analyze the following legal document (Type: {doc_type}) for an Indian user.
 Generate a structured JSON response in {target_lang_name}.
 
 CRITICAL TRANSLATION MANDATE FOR {target_lang_name.upper()}:
-1. ALL user-facing text values in the JSON output (summary, key_obligations, clauses_and_risks explanation, why_deserves_attention, suggested_question, applicable_laws_and_sections title/penalty_or_punishment/how_to_handle_case, action_map understand/identify/prepare/navigate) MUST BE WRITTEN IN {target_lang_name}.
+1. ALL user-facing text values in the JSON output (summary, key_obligations, clauses_and_risks category/explanation/why_deserves_attention/suggested_question, applicable_laws_and_sections act_or_law/section/title/penalty_or_punishment/how_to_handle_case, action_map understand/identify/prepare/navigate) MUST BE WRITTEN IN {target_lang_name}.
 2. Provide a comprehensive, detailed, and thorough plain-language explanation of what the document/case is about in {target_lang_name}. Never output raw chopped fragments or raw publication metadata.
 3. Keep important Indian legal terms in English alongside their explanation in {target_lang_name}.
 4. DO NOT claim to replace a lawyer or declare clauses legally illegal without qualification. Use cautious terms like 'Potential Concern' or 'Requires Professional Review'.
@@ -425,7 +425,11 @@ DOCUMENT TEXT:
                 'risk_exp': "ಈ ಷರತ್ತು ಪಕ್ಷಕಾರರ ಹೊಣೆಗಾರಿಕೆಯನ್ನು ನಿರ್ದಿಷ್ಟಪಡಿಸುತ್ತದೆ: {ob}...",
                 'risk_why': "ದಂಡ, ಠೇವಣಿ ಜಪ್ತಿ ಅಥವಾ ನೋಟಿಸ್ ಅವಧಿಯ ನಿಯಮಗಳನ್ನು ಸಹಿ ಮಾಡುವ ಮುನ್ನ ಸ್ಪಷ್ಟವಾಗಿ ತಿಳಿದುಕೊಳ್ಳಿ.",
                 'risk_q': "ಈ ಷರತ್ತಿಗೆ ಸಂಬಂಧಿಸಿದಂತೆ ನನ್ನ ಕಾನೂನು ಹಕ್ಕುಗಳು ಮತ್ತು ಹೊಣೆಗಾರಿಕೆಗಳು ಯಾವುವು?",
-                'risk_ev': "ದಾಖಲೆಯಲ್ಲಿ ಕಂಡುಬಂದ ಸತ್ಯಾಂಶ"
+                'risk_ev': "ದಾಖಲೆಯಲ್ಲಿ ಕಂಡುಬಂದ ಸತ್ಯಾಂಶ",
+                'law_act': "ಭಾರತೀಯ ಗುತ್ತಿಗೆ ಕಾಯಿದೆ, 1872 ಮತ್ತು ಸಂಬಂಧಿತ ಶಾಸನಬದ್ಧ ಕಾನೂನುಗಳು (Indian Contract Act, 1872)",
+                'law_sec': "ವಿಭಾಗ 10 (Section 10)",
+                'law_title': "ಸಿಂಧುವಾದ ಕಾನೂನು ಒಪ್ಪಂದದ ಅತ್ಯಗತ್ಯ ಷರತ್ತುಗಳು",
+                'law_penalty': "ಕಾನೂನುಬಾಹಿರ ಅಥವಾ ನ್ಯಾಯಸಮ್ಮತವಲ್ಲದ ಷರತ್ತುಗಳು ಭಾರತೀಯ ಕಾನೂನಿನಡಿ ಶೂನ್ಯ ಮತ್ತು ಅಸಿಂಧು (Void)"
             },
             'hi': {
                 'doc_kind': "कानूनी दस्तावेज़ (Legal Document)",
@@ -461,7 +465,11 @@ DOCUMENT TEXT:
                 'risk_exp': "यह खंड पक्ष की जिम्मेदारी निर्धारित करता है: {ob}...",
                 'risk_why': "दंड या नोटिस अवधि की शर्तों को स्पष्ट रूप से समझें।",
                 'risk_q': "इस खंड के तहत मेरे कानूनी अधिकार और दायित्व क्या हैं?",
-                'risk_ev': "दस्तावेज़ में पाया गया तथ्य"
+                'risk_ev': "दस्तावेज़ में पाया गया तथ्य",
+                'law_act': "भारतीय अनुबंध अधिनियम, 1872 और प्रासंगिक वैधानिक कानून (Indian Contract Act, 1872)",
+                'law_sec': "धारा 10 (Section 10)",
+                'law_title': "वैध कानूनी समझौते की आवश्यक शर्तें",
+                'law_penalty': "गैर-कानूनी या अस्वाभाविक शर्तें भारतीय कानून के तहत अमान्य (Void) हैं"
             },
             'te': {
                 'doc_kind': "న్యాయ పత్రం (Legal Document)",
@@ -497,7 +505,11 @@ DOCUMENT TEXT:
                 'risk_exp': "ఈ నిబంధన బాధ్యతలను నిర్దేశిస్తుంది: {ob}...",
                 'risk_why': "జరిమానాలు లేదా నోటీసు నిబంధనలను అర్థం చేసుకోండి.",
                 'risk_q': "ఈ నిబంధన కింద నా చట్టపరమైన హక్కులు ఏమిటి?",
-                'risk_ev': "పత్రంలో ఉన్న నిజం"
+                'risk_ev': "పత్రంలో ఉన్న నిజం",
+                'law_act': "భారతీయ కాంట్రాక్ట్ చట్టం, 1872 & సంబంధిత చట్టబద్ధమైన చట్టాలు (Indian Contract Act, 1872)",
+                'law_sec': "సెక్షన్ 10 (Section 10)",
+                'law_title': "చెల్లుబాటు అయ్యే న్యాయపరమైన ఒప్పందం యొక్క ప్రాథమిక నిబంధనలు",
+                'law_penalty': "చట్టవిరుద్ధమైన లేదా అన్యాయమైన నిబంధనలు భారతీయ చట్టం ప్రకారం చెల్లవు (Void)"
             },
             'ta': {
                 'doc_kind': "சட்ட ஆவணம் (Legal Document)",
@@ -533,7 +545,11 @@ DOCUMENT TEXT:
                 'risk_exp': "இந்த விதி பொறுப்பை நிர்ணயிக்கிறது: {ob}...",
                 'risk_why': "அபராதம் அல்லது அறிவிப்பு விதிகளை தெளிவாக புரிந்து கொள்ளுங்கள்.",
                 'risk_q': "இந்த விதியின் கீழ் என் சட்ட உரிமைகள் என்ன?",
-                'risk_ev': "ஆவணத்தில் உள்ள உண்மை"
+                'risk_ev': "ஆவணத்தில் உள்ள உண்மை",
+                'law_act': "இந்திய ஒப்பந்தச் சட்டம், 1872 & தொடர்புடைய சட்டங்கள் (Indian Contract Act, 1872)",
+                'law_sec': "பிரிவு 10 (Section 10)",
+                'law_title': "செல்லுபடியாகும் சட்டப்பூர்வ ஒப்பந்தத்தின் அத்தியாவசிய நிபந்தனைகள்",
+                'law_penalty': "சட்டவிரோதமான அல்லது நியாயமற்ற விதிகள் இந்தியச் சட்டத்தின் கீழ் செல்லாதவை (Void)"
             },
             'ml': {
                 'doc_kind': "നിയമപരമായ പ്രമാണം (Legal Document)",
@@ -569,7 +585,11 @@ DOCUMENT TEXT:
                 'risk_exp': "ഈ വകുപ്പ് ചുമതലകൾ നിർണ്ണയിക്കുന്നു: {ob}...",
                 'risk_why': "പിഴ അല്ലെങ്കിൽ നോട്ടീസ് കാലാവധി മനസ്സിലാക്കുക.",
                 'risk_q': "ഈ വകുപ്പ് അനുസരിച്ച് എന്റെ അവകാശങ്ങൾ എന്തൊക്കെയാണ്?",
-                'risk_ev': "പ്രമാണത്തിൽ കണ്ടെത്തിയ വസ്തുത"
+                'risk_ev': "പ്രമാണത്തിൽ കണ്ടെത്തിയ വസ്തുത",
+                'law_act': "ഇന്ത്യൻ കരാർ നിയമം, 1872 & ബാധകമായ നിയമങ്ങൾ (Indian Contract Act, 1872)",
+                'law_sec': "വകുപ്പ് 10 (Section 10)",
+                'law_title': "സാധുവായ നിയമപരമായ കരാറിന്റെ അവശ്യ വ്യവസ്ഥകൾ",
+                'law_penalty': "നിയമവിരുദ്ധമോ അന്യായമോ ആയ വ്യവസ്ഥകൾ ഇന്ത്യൻ നിയമപ്രകാരം അസാധുവാണ് (Void)"
             },
             'mr': {
                 'doc_kind': "कायदेशीर दस्तऐवज (Legal Document)",
@@ -605,7 +625,11 @@ DOCUMENT TEXT:
                 'risk_exp': "ही अट जबाबदारी निश्चित करते: {ob}...",
                 'risk_why': "दंड किंवा नोटीस मुदतीचे नियम समजून घ्या.",
                 'risk_q': "या अटीनुसार माझे हक्क काय आहेत?",
-                'risk_ev': "दस्तऐवजातील सत्य"
+                'risk_ev': "दस्तऐवजातील सत्य",
+                'law_act': "भारतीय कंत्राट कायदा, १८७२ आणि संबंधित वैधानिक कायदे (Indian Contract Act, 1872)",
+                'law_sec': "कलम १० (Section 10)",
+                'law_title': "वैध कायदेशीर कराराच्या आवश्यक अटी",
+                'law_penalty': "बेकायदेशीर किंवा अवाजवी अटी भारतीय कायद्यानुसार रद्दबातल (Void) ठरतात"
             },
             'bn': {
                 'doc_kind': "আইনি নথি (Legal Document)",
@@ -641,7 +665,11 @@ DOCUMENT TEXT:
                 'risk_exp': "এই শর্তটি দায়িত্ব নির্ধারণ করে: {ob}...",
                 'risk_why': "জরিমানা বা নোটিশের মেয়াদ ভালোভাবে বুঝুন।",
                 'risk_q': "এই শর্তের অধীনে আমার অধিকার কী?",
-                'risk_ev': "নথিতে প্রাপ্ত তথ্য"
+                'risk_ev': "নথিতে প্রাপ্ত তথ্য",
+                'law_act': "ভারতীয় চুক্তি আইন, ১৮৭২ এবং সংশ্লিষ্ট সংবিধিবদ্ধ আইন (Indian Contract Act, 1872)",
+                'law_sec': "ধারা ১০ (Section 10)",
+                'law_title': "বৈধ আইনি চুক্তির অত্যাবশ্যকীয় শর্তাবলী",
+                'law_penalty': "বেআইনি বা অন্যায্য শর্তাবলী ভারতীয় আইনের অধীনে বাতিল (Void) বলে গণ্য হবে"
             },
             'gu': {
                 'doc_kind': "કાનૂની દસ્તાવેજ (Legal Document)",
@@ -677,7 +705,11 @@ DOCUMENT TEXT:
                 'risk_exp': "આ શરત જવાબદારી નક્કી કરે છે: {ob}...",
                 'risk_why': "દંડ અથવા નોટિસ મુદતના નિયમો સમજો.",
                 'risk_q': "આ શરત હેઠળ મારા અધિકારો શું છે?",
-                'risk_ev': "દસ્તાવેજમાંથી મળેલી હકીકત"
+                'risk_ev': "દસ્તાવેજમાંથી મળેલી હકીકત",
+                'law_act': "ભારતીય કરાર કાયદો, 1872 અને સંબંધિત વૈધાનિક કાયદા (Indian Contract Act, 1872)",
+                'law_sec': "કલમ 10 (Section 10)",
+                'law_title': "વૈધ કાનૂની કરારની આવશ્યક શરતો",
+                'law_penalty': "ગેરકાનૂની અથવા અયોગ્ય શરતો ભારતીય કાયદા હેઠળ રદબાતલ (Void) ગણાય છે"
             },
             'en': {
                 'doc_kind': "Legal Document",
@@ -713,7 +745,11 @@ DOCUMENT TEXT:
                 'risk_exp': "This clause outlines specific legal obligations and liabilities for the party: {ob}...",
                 'risk_why': "Pay close attention to penalties, deposit deductions, or notice conditions before proceeding.",
                 'risk_q': "What are my legal rights and liabilities regarding this clause?",
-                'risk_ev': "Fact found in document"
+                'risk_ev': "Fact found in document",
+                'law_act': "Indian Contract Act, 1872 & Relevant Statutory Laws",
+                'law_sec': "Section 10",
+                'law_title': "Essential Conditions of Valid Legal Agreement",
+                'law_penalty': "Unlawful or unconscionable terms are void under Indian Law"
             }
         }
 
@@ -832,10 +868,10 @@ DOCUMENT TEXT:
 
         # 8. Applicable Laws
         applicable_laws = [{
-            "act_or_law": "Indian Contract Act, 1872 & Relevant Statutory Laws",
-            "section": "Section 10",
-            "title": "Essential Conditions of Valid Legal Agreement",
-            "penalty_or_punishment": "Unlawful or unconscionable terms are void under Indian Law",
+            "act_or_law": L.get('law_act', "Indian Contract Act, 1872 & Relevant Statutory Laws"),
+            "section": L.get('law_sec', "Section 10"),
+            "title": L.get('law_title', "Essential Conditions of Valid Legal Agreement"),
+            "penalty_or_punishment": L.get('law_penalty', "Unlawful or unconscionable terms are void under Indian Law"),
             "how_to_handle_case": L['step_2'],
             "portal_url": "https://www.indiacode.nic.in"
         }]
