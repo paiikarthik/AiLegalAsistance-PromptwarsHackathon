@@ -12,8 +12,8 @@ class GeminiService:
     """
     Interfaces with Google Gemini and OpenAI (ChatGPT) APIs to produce structured legal document analysis,
     clause risk explorer, Legal Clarity & Action Map, and multilingual responses.
-    Routes Kannada, Malayalam, Telugu, Tamil, and other non-(Hindi/English/Tulu) languages to ChatGPT,
-    while routing Hindi, English, and Tulu to Gemini.
+    Routes Kannada, Malayalam, Telugu, Tamil, and other non-(Hindi/English) languages to ChatGPT,
+    while routing Hindi and English to Gemini.
     """
     
     def __init__(self, api_key: str = None):
@@ -48,17 +48,17 @@ class GeminiService:
     def _is_chatgpt_language(self, language: str) -> bool:
         """
         Determines whether the given language should be routed to ChatGPT (OpenAI).
-        Hindi, English, Tulu use Gemini.
+        Hindi, English use Gemini.
         Kannada, Malayalam, Telugu, Tamil, and all other languages use ChatGPT.
         """
         lang_lower = (language or 'en').lower().strip()
-        if lang_lower in {'en', 'english', 'hi', 'hindi', 'tulu', 'tcy'}:
+        if lang_lower in {'en', 'english', 'hi', 'hindi'}:
             return False
         return True
 
     def _call_openai_raw(self, prompt: str) -> str:
         """
-        Invokes ChatGPT (OpenAI API) for non-(Hindi/English/Tulu) languages such as Kannada, Malayalam, Telugu, Tamil, etc.
+        Invokes ChatGPT (OpenAI API) for non-(Hindi/English) languages such as Kannada, Malayalam, Telugu, Tamil, etc.
         """
         api_key = self.openai_api_key or os.environ.get('OPENAI_API_KEY', '')
         if not api_key:
@@ -99,7 +99,7 @@ class GeminiService:
         """
         Unified LLM router:
         - Kannada, Malayalam, Telugu, Tamil, and other languages -> ChatGPT (OpenAI)
-        - Hindi, English, Tulu -> Gemini
+        - Hindi, English -> Gemini
         Gracefully falls back to secondary provider if primary provider fails.
         """
         use_chatgpt = self._is_chatgpt_language(language)

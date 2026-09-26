@@ -569,7 +569,6 @@
                 <option value="hi">हिन्दी</option>
                 <option value="ml">മലയാളം</option>
                 <option value="te">తెలుగు</option>
-                <option value="tulu">ತುಳು</option>
                 <option value="mr">मराठी</option>
                 <option value="gu">ગુજરાતી</option>
                 <option value="bn">বাংলা</option>
@@ -1443,40 +1442,6 @@
                     "నేను ఉపయోగ నిబంధనలను అంగీకరిస్తున్నాను మరియు LawBuddy సమాచార సహాయాన్ని మాత్రమే అందిస్తుందని అర్థం చేసుకున్నాను."
             },
 
-            tulu: {
-                tagline: "ಅರ್ಥ ಮಲ್ಪುಲೆ • ಹೋಲಿಕೆ ಮಲ್ಪುಲೆ • ಮುಂದು ಪೋಲೆ",
-                langLabel: "ಬಾಸೆ",
-                signupTitle: "ಈರೆನ ಕಾನೂನು ಸಹಾಯಕೆ,",
-                signupTitleHighlight: "ಎಪೊಲ ಈರೆನೊಟ್ಟುಗು.",
-                signupDesc:
-                    "ಈರೆನ LawBuddy ಖಾತೆನ್ ಸುರು ಮಲ್ಪುಲೆ ಬೊಕ್ಕ ಕಾನೂನು ಮಾಹಿತಿನ್ ಸುಲಭವಾದ್ ಅರ್ಥ ಮಲ್ಪುಲೆ.",
-                benefit1:
-                    "ಕಠಿಣ ಕಾನೂನು ದಾಖಲೆಲೆನ್ ಸುಲಭವಾದ್ ಅರ್ಥ ಮಲ್ಪುಲೆ.",
-                benefit2:
-                    "ಒಪ್ಪಂದೊಲೆನ್ ಹೋಲಿಕೆ ಮಲ್ತ್‌ದ್ ಮುಖ್ಯ ಬದಲಾವಣೆ ಗುರುತು ಮಲ್ಪುಲೆ.",
-                benefit3:
-                    "10 ಬಾಸೆಡ್ ಕಾನೂನು ಮಾಹಿತಿ ತೂಲೆ.",
-                signupWithGoogle: "Google ಡ್ ಸೈನ್ ಅಪ್ ಆಲೆ",
-                orDivider: "ಅತ್ತ್ಂಡ",
-                createAccount: "ಖಾತೆ ಸುರು ಮಲ್ಪುಲೆ",
-                signupSubtitle:
-                    "LawBuddyಗ್ ಸೇರ್ದ್ ಕಾನೂನು ಮಾಹಿತಿ ಅರ್ಥ ಮಲ್ಪೆರೆ ಸುರು ಮಲ್ಪುಲೆ.",
-                fullNameLabel: "ಪೂರ್ತಿ ಪುದರ್",
-                fullNamePlaceholder: "ಈರೆನ ಪೂರ್ತಿ ಪುದರ್ ಪಾಡುಲೆ",
-                emailLabel: "ಇಮೇಲ್ ವಿಳಾಸ",
-                emailPlaceholder: "ಈರೆನ ಇಮೇಲ್ ಪಾಡುಲೆ",
-                passwordLabel: "ಪಾಸ್‌ವರ್ಡ್",
-                passwordPlaceholder: "ಪಾಸ್‌ವರ್ಡ್ ತಯಾರ್ ಮಲ್ಪುಲೆ",
-                passwordHint: "ಕನಿಷ್ಠ 6 ಅಕ್ಷರೊಲೆನ್ ಗಳಸುಲೆ.",
-                confirmPasswordLabel: "ಪಾಸ್‌ವರ್ಡ್ ಖಾತರಿ ಮಲ್ಪುಲೆ",
-                confirmPasswordPlaceholder: "ಪಾಸ್‌ವರ್ಡ್ ಪಿರೊರ ಪಾಡುಲೆ",
-                createAccountBtn: "ಖಾತೆ ಸುರು ಮಲ್ಪುಲೆ →",
-                alreadyHaveAccount: "ದುಂಬೇ ಖಾತೆ ಉಂಡಾ?",
-                loginText: "ಲಾಗಿನ್ ಆಲೆ",
-                termsLabel:
-                    "ಯಾನ್ ಬಳಕೆದ ನಿಯಮೊಲೆನ್ ಒಪ್ಪುವೆ ಬೊಕ್ಕ LawBuddy ಮಾಹಿತಿ ಸಹಾಯ ಮಾತ್ರ ಕೊರ್ಪುಂಡು ಎಂದು ತೆರಿಯೊಂಡೆ."
-            },
-
             mr: {
                 tagline: "समजा • तुलना करा • पुढे जा",
                 langLabel: "भाषा",
@@ -1654,8 +1619,7 @@
 
             localStorage.setItem("lawbuddyLanguage", language);
 
-            document.documentElement.lang =
-                language === "tulu" ? "tcy" : language;
+            document.documentElement.lang = language;
         }
 
         window.changeSignupLanguage = changeSignupLanguage;

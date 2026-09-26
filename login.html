@@ -479,7 +479,6 @@
                 <option value="hi">हिन्दी</option>
                 <option value="ml">മലയാളം</option>
                 <option value="te">తెలుగు</option>
-                <option value="tulu">ತುಳು</option>
                 <option value="mr">ಮರಾಠಿ</option>
                 <option value="gu">ગુજરાતી</option>
                 <option value="bn">বাংলা</option>
@@ -1085,28 +1084,6 @@ window.loginTranslations = {
         dontHaveAccount: "ఖాతా లేదా?",
         createAccount: "ఖాతాను సృష్టించండి"
     },
-    tulu: {
-        tagline: "ಅರ್ಥ ಮಲ್ಪುಲೆ • ಹೋಲಿಕೆ ಮಲ್ಪುಲೆ • ಮುಂದು ಪೋಲೆ",
-        langLabel: "ಬಾಸೆ",
-        loginTitle: "ಈರೆನ ಕಾನೂನು ಸಹಾಯಕೆ,",
-        loginTitleHighlight: "ಎಪೊಲ ಈರೆನೊಟ್ಟುಗು.",
-        loginDesc: "ಈರೆನ LawBuddy ಖಾತೆಗ್ ಲಾಗಿನ್ ಆಲೆ ಬೊಕ್ಕ ಕಾನೂನು ಮಾಹಿತಿನ್ ಸುಲಭವಾದ್ ಅರ್ಥ ಮಲ್ಪುಲೆ.",
-        benefit1: "ಕಠಿಣ ಕಾನೂನು ದಾಖಲೆಲೆನ್ ಸುಲಭವಾದ್ ಅರ್ಥ ಮಲ್ಪುಲೆ.",
-        benefit2: "ಒಪ್ಪಂದೊಲೆನ್ ಹೋಲಿಕೆ ಮಲ್ತ್‌ದ್ ಮುಖ್ಯ ಬದಲಾವಣೆ ಗುರುತು ಮಲ್ಪುಲೆ.",
-        benefit3: "ಮಸ್ತ್ ಬಾಸೆಡ್ ಕಾನೂನು ಮಾಹಿತಿ ತೂಲೆ.",
-        welcomeBack: "ಪಿರೊರ ಸ್ವಾಗತ",
-        loginSubtitle: "LawBuddy ಗಳಸೆರೆ ಲಾಗಿನ್ ಆಲೆ.",
-        loginWithGoogle: "Google ಡ್ ಲಾಗಿನ್ ಆಲೆ",
-        orDivider: "ಅತ್ತ್ಂಡ",
-        emailLabel: "ಇಮೇಲ್ ವಿಳಾಸ",
-        emailPlaceholder: "ಈರೆನ ಇಮೇಲ್ ಪಾಡುಲೆ",
-        passwordLabel: "ಪಾಸ್‌ವರ್ಡ್",
-        passwordPlaceholder: "ಈರೆನ ಪಾಸ್‌ವರ್ಡ್ ಪಾಡುಲೆ",
-        forgotPassword: "ಪಾಸ್‌ವರ್ಡ್ ಮರತ್ತ್ಂಡಾ?",
-        loginBtn: "ಲಾಗಿನ್ ಆಲೆ →",
-        dontHaveAccount: "ಖಾತೆ ಇಜ್ಜಿಯಾ?",
-        createAccount: "ಖಾತೆ ಸುರು ಮಲ್ಪುಲೆ"
-    },
     mr: {
         tagline: "समजा • तुलना करा • पुढे जा",
         langLabel: "भाषा",
@@ -1225,7 +1202,7 @@ function changeLoginLanguage(language) {
     }
 
     localStorage.setItem("lawbuddyLanguage", language);
-    document.documentElement.lang = language === "tulu" ? "tcy" : language;
+    document.documentElement.lang = language;
 }
 
 window.changeLoginLanguage = changeLoginLanguage;

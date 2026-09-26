@@ -19,7 +19,7 @@ LawBuddy AI bridges this gap by transforming dense legal documents (Rental Agree
 - **SOV Sentence Structure**: Enforces Subject-Object-Verb (SOV) Kannada grammar order to ensure translations sound natural to native Kannada speakers rather than literal machine-translated English (SVO).
 - **Standard Legal Terminology 
  
-- **Multilingual Support**: Fully supports 10 Indian languages including Kannada (ಕನ್ನಡ), Hindi (हिंदी), Malayalam (മലയാളം), Telugu (తెలుగు), Marathi (मराठी), Bengali (বাংলা), Gujarati (ગુજરાતી), Tulu (ತುಳು), Tamil (தமிழ்), and English.
+- **Multilingual Support**: Fully supports 9 Indian languages including Kannada (ಕನ್ನಡ), Hindi (हिंदी), Malayalam (മലയാളം), Telugu (తెలుగు), Marathi (मराठी), Bengali (বাংলা), Gujarati (ગુજરાતી), Tamil (தமிழ்), and English.
 - **Rule-Based Kannada Fallback**: Generates complete Kannada translation fallbacks when LLM APIs are offline or rate-limited.
 
 ### 2. 🔒 Enterprise Security & Privacy

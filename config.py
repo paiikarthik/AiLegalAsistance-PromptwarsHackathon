@@ -35,7 +35,6 @@ class Config:
         'mr': 'Marathi (मराठी)',
         'bn': 'Bengali (বাংলা)',
         'gu': 'Gujarati (ગુજરાતી)',
-        'tulu': 'Tulu (ತುಳು)',
         'ta': 'Tamil (தமிழ்)'
     }
 

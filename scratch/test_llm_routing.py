@@ -9,7 +9,7 @@ def test_routing():
         assert service._is_chatgpt_language(lang) is True, f"Failed for {lang}, expected ChatGPT"
         
     # Test languages that MUST use Gemini
-    gemini_langs = ['en', 'english', 'hi', 'hindi', 'tulu', 'tcy']
+    gemini_langs = ['en', 'english', 'hi', 'hindi']
     for lang in gemini_langs:
         assert service._is_chatgpt_language(lang) is False, f"Failed for {lang}, expected Gemini"
         
