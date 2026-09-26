@@ -23,6 +23,7 @@ from services.rag_service import RAGService
 from services.comparison_service import ComparisonService
 from services.consultation_service import ConsultationService
 from services.case_preparation_service import EvidenceService
+from services.database_service import DatabaseService
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("lawbuddy")
@@ -30,6 +31,9 @@ logger = logging.getLogger("lawbuddy")
 app = Flask(__name__, static_folder="static", template_folder=".")
 app.config.from_object(Config)
 CORS(app)
+
+# Initialize SQLite Database for permanent user and case data storage
+DatabaseService.init_db()
 
 # --- SECURITY HEADERS MIDDLEWARE ---
 @app.after_request
@@ -39,7 +43,16 @@ def apply_security_headers(response):
     response.headers['X-XSS-Protection'] = '1; mode=block'
     response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-    response.headers['Content-Security-Policy'] = "default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; frame-ancestors 'none';"
+    response.headers['Content-Security-Policy'] = (
+        "default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://www.gstatic.com; "
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://apis.google.com https://accounts.google.com https://*.firebaseapp.com https://*.googleapis.com; "
+        "connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://accounts.google.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com wss: ws:; "
+        "frame-src 'self' https://*.firebaseapp.com https://accounts.google.com; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.gstatic.com; "
+        "font-src 'self' data: https://fonts.gstatic.com; "
+        "img-src 'self' data: blob: https://*.googleusercontent.com https://lh3.googleusercontent.com https://www.gstatic.com; "
+        "frame-ancestors 'none';"
+    )
     return response
 
 # --- THREAD-SAFE IN-MEMORY API RATE LIMITER ---
@@ -226,6 +239,186 @@ def health_check():
         "supported_languages": Config.SUPPORTED_LANGUAGES
     })
 
+def _get_request_user_id(req_data=None):
+    if req_data and isinstance(req_data, dict):
+        if req_data.get('user_id'): return req_data.get('user_id')
+        if req_data.get('uid'): return req_data.get('uid')
+    header_uid = request.headers.get('X-User-ID') or request.headers.get('x-user-id')
+    return header_uid
+
+@app.route('/api/user/signup', methods=['POST'])
+def user_signup_endpoint():
+    data = request.get_json(silent=True) or {}
+    email = data.get('email')
+    password = data.get('password')
+    name = data.get('name') or data.get('fullName')
+    user_id = data.get('user_id') or data.get('uid') or ('user_' + str(int(time.time() * 1000)))
+
+    if not email or not password:
+        return jsonify({"error": "Email address and password are required."}), 400
+
+    user_info, err = DatabaseService.register_user(user_id, email, password, name, auth_provider='email')
+    if err:
+        return jsonify({"error": err}), 400
+
+    return jsonify({
+        "status": "success",
+        "user": user_info,
+        "message": "Account created successfully."
+    }), 201
+
+@app.route('/api/user/login', methods=['POST'])
+def user_login_endpoint():
+    data = request.get_json(silent=True) or {}
+    email = data.get('email')
+    password = data.get('password')
+
+    if not email or not password:
+        return jsonify({"error": "Email address and password are required."}), 400
+
+    is_valid, user_data, err_msg = DatabaseService.verify_user_credentials(email, password)
+    if not is_valid:
+        return jsonify({"error": err_msg}), 401
+
+    return jsonify({
+        "status": "success",
+        "user": user_data,
+        "message": "Login successful."
+    })
+
+@app.route('/api/user/sync', methods=['POST'])
+def sync_user_account():
+    data = request.get_json(silent=True) or {}
+    user_id = _get_request_user_id(data)
+    email = data.get('email')
+    name = data.get('name') or data.get('displayName')
+    auth_provider = data.get('auth_provider', 'email')
+
+    if not user_id or not email:
+        return jsonify({"error": "user_id and email are required to sync user profile"}), 400
+
+    user_info = DatabaseService.upsert_user(user_id, email, name, auth_provider)
+    
+    # Retrieve user's latest saved active document and claims from SQLite DB
+    latest_doc = DatabaseService.get_latest_user_document(user_id)
+    evidence = DatabaseService.get_user_evidence(user_id)
+    facts = DatabaseService.get_user_case_facts(user_id)
+    
+    if latest_doc:
+        doc_id = latest_doc["doc_id"]
+        if doc_id not in DOCUMENT_CACHE:
+            chunks = RAGService.chunk_text(latest_doc["raw_text"])
+            DOCUMENT_CACHE[doc_id] = {
+                "filename": latest_doc["filename"],
+                "raw_text": latest_doc["raw_text"],
+                "pages": [{"page_num": 1, "text": latest_doc["raw_text"]}],
+                "total_pages": 1,
+                "doc_type": latest_doc["doc_type"],
+                "chunks": chunks,
+                "analysis": latest_doc.get("analysis"),
+                "created_at": time.time()
+            }
+
+    return jsonify({
+        "status": "success",
+        "user": user_info,
+        "latest_doc": latest_doc,
+        "evidence": evidence,
+        "facts": facts
+    })
+
+@app.route('/api/user/case-data', methods=['GET'])
+def get_user_case_data():
+    user_id = request.args.get('user_id') or request.headers.get('X-User-ID')
+    if not user_id:
+        return jsonify({"error": "user_id is required"}), 400
+
+    latest_doc = DatabaseService.get_latest_user_document(user_id)
+    evidence = DatabaseService.get_user_evidence(user_id)
+    facts = DatabaseService.get_user_case_facts(user_id)
+    
+    if latest_doc:
+        doc_id = latest_doc["doc_id"]
+        if doc_id not in DOCUMENT_CACHE:
+            chunks = RAGService.chunk_text(latest_doc["raw_text"])
+            DOCUMENT_CACHE[doc_id] = {
+                "filename": latest_doc["filename"],
+                "raw_text": latest_doc["raw_text"],
+                "pages": [{"page_num": 1, "text": latest_doc["raw_text"]}],
+                "total_pages": 1,
+                "doc_type": latest_doc["doc_type"],
+                "chunks": chunks,
+                "analysis": latest_doc.get("analysis"),
+                "created_at": time.time()
+            }
+
+    return jsonify({
+        "latest_doc": latest_doc,
+        "evidence": evidence,
+        "facts": facts
+    })
+
+@app.route('/api/user/cases', methods=['GET'])
+def get_user_cases():
+    user_id = request.args.get('user_id') or request.headers.get('X-User-ID')
+    if not user_id:
+        return jsonify({"error": "user_id is required to fetch user cases"}), 400
+
+    docs = DatabaseService.get_user_documents(user_id)
+    return jsonify({
+        "status": "success",
+        "cases": docs
+    })
+
+@app.route('/api/user/case/<doc_id>', methods=['GET'])
+def get_user_case_by_id(doc_id):
+    user_id = request.args.get('user_id') or request.headers.get('X-User-ID')
+    doc = DatabaseService.get_document(doc_id)
+    if not doc:
+        return jsonify({"error": "Case document not found"}), 404
+
+    if doc_id not in DOCUMENT_CACHE:
+        chunks = RAGService.chunk_text(doc["raw_text"])
+        DOCUMENT_CACHE[doc_id] = {
+            "filename": doc["filename"],
+            "raw_text": doc["raw_text"],
+            "pages": [{"page_num": 1, "text": doc["raw_text"]}],
+            "total_pages": 1,
+            "doc_type": doc["doc_type"],
+            "chunks": chunks,
+            "analysis": doc.get("analysis"),
+            "created_at": time.time()
+        }
+
+    evidence = DatabaseService.get_user_evidence(user_id, doc_id=doc_id) if user_id else []
+    facts = DatabaseService.get_user_case_facts(user_id, doc_id=doc_id) if user_id else []
+
+    return jsonify({
+        "status": "success",
+        "doc": doc,
+        "evidence": evidence,
+        "facts": facts
+    })
+
+@app.route('/api/case-facts/save', methods=['POST'])
+def save_user_case_fact():
+    data = request.get_json(silent=True) or {}
+    user_id = _get_request_user_id(data)
+    doc_id = data.get('doc_id')
+    title = data.get('title') or data.get('claim_title')
+    details = data.get('details') or data.get('claim_details', '')
+    category = data.get('category') or data.get('claim_category', 'Claim')
+
+    if not user_id or not title:
+        return jsonify({"error": "user_id and claim title are required."}), 400
+
+    fact_id = DatabaseService.save_case_fact(user_id, doc_id, title, details, category)
+    return jsonify({
+        "status": "success",
+        "fact_id": fact_id,
+        "message": "Factual claim saved permanently in database."
+    })
+
 @app.route('/api/sample-demo', methods=['GET'])
 def sample_demo():
     """
@@ -243,6 +436,7 @@ def sample_demo():
         }
 
     doc_id = "sample_rental_demo_2026"
+    user_id = request.headers.get('X-User-ID') or "demo_user"
     chunks = RAGService.chunk_text(extracted["raw_text"])
     
     DOCUMENT_CACHE[doc_id] = {
@@ -254,6 +448,9 @@ def sample_demo():
         "chunks": chunks,
         "created_at": time.time()
     }
+
+    # Save to SQLite DB
+    DatabaseService.save_document(doc_id, user_id, "Sample_Indian_Rental_Agreement.txt", extracted["doc_type_hint"], extracted["raw_text"])
     
     return jsonify({
         "doc_id": doc_id,
@@ -265,11 +462,13 @@ def sample_demo():
 
 @app.route('/api/upload', methods=['POST'])
 def upload_document():
+    req_json = request.get_json(silent=True) or {}
+    user_id = _get_request_user_id(req_json) or request.form.get('user_id') or "anonymous"
+
     if 'file' not in request.files:
         # Check text upload
-        data = request.get_json(silent=True) or {}
-        text_content = data.get('text', '')
-        raw_filename = data.get('filename', 'Pasted_Legal_Document.txt')
+        text_content = req_json.get('text', '')
+        raw_filename = req_json.get('filename', 'Pasted_Legal_Document.txt')
         filename = sanitize_upload_filename(raw_filename)
         
         if not text_content.strip():
@@ -321,6 +520,9 @@ def upload_document():
         "created_at": time.time()
     }
 
+    # Save permanently to SQLite Database
+    DatabaseService.save_document(doc_id, user_id, filename, extracted["doc_type_hint"], extracted["raw_text"])
+
     return jsonify({
         "doc_id": doc_id,
         "filename": filename,
@@ -334,6 +536,7 @@ def upload_document():
 def upload_website_link():
     """Fetch public webpage text and make it available to the normal AI analysis flow."""
     data = request.get_json(silent=True) or {}
+    user_id = _get_request_user_id(data) or "anonymous"
     url = (data.get("url") or "").strip()
     if not url:
         return jsonify({"error": "A website link is required."}), 400
@@ -366,6 +569,10 @@ def upload_website_link():
         "doc_type": extracted["doc_type_hint"],
         "chunks": RAGService.chunk_text(raw_text)
     }
+
+    # Save permanently to SQLite Database
+    DatabaseService.save_document(doc_id, user_id, filename, extracted["doc_type_hint"], raw_text)
+
     return jsonify({
         "doc_id": doc_id,
         "filename": filename,
@@ -380,8 +587,27 @@ def analyze_document():
     doc_id = data.get('doc_id')
     doc_type = data.get('doc_type')
     language = data.get('language', 'en')
+    user_id = _get_request_user_id(data)
 
-    if not doc_id or doc_id not in DOCUMENT_CACHE:
+    if not doc_id:
+        return jsonify({"error": "doc_id is required"}), 400
+
+    # Retrieve from DOCUMENT_CACHE or SQLite DB
+    if doc_id not in DOCUMENT_CACHE:
+        db_doc = DatabaseService.get_document(doc_id)
+        if db_doc:
+            DOCUMENT_CACHE[doc_id] = {
+                "filename": db_doc["filename"],
+                "raw_text": db_doc["raw_text"],
+                "pages": [{"page_num": 1, "text": db_doc["raw_text"]}],
+                "total_pages": 1,
+                "doc_type": db_doc["doc_type"],
+                "chunks": RAGService.chunk_text(db_doc["raw_text"]),
+                "analysis": db_doc.get("analysis"),
+                "created_at": time.time()
+            }
+
+    if doc_id not in DOCUMENT_CACHE:
         return jsonify({"error": "Invalid or expired document session ID"}), 404
 
     cached_doc = DOCUMENT_CACHE[doc_id]
@@ -395,6 +621,10 @@ def analyze_document():
             language=language
         )
         cached_doc["analysis"] = analysis_result
+        
+        # Save analysis permanently to SQLite DB
+        DatabaseService.update_document_analysis(doc_id, analysis_result)
+        
         return jsonify(analysis_result)
     except Exception as e:
         logger.error(f"Document analysis failed: {e}")
@@ -560,6 +790,7 @@ def add_evidence_item():
     if not name:
         return jsonify({"error": "Evidence item name is required"}), 400
 
+    user_id = _get_request_user_id(data)
     item = EvidenceService.add_evidence_item(
         doc_id=doc_id,
         issue_id=issue_id,
@@ -568,6 +799,8 @@ def add_evidence_item():
         linked_doc_id=linked_doc_id,
         notes=notes
     )
+    if user_id:
+        DatabaseService.save_evidence_item(user_id, doc_id, name, status)
     return jsonify(item), 201
 
 @app.route('/api/evidence/item/<item_id>', methods=['PUT'])
@@ -804,10 +1037,15 @@ cleanup_thread.start()
 def delete_account():
     data = request.get_json(silent=True) or {}
     doc_id = data.get('doc_id')
+    user_id = _get_request_user_id(data)
 
-    # Instantly purge document session if active
+    # Instantly purge document session from memory if active
     if doc_id and doc_id in DOCUMENT_CACHE:
         DOCUMENT_CACHE.pop(doc_id, None)
+
+    # Permanently delete all user records from SQLite database
+    if user_id:
+        DatabaseService.delete_user_data(user_id)
 
     return jsonify({
         "status": "success",

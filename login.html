@@ -263,6 +263,28 @@
             color: #b42323;
         }
 
+        .input-error-msg {
+            color: #dc2626;
+            font-size: 11px;
+            margin-top: 5px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .input-error-msg.visible {
+            display: block;
+        }
+
+        input.field-invalid {
+            border-color: #dc2626 !important;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
+        }
+
+        input.field-valid {
+            border-color: #16a34a !important;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15) !important;
+        }
+
         .login-link {
             text-align: center;
             margin-top: 23px;
@@ -535,7 +557,7 @@
                 <span data-i18n="orDivider">OR</span>
             </div>
 
-            <form id="loginForm">
+            <form id="loginForm" novalidate>
                 <div class="group">
                     <label for="email" data-i18n="emailLabel">Email Address</label>
 
@@ -547,6 +569,7 @@
                         required
                         autocomplete="email"
                     >
+                    <span id="emailError" class="input-error-msg">Please enter a valid email address.</span>
                 </div>
 
                 <div class="group">
@@ -560,6 +583,7 @@
                         required
                         autocomplete="current-password"
                     >
+                    <span id="passwordError" class="input-error-msg">Password must be at least 6 characters.</span>
                 </div>
 
                 <div class="forgot">
@@ -662,7 +686,18 @@
                 localStorage.setItem('lawbuddyRegisteredUsers', JSON.stringify(savedUsers));
             } catch (e) {}
 
-            window.location.href = "app.html";
+            fetch('/api/user/sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: userObj.uid,
+                    email: userObj.email,
+                    name: userObj.name,
+                    auth_provider: userObj.uid && userObj.uid.startsWith('google') ? 'google' : 'email'
+                })
+            }).finally(() => {
+                window.location.href = "app.html";
+            });
         }
 
         function errorText(error) {
@@ -691,10 +726,97 @@
             return messages[error.code] || (error.message ? `${error.code || 'Error'}: ${error.message}` : "Login failed. Please try again.");
         }
 
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailError = document.getElementById("emailError");
+        const passwordError = document.getElementById("passwordError");
+
+        function validateEmailField() {
+            const val = emailInput ? emailInput.value.trim() : "";
+            if (!val) {
+                if (emailInput) {
+                    emailInput.classList.add("field-invalid");
+                    emailInput.classList.remove("field-valid");
+                }
+                if (emailError) {
+                    emailError.textContent = "Email address is required.";
+                    emailError.classList.add("visible");
+                }
+                return false;
+            } else if (!emailRegex.test(val)) {
+                if (emailInput) {
+                    emailInput.classList.add("field-invalid");
+                    emailInput.classList.remove("field-valid");
+                }
+                if (emailError) {
+                    emailError.textContent = "Please enter a valid email address (e.g. user@example.com).";
+                    emailError.classList.add("visible");
+                }
+                return false;
+            } else {
+                if (emailInput) {
+                    emailInput.classList.remove("field-invalid");
+                    emailInput.classList.add("field-valid");
+                }
+                if (emailError) emailError.classList.remove("visible");
+                return true;
+            }
+        }
+
+        function validatePasswordField() {
+            const val = passwordInput ? passwordInput.value : "";
+            if (!val) {
+                if (passwordInput) {
+                    passwordInput.classList.add("field-invalid");
+                    passwordInput.classList.remove("field-valid");
+                }
+                if (passwordError) {
+                    passwordError.textContent = "Password is required.";
+                    passwordError.classList.add("visible");
+                }
+                return false;
+            } else if (val.length < 6) {
+                if (passwordInput) {
+                    passwordInput.classList.add("field-invalid");
+                    passwordInput.classList.remove("field-valid");
+                }
+                if (passwordError) {
+                    passwordError.textContent = "Password must be at least 6 characters.";
+                    passwordError.classList.add("visible");
+                }
+                return false;
+            } else {
+                if (passwordInput) {
+                    passwordInput.classList.remove("field-invalid");
+                    passwordInput.classList.add("field-valid");
+                }
+                if (passwordError) passwordError.classList.remove("visible");
+                return true;
+            }
+        }
+
+        if (emailInput) {
+            emailInput.addEventListener("input", validateEmailField);
+            emailInput.addEventListener("blur", validateEmailField);
+        }
+        if (passwordInput) {
+            passwordInput.addEventListener("input", validatePasswordField);
+            passwordInput.addEventListener("blur", validatePasswordField);
+        }
+
         document
             .getElementById("loginForm")
             .addEventListener("submit", async (event) => {
                 event.preventDefault();
+
+                const isEmailValid = validateEmailField();
+                const isPasswordValid = validatePasswordField();
+
+                if (!isEmailValid || !isPasswordValid) {
+                    show("Please correct the highlighted errors before logging in.", "error");
+                    if (!isEmailValid && emailInput) emailInput.focus();
+                    else if (!isPasswordValid && passwordInput) passwordInput.focus();
+                    return;
+                }
 
                 const button = document.getElementById("loginButton");
 
@@ -705,23 +827,46 @@
                 const password = passwordInput.value;
 
                 try {
-                    const result = await signInWithEmailAndPassword(
-                        auth,
-                        email,
-                        password
-                    );
+                    // 1. Authenticate with backend API
+                    const res = await fetch('/api/user/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.user) {
+                        save(data.user);
+                        return;
+                    } else if (res.status === 401 || res.status === 400) {
+                        show(data.error || "Invalid email or password.", "error");
+                        return;
+                    }
+                } catch (apiErr) {
+                    console.warn("Backend API login check:", apiErr);
+                }
 
+                // 2. Firebase Auth Check
+                try {
+                    const result = await signInWithEmailAndPassword(auth, email, password);
                     save(result.user);
-                } catch (error) {
-                    console.warn("Firebase email login warning:", error);
-                    // Seamless fallback login so users are never blocked
+                    return;
+                } catch (fbError) {
+                    // 3. Local Registered User Check (Strict Verification)
                     const savedUsers = JSON.parse(localStorage.getItem('lawbuddyRegisteredUsers') || '{}');
-                    const userObj = savedUsers[email.toLowerCase()] || {
-                        uid: 'user_' + Date.now(),
-                        displayName: email.split('@')[0],
-                        email: email
-                    };
-                    save(userObj);
+                    const localUser = savedUsers[email.toLowerCase()];
+
+                    if (!localUser) {
+                        show("No account found with this email address. Please sign up first.", "error");
+                        return;
+                    }
+
+                    if (localUser.password && localUser.password !== password) {
+                        show("Invalid email or password. Please try again.", "error");
+                        return;
+                    }
+
+                    // Registered user with valid password
+                    save(localUser);
                 } finally {
                     button.disabled = false;
                     const currentLang = localStorage.getItem("lawbuddyLanguage") || "en";
@@ -730,6 +875,7 @@
                 }
             });
 
+        const googleLoginBtn = document.getElementById("googleLogin");
         const googleModalOverlay = document.getElementById("googleModalOverlay");
         const googleUserEmailInput = document.getElementById("googleUserEmailInput");
         const googleUserNameInput = document.getElementById("googleUserNameInput");
@@ -752,6 +898,14 @@
             }
         }
 
+        if (googleModalOverlay) {
+            googleModalOverlay.addEventListener("click", (e) => {
+                if (e.target === googleModalOverlay) {
+                    closeGoogleModal();
+                }
+            });
+        }
+
         if (googleModalCancelBtn) {
             googleModalCancelBtn.addEventListener("click", closeGoogleModal);
         }
@@ -769,7 +923,6 @@
             });
         }
 
-        const googleLoginBtn = document.getElementById("googleLogin");
         if (googleLoginBtn) {
             googleLoginBtn.addEventListener("click", async (e) => {
                 if (e) e.preventDefault();

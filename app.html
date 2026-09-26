@@ -23,6 +23,22 @@
         .table-custom th { background: #f8fafc; font-weight: 700; color: #1e293b; }
         .scenario-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
     </style>
+
+    <script>
+        // Synchronous Authentication Session Guard
+        (function() {
+            try {
+                const user = JSON.parse(localStorage.getItem('lawbuddyUser') || 'null');
+                if (!user || (!user.uid && !user.email)) {
+                    localStorage.removeItem('lawbuddyUser');
+                    window.location.replace('login.html');
+                }
+            } catch (e) {
+                localStorage.removeItem('lawbuddyUser');
+                window.location.replace('login.html');
+            }
+        })();
+    </script>
 </head>
 <body class="app-body">
 
@@ -82,6 +98,14 @@
                     <h4 id="activeDocName">No document loaded</h4>
                     <span class="doc-badge" id="activeDocTypeBadge">Pending Upload</span>
                 </div>
+            </div>
+
+            <!-- Saved Cases Selector -->
+            <div style="margin: 0 16px 16px 16px; background: #f8fafc; padding: 12px; border-radius: 12px; border: 1px solid #cbd5e1;">
+                <label for="userCasesDropdown" style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #475569; display: block; margin-bottom: 6px;">📁 Saved Cases (My Account)</label>
+                <select id="userCasesDropdown" style="width: 100%; padding: 8px; font-size: 13px; border-radius: 8px; border: 1px solid #94a3b8; background: #ffffff; font-weight: 500;">
+                    <option value="">-- Select Saved Case --</option>
+                </select>
             </div>
 
             <nav class="nav-menu">
@@ -208,6 +232,17 @@
                 </div>
 
                 <div id="caseReadiness" class="case-readiness"><p>Add a document or tell LawBuddy what happened to start your case list.</p></div>
+
+                <!-- Case Filter Bar for Evidence Matrix -->
+                <div class="card-box" style="margin-bottom: 16px; background: #e0f2fe; border: 1px solid #7dd3fc; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 280px;">
+                        <strong style="color: #0369a1; font-size: 14px;">📁 Filter Evidence by Case:</strong>
+                        <select id="evidenceCaseFilterSelect" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #0284c7; flex: 1; font-weight: 600; color: #0f172a; background: #ffffff;">
+                            <option value="">-- All Uploaded Cases --</option>
+                        </select>
+                    </div>
+                    <span id="caseCountBadge" style="font-size: 12px; background: #0284c7; color: #ffffff; padding: 4px 12px; border-radius: 12px; font-weight: 700;">0 Cases Loaded</span>
+                </div>
 
                 <div class="card-box" style="margin-bottom: 20px; background: #f8fafc; border: 1px solid #cbd5e1;">
                     <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">

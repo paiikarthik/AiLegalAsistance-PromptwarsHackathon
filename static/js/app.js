@@ -27,6 +27,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Authentication state is stored by login.html and signup.html.  Read it when
 // the workspace opens so the signed-in person's name is visible in the header.
+function handleLogout(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    localStorage.removeItem('lawbuddyUser');
+    sessionStorage.clear();
+    if (window.appState) {
+        window.appState.activeDocId = null;
+        window.appState.activeDocName = null;
+        window.appState.analysisData = null;
+    }
+    window.location.replace('login.html');
+}
+window.handleLogout = handleLogout;
+
 function initUserProfile() {
     const userNameLabel = document.getElementById('userNameLabel');
     if (!userNameLabel) return;
@@ -37,15 +50,151 @@ function initUserProfile() {
         if (name) {
             userNameLabel.textContent = name;
             userNameLabel.title = user.email || name;
+            syncUserDataAndRestoreCase(user);
+            loadUserCasesList(user);
+        } else {
+            handleLogout();
+            return;
         }
     } catch (error) {
         // A bad/stale localStorage value must not prevent the app from loading.
         console.warn('Could not read saved user profile:', error);
+        handleLogout();
+        return;
     }
 
     const logoutLink = document.querySelector('.logout-link');
     if (logoutLink) {
-        logoutLink.addEventListener('click', () => localStorage.removeItem('lawbuddyUser'));
+        logoutLink.addEventListener('click', handleLogout);
+    }
+
+    const userCasesDropdown = document.getElementById('userCasesDropdown');
+    if (userCasesDropdown) {
+        userCasesDropdown.addEventListener('change', (e) => {
+            if (e.target.value) switchToUserCase(e.target.value);
+        });
+    }
+
+    const evidenceCaseFilterSelect = document.getElementById('evidenceCaseFilterSelect');
+    if (evidenceCaseFilterSelect) {
+        evidenceCaseFilterSelect.addEventListener('change', (e) => {
+            if (e.target.value) {
+                switchToUserCase(e.target.value);
+            } else {
+                fetchAndRenderEvidenceMatrix();
+            }
+        });
+    }
+}
+
+async function loadUserCasesList(user) {
+    const userObj = user || JSON.parse(localStorage.getItem('lawbuddyUser') || 'null');
+    if (!userObj || !userObj.uid) return;
+    try {
+        const res = await apiFetch(`/api/user/cases?user_id=${encodeURIComponent(userObj.uid)}`);
+        const data = await readApiJson(res);
+        if (data && data.cases) {
+            populateUserCaseDropdowns(data.cases);
+        }
+    } catch (err) {
+        console.warn('Could not load user cases list:', err);
+    }
+}
+
+function populateUserCaseDropdowns(cases) {
+    const userCasesDropdown = document.getElementById('userCasesDropdown');
+    const evidenceCaseFilterSelect = document.getElementById('evidenceCaseFilterSelect');
+    const caseCountBadge = document.getElementById('caseCountBadge');
+
+    if (caseCountBadge) {
+        caseCountBadge.textContent = `${cases.length} Case${cases.length === 1 ? '' : 's'} Loaded`;
+    }
+
+    const optionsHtml = cases.length > 0
+        ? cases.map(c => `<option value="${c.doc_id}">${escapeHtml(c.filename)} (${c.doc_type || 'Case Doc'})</option>`).join('')
+        : '<option value="">No cases uploaded yet</option>';
+
+    if (userCasesDropdown) {
+        userCasesDropdown.innerHTML = `<option value="">-- Select Saved Case (${cases.length}) --</option>` + optionsHtml;
+        if (window.appState.activeDocId) {
+            userCasesDropdown.value = window.appState.activeDocId;
+        }
+    }
+
+    if (evidenceCaseFilterSelect) {
+        evidenceCaseFilterSelect.innerHTML = `<option value="">-- All Cases for My Account (${cases.length}) --</option>` + optionsHtml;
+        if (window.appState.activeDocId) {
+            evidenceCaseFilterSelect.value = window.appState.activeDocId;
+        }
+    }
+}
+
+async function switchToUserCase(docId) {
+    if (!docId) return;
+    showNotification("Loading selected case details...");
+    try {
+        const user = JSON.parse(localStorage.getItem('lawbuddyUser') || 'null');
+        const uid = user ? user.uid : '';
+        const res = await apiFetch(`/api/user/case/${docId}?user_id=${encodeURIComponent(uid)}`);
+        const data = await readApiJson(res);
+        if (data && data.doc) {
+            const doc = data.doc;
+            updateActiveDocSession(doc);
+
+            if (doc.analysis) {
+                window.appState.analysisData = doc.analysis;
+                renderClarityActionMap(doc.analysis.action_map, doc.analysis.summary);
+                renderApplicableLaws(doc.analysis.applicable_laws_and_sections);
+                renderClauseRisks(doc.analysis.clauses_and_risks);
+                renderFactsAndTimeline(doc.analysis);
+                renderCaseReadiness(doc.analysis);
+            }
+            fetchAndRenderEvidenceMatrix(doc.doc_id);
+
+            // Sync dropdown selection values
+            const userCasesDropdown = document.getElementById('userCasesDropdown');
+            const evidenceCaseFilterSelect = document.getElementById('evidenceCaseFilterSelect');
+            if (userCasesDropdown) userCasesDropdown.value = docId;
+            if (evidenceCaseFilterSelect) evidenceCaseFilterSelect.value = docId;
+
+            showNotification(`Active case switched to: ${doc.filename}`);
+        }
+    } catch (err) {
+        showNotification(`Could not load selected case: ${err.message}`, true);
+    }
+}
+
+async function syncUserDataAndRestoreCase(user) {
+    if (!user || !user.uid) return;
+    try {
+        const res = await apiFetch('/api/user/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: user.uid,
+                email: user.email,
+                name: user.name
+            })
+        });
+
+        const data = await readApiJson(res);
+        if (data && data.latest_doc) {
+            const doc = data.latest_doc;
+            updateActiveDocSession(doc);
+
+            if (doc.analysis) {
+                window.appState.analysisData = doc.analysis;
+                renderClarityActionMap(doc.analysis.action_map, doc.analysis.summary);
+                renderApplicableLaws(doc.analysis.applicable_laws_and_sections);
+                renderClauseRisks(doc.analysis.clauses_and_risks);
+                renderFactsAndTimeline(doc.analysis);
+                renderCaseReadiness(doc.analysis);
+                fetchAndRenderEvidenceMatrix(doc.doc_id);
+            }
+            showNotification(`Welcome back, ${user.name || 'User'}! Restored your active case data.`);
+        }
+    } catch (err) {
+        console.warn('Sync user data warning:', err);
     }
 }
 
@@ -84,7 +233,18 @@ function apiUrl(path) {
     return (isFileProtocol || isLocalPreview) ? `http://127.0.0.1:5000${path}` : path;
 }
 
-function apiFetch(path, options) {
+function apiFetch(path, options = {}) {
+    try {
+        const user = JSON.parse(localStorage.getItem('lawbuddyUser') || 'null');
+        if (user && user.uid) {
+            options.headers = options.headers || {};
+            if (options.headers instanceof Headers) {
+                options.headers.set('X-User-ID', user.uid);
+            } else {
+                options.headers['X-User-ID'] = user.uid;
+            }
+        }
+    } catch (e) {}
     return fetch(apiUrl(path), options);
 }
 
@@ -495,6 +655,8 @@ function updateActiveDocSession(data) {
 
     document.getElementById('activeDocName').innerText = data.filename;
     document.getElementById('activeDocTypeBadge').innerText = data.doc_type;
+
+    loadUserCasesList();
     
     const docALabel = document.getElementById('docANameLabel');
     if (docALabel) {
@@ -1302,8 +1464,9 @@ async function deleteAccount() {
     }
 
     localStorage.removeItem('lawbuddyUser');
+    sessionStorage.clear();
     alert("Your account session and all temporary document data have been permanently deleted.");
-    window.location.href = "login.html";
+    window.location.replace("login.html");
 }
 window.deleteAccount = deleteAccount;
 

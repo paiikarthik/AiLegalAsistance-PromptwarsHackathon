@@ -394,10 +394,40 @@
                 border-radius: 16px;
             }
 
-            .signup-card h2 {
-                font-size: 25px;
-            }
         }
+
+        .input-error-msg {
+            color: #dc2626;
+            font-size: 11px;
+            margin-top: 5px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .input-error-msg.visible {
+            display: block;
+        }
+
+        input.field-invalid {
+            border-color: #dc2626 !important;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
+        }
+
+        input.field-valid {
+            border-color: #16a34a !important;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15) !important;
+        }
+
+        .strength-bar {
+            height: 4px;
+            border-radius: 2px;
+            background: transparent;
+            margin-top: 6px;
+            transition: all 0.3s ease;
+        }
+        .strength-bar.weak { background: #ef4444; width: 33%; }
+        .strength-bar.medium { background: #f59e0b; width: 66%; }
+        .strength-bar.strong { background: #22c55e; width: 100%; }
 
         .google-modal-overlay {
             position: fixed;
@@ -632,7 +662,7 @@
                 <span data-i18n="orDivider">OR</span>
             </div>
 
-            <form id="signupForm">
+            <form id="signupForm" novalidate>
                 <div class="form-group">
                     <label for="fullName" data-i18n="fullNameLabel">
                         Full Name
@@ -647,6 +677,7 @@
                         autocomplete="name"
                         maxlength="100"
                     >
+                    <span id="fullNameError" class="input-error-msg">Full name is required (minimum 2 characters).</span>
                 </div>
 
                 <div class="form-group">
@@ -662,6 +693,7 @@
                         required
                         autocomplete="email"
                     >
+                    <span id="emailError" class="input-error-msg">Please enter a valid email address.</span>
                 </div>
 
                 <div class="form-group">
@@ -678,10 +710,8 @@
                         minlength="6"
                         autocomplete="new-password"
                     >
-
-                    <span class="password-hint" data-i18n="passwordHint">
-                        Use at least 6 characters.
-                    </span>
+                    <div id="passwordStrengthBar" class="strength-bar"></div>
+                    <span id="passwordError" class="input-error-msg">Use at least 6 characters.</span>
                 </div>
 
                 <div class="form-group">
@@ -698,6 +728,7 @@
                         minlength="6"
                         autocomplete="new-password"
                     >
+                    <span id="confirmPasswordError" class="input-error-msg">Passwords do not match.</span>
                 </div>
 
                 <label class="terms">
@@ -709,6 +740,7 @@
                         professional legal advice.
                     </span>
                 </label>
+                <span id="termsError" class="input-error-msg" style="margin-top:-10px; margin-bottom:12px;">You must agree to the Terms of Use to proceed.</span>
 
                 <button
                     type="submit"
@@ -855,9 +887,20 @@
 
             showMessage("Signed in successfully as " + userName + "!", "success");
 
-            setTimeout(() => {
-                window.location.href = "app.html";
-            }, 600);
+            fetch('/api/user/sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: userObj.uid,
+                    email: userObj.email,
+                    name: userObj.name,
+                    auth_provider: 'google'
+                })
+            }).finally(() => {
+                setTimeout(() => {
+                    window.location.href = "app.html";
+                }, 400);
+            });
         }
 
         const googleModalOverlay = document.getElementById("googleModalOverlay");
@@ -880,6 +923,14 @@
                 googleSignupButton.disabled = false;
                 googleSignupButton.style.opacity = "1";
             }
+        }
+
+        if (googleModalOverlay) {
+            googleModalOverlay.addEventListener("click", (e) => {
+                if (e.target === googleModalOverlay) {
+                    closeGoogleModal();
+                }
+            });
         }
 
         if (googleModalCancelBtn) {
@@ -924,36 +975,233 @@
             });
         }
 
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const fullNameInput = document.getElementById("fullName");
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        const confirmPasswordInput = document.getElementById("confirmPassword");
+        const termsInput = document.getElementById("terms");
+
+        const fullNameError = document.getElementById("fullNameError");
+        const emailError = document.getElementById("emailError");
+        const passwordError = document.getElementById("passwordError");
+        const confirmPasswordError = document.getElementById("confirmPasswordError");
+        const termsError = document.getElementById("termsError");
+        const strengthBar = document.getElementById("passwordStrengthBar");
+
+        function validateFullName() {
+            const val = fullNameInput ? fullNameInput.value.trim() : "";
+            if (!val) {
+                if (fullNameInput) {
+                    fullNameInput.classList.add("field-invalid");
+                    fullNameInput.classList.remove("field-valid");
+                }
+                if (fullNameError) {
+                    fullNameError.textContent = "Full name is required.";
+                    fullNameError.classList.add("visible");
+                }
+                return false;
+            } else if (val.length < 2) {
+                if (fullNameInput) {
+                    fullNameInput.classList.add("field-invalid");
+                    fullNameInput.classList.remove("field-valid");
+                }
+                if (fullNameError) {
+                    fullNameError.textContent = "Full name must be at least 2 characters.";
+                    fullNameError.classList.add("visible");
+                }
+                return false;
+            } else {
+                if (fullNameInput) {
+                    fullNameInput.classList.remove("field-invalid");
+                    fullNameInput.classList.add("field-valid");
+                }
+                if (fullNameError) fullNameError.classList.remove("visible");
+                return true;
+            }
+        }
+
+        function validateSignupEmail() {
+            const val = emailInput ? emailInput.value.trim().toLowerCase() : "";
+            if (!val) {
+                if (emailInput) {
+                    emailInput.classList.add("field-invalid");
+                    emailInput.classList.remove("field-valid");
+                }
+                if (emailError) {
+                    emailError.textContent = "Email address is required.";
+                    emailError.classList.add("visible");
+                }
+                return false;
+            } else if (!emailRegex.test(val)) {
+                if (emailInput) {
+                    emailInput.classList.add("field-invalid");
+                    emailInput.classList.remove("field-valid");
+                }
+                if (emailError) {
+                    emailError.textContent = "Please enter a valid email address (e.g. name@domain.com).";
+                    emailError.classList.add("visible");
+                }
+                return false;
+            } else {
+                // Check if already registered locally
+                const savedUsers = JSON.parse(localStorage.getItem('lawbuddyRegisteredUsers') || '{}');
+                if (savedUsers[val]) {
+                    if (emailInput) {
+                        emailInput.classList.add("field-invalid");
+                        emailInput.classList.remove("field-valid");
+                    }
+                    if (emailError) {
+                        emailError.textContent = "This email is already registered. Please log in instead.";
+                        emailError.classList.add("visible");
+                    }
+                    return false;
+                }
+                if (emailInput) {
+                    emailInput.classList.remove("field-invalid");
+                    emailInput.classList.add("field-valid");
+                }
+                if (emailError) emailError.classList.remove("visible");
+                return true;
+            }
+        }
+
+        function validateSignupPassword() {
+            const val = passwordInput ? passwordInput.value : "";
+            if (!val) {
+                if (passwordInput) {
+                    passwordInput.classList.add("field-invalid");
+                    passwordInput.classList.remove("field-valid");
+                }
+                if (passwordError) {
+                    passwordError.textContent = "Password is required.";
+                    passwordError.classList.add("visible");
+                }
+                if (strengthBar) strengthBar.className = "strength-bar";
+                return false;
+            } else if (val.length < 6) {
+                if (passwordInput) {
+                    passwordInput.classList.add("field-invalid");
+                    passwordInput.classList.remove("field-valid");
+                }
+                if (passwordError) {
+                    passwordError.textContent = "Password must be at least 6 characters.";
+                    passwordError.classList.add("visible");
+                }
+                if (strengthBar) strengthBar.className = "strength-bar weak";
+                return false;
+            } else {
+                if (passwordInput) {
+                    passwordInput.classList.remove("field-invalid");
+                    passwordInput.classList.add("field-valid");
+                }
+                if (passwordError) passwordError.classList.remove("visible");
+
+                // Check password strength
+                const hasUpper = /[A-Z]/.test(val);
+                const hasNumber = /[0-9]/.test(val);
+                const hasSpecial = /[^A-Za-z0-9]/.test(val);
+                if (val.length >= 8 && hasUpper && (hasNumber || hasSpecial)) {
+                    if (strengthBar) strengthBar.className = "strength-bar strong";
+                } else if (val.length >= 6 && (hasNumber || hasUpper)) {
+                    if (strengthBar) strengthBar.className = "strength-bar medium";
+                } else {
+                    if (strengthBar) strengthBar.className = "strength-bar weak";
+                }
+                return true;
+            }
+        }
+
+        function validateConfirmPassword() {
+            const pass = passwordInput ? passwordInput.value : "";
+            const confirm = confirmPasswordInput ? confirmPasswordInput.value : "";
+            if (!confirm) {
+                if (confirmPasswordInput) {
+                    confirmPasswordInput.classList.add("field-invalid");
+                    confirmPasswordInput.classList.remove("field-valid");
+                }
+                if (confirmPasswordError) {
+                    confirmPasswordError.textContent = "Please confirm your password.";
+                    confirmPasswordError.classList.add("visible");
+                }
+                return false;
+            } else if (pass !== confirm) {
+                if (confirmPasswordInput) {
+                    confirmPasswordInput.classList.add("field-invalid");
+                    confirmPasswordInput.classList.remove("field-valid");
+                }
+                if (confirmPasswordError) {
+                    confirmPasswordError.textContent = "Passwords do not match.";
+                    confirmPasswordError.classList.add("visible");
+                }
+                return false;
+            } else {
+                if (confirmPasswordInput) {
+                    confirmPasswordInput.classList.remove("field-invalid");
+                    confirmPasswordInput.classList.add("field-valid");
+                }
+                if (confirmPasswordError) confirmPasswordError.classList.remove("visible");
+                return true;
+            }
+        }
+
+        function validateTerms() {
+            if (!termsInput || !termsInput.checked) {
+                if (termsError) {
+                    termsError.textContent = "You must agree to the Terms of Use to create an account.";
+                    termsError.classList.add("visible");
+                }
+                return false;
+            } else {
+                if (termsError) termsError.classList.remove("visible");
+                return true;
+            }
+        }
+
+        if (fullNameInput) {
+            fullNameInput.addEventListener("input", validateFullName);
+            fullNameInput.addEventListener("blur", validateFullName);
+        }
+        if (emailInput) {
+            emailInput.addEventListener("input", validateSignupEmail);
+            emailInput.addEventListener("blur", validateSignupEmail);
+        }
+        if (passwordInput) {
+            passwordInput.addEventListener("input", () => {
+                validateSignupPassword();
+                if (confirmPasswordInput && confirmPasswordInput.value) validateConfirmPassword();
+            });
+            passwordInput.addEventListener("blur", validateSignupPassword);
+        }
+        if (confirmPasswordInput) {
+            confirmPasswordInput.addEventListener("input", validateConfirmPassword);
+            confirmPasswordInput.addEventListener("blur", validateConfirmPassword);
+        }
+        if (termsInput) {
+            termsInput.addEventListener("change", validateTerms);
+        }
+
         signupForm.addEventListener("submit", async (event) => {
             event.preventDefault();
 
-            const fullName = document
-                .getElementById("fullName")
-                .value
-                .trim();
+            const isNameValid = validateFullName();
+            const isEmailValid = validateSignupEmail();
+            const isPasswordValid = validateSignupPassword();
+            const isConfirmValid = validateConfirmPassword();
+            const isTermsValid = validateTerms();
 
-            const email = document
-                .getElementById("email")
-                .value
-                .trim();
-
-            const password = document.getElementById("password").value;
-
-            const confirmPassword =
-                document.getElementById("confirmPassword").value;
-
-            if (password !== confirmPassword) {
-                showMessage("Passwords do not match.", "error");
+            if (!isNameValid || !isEmailValid || !isPasswordValid || !isConfirmValid || !isTermsValid) {
+                showMessage("Please correct the highlighted errors before submitting.", "error");
+                if (!isNameValid && fullNameInput) fullNameInput.focus();
+                else if (!isEmailValid && emailInput) emailInput.focus();
+                else if (!isPasswordValid && passwordInput) passwordInput.focus();
+                else if (!isConfirmValid && confirmPasswordInput) confirmPasswordInput.focus();
                 return;
             }
 
-            if (password.length < 6) {
-                showMessage(
-                    "Password must contain at least 6 characters.",
-                    "error"
-                );
-                return;
-            }
+            const fullName = fullNameInput.value.trim();
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
 
             signupButton.disabled = true;
             signupButton.textContent = "Creating Account...";
@@ -961,24 +1209,35 @@
             const userSession = {
                 uid: 'user_' + Date.now(),
                 name: fullName,
-                email: email
+                email: email,
+                password: password
             };
 
             try {
-                const userCredential =
-                    await createUserWithEmailAndPassword(
-                        auth,
-                        email,
-                        password
-                    );
-
-                await updateProfile(userCredential.user, {
-                    displayName: fullName
+                const apiRes = await fetch('/api/user/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: userSession.uid,
+                        email: email,
+                        password: password,
+                        name: fullName
+                    })
                 });
+                const apiData = await apiRes.json();
+                if (apiRes.ok && apiData.user) {
+                    userSession.uid = apiData.user.user_id || apiData.user.uid || userSession.uid;
+                }
+            } catch (apiErr) {
+                console.warn("API signup warning:", apiErr);
+            }
 
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await updateProfile(userCredential.user, { displayName: fullName });
                 userSession.uid = userCredential.user.uid;
             } catch (error) {
-                console.warn("Firebase signup notice (using local user session fallback):", error);
+                console.warn("Firebase signup notice:", error);
             }
 
             // Save user in registered users db and active session
@@ -995,14 +1254,20 @@
                 })
             );
 
-            showMessage(
-                "Account created successfully! Logging you in...",
-                "success"
-            );
-
-            setTimeout(() => {
-                window.location.href = "app.html";
-            }, 800);
+            fetch('/api/user/sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: userSession.uid,
+                    email: email,
+                    name: fullName,
+                    auth_provider: 'email'
+                })
+            }).finally(() => {
+                setTimeout(() => {
+                    window.location.href = "app.html";
+                }, 400);
+            });
         });
     </script>
 

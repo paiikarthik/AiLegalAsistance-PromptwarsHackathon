@@ -18,6 +18,10 @@ uploads/*
 !uploads/.gitkeep
 scratch/
 
+# Database
+*.db
+data/*.db
+
 # IDE & System Files
 .vscode/
 .idea/
