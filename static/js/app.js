@@ -395,6 +395,15 @@ function switchTab(targetId) {
 
     if (selectedNav) selectedNav.classList.add('active');
     if (selectedPane) selectedPane.classList.add('active');
+
+    const floatBtn = document.getElementById('floatingChatContainer');
+    if (floatBtn) {
+        if (targetId === 'chatTab') {
+            floatBtn.classList.add('hidden');
+        } else {
+            floatBtn.classList.remove('hidden');
+        }
+    }
 }
 
 // Language Selector Handler

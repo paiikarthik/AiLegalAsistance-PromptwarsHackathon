@@ -996,15 +996,41 @@ DOCUMENT TEXT:
         }
         
         selected_map = qa_maps.get(lang_code, qa_maps['en'])
-        
-        if any(w in q_lower for w in ['notice', 'period', 'సూచన', 'అవధి', 'நோட்டீஸ்', 'നോട്ടീസ്', 'नोटीस', 'নোটিশ', 'નોટિસ']):
+
+        # Extract factual context snippet from document text if available
+        clean_doc_text = self.clean_extracted_text(text) if text else ""
+        extracted_lines = [l.strip() for l in clean_doc_text.splitlines() if len(l.strip()) > 20]
+        context_snippet = ""
+        if extracted_lines:
+            context_snippet = "\n\n📄 **Document Context:**\n" + "\n".join([f"• {l[:150]}" for l in extracted_lines[:3]])
+
+        action_guidance_map = {
+            'kn': "ನಿಮ್ಮ ಅಪ್‌ಲೋಡ್ ಮಾಡಿದ ದಾಖಲೆಯ ಆಧಾರದ ಮೇಲೆ ಮುಂದಿನ ಸೂಕ್ತ ಕ್ರಮಗಳು:\n1. 📜 ಒಪ್ಪಂದದ ಷರತ್ತುಗಳನ್ನು ಓದಿ: ನಿಯಮಗಳು, ನೋಟಿಸ್ ಅವಧಿ ಮತ್ತು ದಿನಾಂಕಗಳನ್ನು ಸ್ಪಷ್ಟವಾಗಿ ಪರಿಶೀಲಿಸಿ.\n2. 📄 ಸಾಕ್ಷ್ಯಗಳನ್ನು ಸಂಗ್ರಹಿಸಿ: ಬಾಡಿಗೆ ರಶೀದಿಗಳು, ಮುಂಗಡ ಪಾವತಿ ರಶೀದಿ ಹಾಗೂ ಇಮೇಲ್/ವಾಟ್ಸಾಪ್ ಸಂದೇಶಗಳನ್ನು ಭದ್ರವಾಗಿರಿಸಿ.\n3. ⏳ ಗಡುವುಗಳನ್ನು ಗಮನಿಸಿ: ನೋಟಿಸ್ ಅವಧಿ ಮುಗಿಯುವ ಮುನ್ನವೇ ಸೂಕ್ತ ಲಿಖಿತ ಉತ್ತರ ನೀಡಿ.\n4. 🧑‍⚖️ ಕಾನೂನು ನೆರವು: ವಕೀಲರನ್ನು ಅಥವಾ ಉಚಿತ ಕಾನೂನು ಸೇವಾ ಪ್ರಾಧಿಕಾರ (NALSA - nalsa.gov.in) ವನ್ನು ಸಂಪರ್ಕಿಸಿ.",
+            'hi': "आपके अपलोड किए गए दस्तावेज़ के आधार पर अगले अनुशंसित कदम:\n1. 📜 अनुबंध की समीक्षा: सभी शर्तों, नोटिस अवधि और भुगतान तिथियों को ध्यान से पढ़ें।\n2. 📄 साक्ष्य एकत्र करें: किराए की रसीदें, जमा प्रमाण और लिखित संदेशों को सुरक्षित रखें।\n3. ⏳ समय-सीमा का ध्यान रखें: किसी भी नोटिस की समय-सीमा समाप्त होने से पहले लिखित जवाब दें।\n4. 🧑‍⚖️ कानूनी परामर्श: विवाद या अनुचित मांग के मामले में वकील या NALSA कानूनी सहायता (nalsa.gov.in) से संपर्क करें।",
+            'te': "మీ పత్రం ఆధారంగా తదుపరి సిఫార్సు చేసిన చర్యలు:\n1. 📜 ఒప్పంద నియమాలను చదవండి: నోటీసు వ్యవధి మరియు చెల్లింపు తేదీలను పరిశీలించండి.\n2. 📄 రశీదులను భద్రపరచండి: అద్దె రశీదులు మరియు సందేశాలను దాచుకోండి.\n3. ⏳ గడువులను గమనించండి: నోటీసు గడువు లోగానే లిఖితపూర్వకంగా స్పందించండి.\n4. 🧑‍⚖️ న్యాయ సలహా: వివాదాలు ఉంటే లాయర్‌ను లేదా NALSA ఉచిత న్యాయ సహాయాన్ని (nalsa.gov.in) సంప్రదించండి.",
+            'ta': "உங்கள் ஆவணத்தின் அடிப்படையில் அடுத்த கட்ட நடவடிக்கைகள்:\n1. 📜 விதிகளை படிக்கவும்: அறிவிப்பு காலம் மற்றும் கட்டண தேதிகளை சரிபார்க்கவும்.\n2. 📄 சான்றுகளை பாதுகாக்கவும்: வாடகை ரசீதுகள் மற்றும் செய்திகளை சேமிக்கவும்.\n3. ⏳ கெடுவை கவனிக்கவும்: அறிவிப்பு முடிவதற்குள் எழுத்துப்பூர்வ பதில் அளிக்கவும்.\n4. 🧑‍⚖️ சட்ட ஆலோசனை: சிக்கல்கள் இருந்தால் வழக்கறிஞரையோ அல்லது NALSA இலவச சட்ட உதவி மையத்தையோ (nalsa.gov.in) அணுகவும்.",
+            'ml': "നിങ്ങളുടെ പ്രമാണത്തിന്റെ അടിസ്ഥാനത്തിൽ അടുത്ത ഘട്ടങ്ങൾ:\n1. 📜 കരാർ വ്യവസ്ഥകൾ വായിക്കുക: നോട്ടീസ് കാലാവധിയും തീയതികളും പരിശോധിക്കുക.\n2. 📄 രസീതുകൾ സൂക്ഷിക്കുക: വാടക രസീതുകളും സന്ദേശങ്ങളും സുരക്ഷിതമാക്കുക.\n3. ⏳ സമയപരിധി പാലിക്കുക: സമയപരിധിക്കുള്ളിൽ രേഖാമൂലം മറുപടി നൽകുക.\n4. 🧑‍⚖️ നിയമ സഹായം: ആവശ്യമെങ്കിൽ വക്കീലിനെയോ NALSA സൗജന്യ നിയമ സഹായ കേന്ദ്രത്തെയോ (nalsa.gov.in) സമീപിക്കുക.",
+            'mr': "तुमच्या दस्तऐवजानुसार पुढील पायऱ्या:\n1. 📜 अटी तपासा: नोटीस कालावधी आणि तारखा नीट वाचा.\n2. 📄 पुरावे सुरक्षित ठेवा: पावत्या व संदेश जपून ठेवा.\n3. ⏳ मुदतीचे भान ठेवा: मुदतीपूर्वी लेखी उत्तर द्या.\n4. 🧑‍⚖️ कायदेशीर सल्ला: गरज असल्यास वकिलांचा किंवा NALSA विनामूल्य कायदेशीर मदत केंद्राचा (nalsa.gov.in) सल्ला घ्या.",
+            'bn': "আপনার আপলোড করা নথির ভিত্তিতে পরবর্তী পদক্ষেপ:\n১. 📜 শর্তাবলী পড়ুন: নোটিশের সময়কাল ও তারিখগুলি পর্যালোচনা করুন।\n২. 📄 রসিদ সংরক্ষণ করুন: ভাড়ার রসিদ ও মেসেজগুলি সংরক্ষণ করুন।\n৩. ⏳ সময়সীমা মেনে চলুন: সময়সীমা শেষ হওয়ার আগে লিখিত জবাব দিন।\n৪. 🧑‍⚖️ আইনি পরামর্শ: প্রয়োজনে উকিল বা NALSA বিনামূল্যে আইনি সহায়তা পোর্টাল (nalsa.gov.in) ব্যবহার করুন।",
+            'gu': "તમારા દસ્તાવેજ મુજબ આગળના પગલાં:\n1. 📜 શરતોની સમીક્ષા: નોટિસ સમયગાળો અને તારીખો વાંચો.\n2. 📄 પુરાવા સાચવો: ચૂકવણીની રસીદો અને સંદેશાઓ સાચવો.\n3. ⏳ સમયમર્યાદાનું પાલન: સમયમર્યાદા પહેલાં લેખિત જવાબ આપો.\n4. 🧑‍⚖️ કાનૂની સલાહ: જરૂર પડે વકીલ અથવા NALSA કાનૂની સહાય (nalsa.gov.in) સંપર્ક કરો.",
+            'en': "Based on your uploaded document, here are your recommended immediate next steps:\n1. 📜 Review Document Obligations: Carefully read all clauses, notice windows, and payment dates.\n2. 📄 Gather Evidence & Receipts: Keep rent receipts, security deposit proofs, and written messages organized.\n3. ⏳ Track Deadlines: Respond in writing prior to any notice or cure deadline.\n4. 🧑‍⚖️ Legal Consultation: If you face a dispute or unfair eviction demand, consult an advocate or visit the NALSA Free Legal Aid Portal (nalsa.gov.in)."
+        }
+        action_text = action_guidance_map.get(lang_code, action_guidance_map['en'])
+
+        if any(w in q_lower for w in ['notice', 'period']):
             answer = selected_map['notice']
-        elif any(w in q_lower for w in ['rent', 'payment', 'బాడిగె', 'కిరాయి', 'വാടക', 'भाडे', 'ভাড়া', 'ભાડું']):
+        elif any(w in q_lower for w in ['rent', 'payment']):
             answer = selected_map['rent']
-        elif any(w in q_lower for w in ['deposit', 'security', 'డిపాజిట్', 'டெபாசிட்', 'നിക്ഷേപം', 'ठेव', 'আমানত', 'ડિપોઝિટ']):
+        elif any(w in q_lower for w in ['deposit', 'security']):
             answer = selected_map['deposit']
+        elif any(w in q_lower for w in ['what', 'do', 'how', 'proceed', 'action', 'next', 'step', 'explain', 'help', 'option']):
+            answer = action_text
         else:
             answer = selected_map['default']
+
+        if context_snippet and len(answer) < 800:
+            answer += context_snippet
+
 
         return {
             "answer": answer,
