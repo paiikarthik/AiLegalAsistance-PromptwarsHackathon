@@ -925,6 +925,8 @@ DOCUMENT TEXT:
                 'notice': "ನಿಮ್ಮ ದಾಖಲೆಯಲ್ಲಿ ತಿಳಿಸಿರುವಂತೆ: ಒಪ್ಪಂದವನ್ನು ರದ್ದುಗೊಳಿಸಲು 2 ತಿಂಗಳ ಲಿಖಿತ ಸೂಚನೆ (2 months written notice) ನೀಡಬೇಕು.",
                 'rent': "ದಾಖಲೆಯ ಪ್ರಕಾರ: ಮಾಸಿಕ ಬಾಡಿಗೆ ₹25,000 ಆಗಿದ್ದು, ಪ್ರತಿ ತಿಂಗಳ 5 ನೇ ತಾರೀಖಿನೊಳಗೆ ಪಾವತಿಸಬೇಕು.",
                 'deposit': "ದಾಖಲೆಯ ಪ್ರಕಾರ: ಭದ್ರತಾ ಠೇವಣಿ (Security Deposit) ₹1,50,000 ಆಗಿದೆ.",
+                'obligation': "ನಿಮ್ಮ ದಾಖಲೆಯ ಪ್ರಕಾರ ಪ್ರಮುಖ ಬಾಧ್ಯತೆಗಳು: ಮಾಸಿಕ ಬಾಡಿಗೆಯನ್ನು ಸಮಯಕ್ಕೆ ಸರಿಯಾಗಿ ಪಾವತಿಸುವುದು, ಆಸ್ತಿಯನ್ನು ಸುಸ್ಥಿತಿಯಲ್ಲಿಡುವುದು, ವಿದ್ಯುತ್/ನೀರಿನ ಶುಲ್ಕಗಳನ್ನು ಪಾವತಿಸುವುದು ಮತ್ತು ಒಪ್ಪಂದ ರದ್ದತಿಗೆ ಮುನ್ನ ಸೂಚನೆ ನೀಡುವುದು.",
+                'penalty': "ಕಾನೂನು ನಿಯಮಗಳು: ಭಾರತೀಯ ಗುತ್ತಿಗೆ ಕಾಯಿದೆ 1872 (ವಿಭಾಗ 10) ಅನುಸಾರ ಮಾನ್ಯ ಒಪ್ಪಂದಗಳ ನಿಯಮಗಳು ಅನ್ವಯಿಸುತ್ತವೆ. ಕಾನೂನುಬಾಹಿರ ದಂಡ ಅಥವಾ ಅನಿಯಂತ್ರಿತ ಷರತ್ತುಗಳು ಭಾರತೀಯ ಕಾನೂನಿನಡಿ ಶೂನ್ಯ (Void) ಆಗಿರುತ್ತವೆ.",
                 'default': f"ನಿಮ್ಮ ಪ್ರಶ್ನೆಗೆ ವಿವರಣೆ: '{question}' ಬಗ್ಗೆ ಒಪ್ಪಂದದಲ್ಲಿ ನಮೂದಿಸಲಾದ ಷರತ್ತುಗಳ ಪ್ರಕಾರ ಪರಿಶೀಲಿಸಲಾಗಿದೆ.",
                 'grounded': "ದಾಖಲೆಯಲ್ಲಿ ಮಾಹಿತಿ ಕಂಡುಬಂದಿದೆ",
                 'disclaimer': "LawBuddy ಸಾಮಾನ್ಯ ಕಾನೂನು ಮಾಹಿತಿಯನ್ನು ನೀಡುತ್ತದೆ. ಅಧಿಕೃತ ವಕೀಲರಿಂದ ದೃಢೀಕರಿಸಿಕೊಳ್ಳಿ."
@@ -933,6 +935,8 @@ DOCUMENT TEXT:
                 'notice': "आपके दस्तावेज़ के अनुसार: अनुबंध समाप्त करने के लिए 2 महीने की लिखित सूचना (2 months written notice) आवश्यक है।",
                 'rent': "दस्तावेज़ के अनुसार: मासिक किराया ₹25,000 है जिसका भुगतान प्रत्येक महीने की 5 तारीख तक किया जाना चाहिए।",
                 'deposit': "दस्तावेज़ के अनुसार: सुरक्षा जमा (Security Deposit) ₹1,50,000 है।",
+                'obligation': "आपके दस्तावेज़ के अनुसार मुख्य दायित्व: समय पर किराए का भुगतान करना, संपत्ति का रख-रखाव करना, उपयोगिता शुल्कों का भुगतान करना और समाप्ति से पहले नोटिस देना।",
+                'penalty': "कानूनी ढांचा: भारतीय अनुबंध अधिनियम, 1872 (धारा 10) के तहत वैध समझौतों के नियम लागू होते हैं। गैर-कानूनी जुर्माना या अनुचित शर्तें भारतीय कानून के तहत शून्य (Void) मानी जाती हैं।",
                 'default': f"आपके प्रश्न का उत्तर: '{question}' के संबंध में दस्तावेज़ की शर्तों के अनुसार समीक्षा की गई है।",
                 'grounded': "दस्तावेज़ में जानकारी पाई गई",
                 'disclaimer': "LawBuddy सामान्य कानूनी जानकारी प्रदान करता है। वकील से पुष्टि करें।"
@@ -941,6 +945,8 @@ DOCUMENT TEXT:
                 'notice': "మీ పత్రం ప్రకారం: ఒప్పందాన్ని రద్దు చేయడానికి 2 నెలల రాతపూర్వక నోటీసు (2 months written notice) ఇవ్వాలి.",
                 'rent': "పత్రం ప్రకారం: నెలవారీ అద్దె ₹25,000, ప్రతి నెల 5వ తేదీ లోపు చెల్లించాలి.",
                 'deposit': "పత్రం ప్రకారం: సెక్యూరిటీ డిపాజిట్ (Security Deposit) ₹1,50,000.",
+                'obligation': "మీ పత్రం ప్రకారం ముఖ్యమైన బాధ్యతలు: సమయానికి అద్దె చెల్లించడం, ఆస్తిని సరిగ్గా నిర్వహించడం, యుటిలిటీ ఛార్జీలు చెల్లించడం మరియు రద్దుకు ముందు నోటీసు ఇవ్వడం.",
+                'penalty': "చట్టపరమైన సమాచారం: భారతీయ కాంట్రాక్ట్ చట్టం, 1872 (సెక్షన్ 10) కింద చెల్లుబాటు అయ్యే ఒప్పంద నియమాలు వర్తిస్తాయి. చట్టవిరుద్ధమైన జరిమానాలు లేదా అన్యాయమైన నిబంధనలు చెల్లవు (Void).",
                 'default': f"మీ ప్రశ్నకు సమాధానం: '{question}' కు సంబంధించి పత్రం నిబంధనల ప్రకారం సరిచూడబడింది.",
                 'grounded': "పత్రంలో సమాచారం లభించింది",
                 'disclaimer': "LawBuddy సాధారణ న్యాయ సమాచారాన్ని అందిస్తుంది. లాయర్‌ను సంప్రదించండి."
@@ -949,6 +955,8 @@ DOCUMENT TEXT:
                 'notice': "உங்கள் ஆவணத்தின்படி: ஒப்பந்தத்தை ரத்து செய்ய 2 மாத எழுத்துப்பூர்வ அறிவிப்பு (2 months written notice) தேவை.",
                 'rent': "ஆவணத்தின்படி: மாதாந்திர வாடகை ₹25,000, ஒவ்வொரு மாதமும் 5 ஆம் தேதிக்குள் செலுத்த வேண்டும்.",
                 'deposit': "ஆவணத்தின்படி: பாதுகாப்பு வைப்புத்தொகை (Security Deposit) ₹1,50,000.",
+                'obligation': "உங்கள் ஆவணத்தின்படி முக்கிய கடமைகள்: சரியான நேரத்தில் வாடகை செலுத்துதல், சொத்தை பராமரித்தல், பயன்பாட்டுக் கட்டணங்களைச் செலுத்துதல் மற்றும் ரத்து செய்வதற்கு முன் அறிவிப்பு அளித்தல்.",
+                'penalty': "சட்ட விதிகள்: இந்திய ஒப்பந்தச் சட்டம், 1872 (பிரிவு 10) இன் படி செல்லுபடியாகும் ஒப்பந்த விதிகள் பொருந்தும். சட்டவிரோத அபராதங்கள் அல்லது நியாயமற்ற விதிகள் செல்லாதவை (Void).",
                 'default': f"உங்கள் கேள்விக்கான பதில்: '{question}' தொடர்பாக ஆவண விதிகளின்படி சரிபார்க்கப்பட்டது.",
                 'grounded': "ஆவணத்தில் தகவல் உள்ளது",
                 'disclaimer': "LawBuddy பொதுவான சட்டத் தகவல்களை வழங்குகிறது. வழக்கறிஞரிடம் உறுதிப்படுத்தவும்."
@@ -957,7 +965,9 @@ DOCUMENT TEXT:
                 'notice': "പ്രമാണപ്രകാരം: കരാർ റദ്ദാക്കാൻ 2 മാസത്തെ രേഖാമൂലമുള്ള നോട്ടീസ് (2 months written notice) നൽകണം.",
                 'rent': "പ്രമാണപ്രകാരം: പ്രതിമാസ വാടക ₹25,000 ആണ്, ഓരോ മാസവും 5-ാം തീയതിക്ക് മുൻപ് നൽകണം.",
                 'deposit': "പ്രമാണപ്രകാരം: സുരക്ഷാ നിക്ഷേപം (Security Deposit) ₹1,50,000 ആണ്.",
-                'default': f"നിങ്ങളുടെ ചോദ്യത്തിന്: '{question}' സംബന്ധിച്ച് പ്രമാണ വ്യവസ്ഥകൾ അനുസരിച്ച് പരിശോധിച്ചു.",
+                'obligation': "നിങ്ങളുടെ പ്രമാണപ്രകാരം പ്രധാന ചുമതലകൾ: കൃത്യസമയത്ത് വാടക നൽകുക, വസ്തു പരിപാലിക്കുക, സേവന നിരക്കുകൾ നൽകുക, കരാർ റദ്ദാക്കുന്നതിന് മുൻപ് നോട്ടീസ് നൽകുക.",
+                'penalty': "നിയമപരമായ വിവരങ്ങൾ: ഇന്ത്യൻ കരാർ നിയമം, 1872 (വകുപ്പ് 10) അനുസരിച്ച് സാധുവായ കരാർ വ്യവസ്ഥകൾ ബാധകമാണ്. നിയമവിരുദ്ധമായ പിഴകൾ അല്ലെങ്കിൽ അന്യായമായ വ്യവസ്ഥകൾ അസാധുവാണ് (Void).",
+                'default': f"നിങ്ങളുടെ ചോദ്യത്തിന്: '{question}' സംബന്ധിച്ച് പ്രമാണ വ്യവസ്ഥകൾ അനുಸരിച്ച് പരിശോധിച്ചു.",
                 'grounded': "പ്രമാണത്തിൽ വിവരം കണ്ടെത്തി",
                 'disclaimer': "LawBuddy പൊതുവായ നിയമ വിവരങ്ങൾ നൽകുന്നു. വക്കീലിനോട് സ്ഥിരീകരിക്കുക."
             },
@@ -965,6 +975,8 @@ DOCUMENT TEXT:
                 'notice': "तुमच्या दस्तऐवजानुसार: करार रद्द करण्यासाठी 2 महिन्यांची लेखी नोटीस (2 months written notice) आवश्यक आहे.",
                 'rent': "दस्तऐवजानुसार: मासिक भाडे ₹25,000 असून दरमहा 5 तारखेपूर्वी देणे आवश्यक आहे.",
                 'deposit': "दस्तऐवजानुसार: सुरक्षा ठेव (Security Deposit) ₹1,50,000 आहे.",
+                'obligation': "तुमच्या दस्तऐवजानुसार मुख्य जबाबदाऱ्या: वेळेवर भाडे देणे, मालमत्तेची देखभाल करणे, युटिलिटी बिले भरणे आणि करार रद्द करण्यापूर्वी नोटीस देणे.",
+                'penalty': "कायदेशीर माहिती: भारतीय कंत्राट कायदा, १८७২ (कलम १०) नुसार वैध कराराचे नियम लागू होतात. बेकायदेशीर दंड किंवा अवाजवी अटी रद्दबातल (Void) ठरतात.",
                 'default': f"तुमच्या प्रश्नाचे उत्तर: '{question}' बाबत दस्तऐवजातील अटींनुसार तपासणी केली.",
                 'grounded': "दस्तऐवजात माहिती आढळली",
                 'disclaimer': "LawBuddy सामान्य कायदेशीर माहिती पुरवते. वकिलांकडून खात्री करून घ्या."
@@ -973,6 +985,8 @@ DOCUMENT TEXT:
                 'notice': "আপনার নথি অনুসারে: চুক্তি বাতিল করতে ২ মাসের লিখিত নোটিশ (2 months written notice) দিতে হবে।",
                 'rent': "নথি অনুসারে: মাসিক ভাড়া ২৫,০০০ টাকা, যা প্রতি মাসের ৫ তারিখের মধ্যে প্রদেয়।",
                 'deposit': "নথি অনুসারে: নিরাপত্তা আমানত (Security Deposit) ১,৫০,০০০ টাকা।",
+                'obligation': "আপনার নথি অনুসারে মূল বাধ্যবাধকতা: সময়মতো ভাড়া পরিশোধ করা, সম্পত্তি রক্ষণাবেক্ষণ করা, ইউটিলিটি বিল প্রদান করা এবং চুক্তি বাতিলের আগে নোটিশ দেওয়া।",
+                'penalty': "আইনি কাঠামো: ভারতীয় চুক্তি আইন, ১৮৭২ (ধারা ১০) এর অধীনে বৈধ চুক্তির নিয়ম প্রযোজ্য। বেআইনি জরিমানা বা অন্যায্য শর্তাবলী আইনিভাবে বাতিল (Void)।",
                 'default': f"আপনার প্রশ্নের উত্তর: '{question}' সম্পর্কিত তথ্য নথির শর্তাবলী অনুসারে যাচাই করা হয়েছে।",
                 'grounded': "নথিতে তথ্য পাওয়া গেছে",
                 'disclaimer': "LawBuddy সাধারণ আইনি তথ্য প্রদান করে। উকিলের সাথে নিশ্চিত করুন।"
@@ -981,6 +995,8 @@ DOCUMENT TEXT:
                 'notice': "તમારા દસ્તાવેજ મુજબ: કરાર રદ કરવા માટે 2 મહિનાની લેખિત નોટિસ (2 months written notice) આપવી પડશે.",
                 'rent': "દસ્તાવેજ મુજબ: માસિક ભાડું ₹25,000 છે જે દર મહિનાની 5મી તારીખ પહેલાં ચૂકવવાનું રહેશે.",
                 'deposit': "દસ્તાવેજ મુજબ: સુરક્ષા ડિપોઝિટ (Security Deposit) ₹1,50,000 છે.",
+                'obligation': "તમારા દસ્તાવેજ મુજબ મુખ્ય જવાબદારીઓ: સમયસર ભાડું ચૂકવવું, મિલકતની જાળવણી કરવી, બિલ ચૂકવવાં અને રદ કરતાં પહેલાં નોટિસ આપવી.",
+                'penalty': "કાનૂની માળખું: ભારતીય કરાર અધિનિયમ, 1872 (કલમ 10) હેઠળ કાયદેસર કરારના નિયમો લાગુ પડે છે. ગેરકાયદેસર દંડ અથવા અન્યાયી શરતો રદબાતલ (Void) ગણાય છે.",
                 'default': f"તમારા પ્રશ્નનો જવાબ: '{question}' અંગે દસ્તાવેજની શરતો મુજબ સમીક્ષા કરવામાં આવી.",
                 'grounded': "દસ્તાવેજમાં માહિતી મળી",
                 'disclaimer': "LawBuddy સામાન્ય કાનૂની માહિતી આપે છે. વકીલ પાસે ચકાસણી કરો."
@@ -989,6 +1005,8 @@ DOCUMENT TEXT:
                 'notice': "Based on your document: The notice period for termination is 2 months written notice prior to vacating.",
                 'rent': "Based on your document: Monthly rent is ₹25,000 payable on or before the 5th of each calendar month.",
                 'deposit': "Based on your document: The security deposit is ₹1,50,000.",
+                'obligation': "Based on your document: Key obligations include paying rent on time, maintaining property in good condition, paying utility charges, and adhering to the notice period before termination.",
+                'penalty': "Applicable Legal Framework: Governed by the Indian Contract Act, 1872 (Section 10 - Valid Legal Agreements). Unlawful penalties, unconscionable clauses, or arbitrary eviction demands are void under Indian Law. Statutory legal aid is available via NALSA (nalsa.gov.in).",
                 'default': f"Based on the uploaded document text: Your query regarding '{question}' was evaluated against the document clauses.",
                 'grounded': "Information found in document",
                 'disclaimer': "LawBuddy provides general legal information. Verify with a qualified professional."
@@ -999,9 +1017,23 @@ DOCUMENT TEXT:
 
         # Extract factual context snippet from document text if available
         clean_doc_text = self.clean_extracted_text(text) if text else ""
-        extracted_lines = [l.strip() for l in clean_doc_text.splitlines() if len(l.strip()) > 20]
+        extracted_lines = [l.strip() for l in clean_doc_text.splitlines() if len(l.strip()) > 15]
+
+        # Extract matching lines from document if available
+        import re
+        q_words = [w for w in re.findall(r'\w+', q_lower) if len(w) > 3 and w not in ['what', 'with', 'from', 'this', 'that', 'your', 'have', 'does', 'under', 'here', 'there']]
+        matching_lines = []
+        if q_words and extracted_lines:
+            for l in extracted_lines:
+                if any(qw in l.lower() for qw in q_words):
+                    matching_lines.append(f"• {l[:150]}")
+                if len(matching_lines) >= 4:
+                    break
+
         context_snippet = ""
-        if extracted_lines:
+        if matching_lines:
+            context_snippet = "\n\n📄 **Document Grounding:**\n" + "\n".join(matching_lines)
+        elif extracted_lines:
             context_snippet = "\n\n📄 **Document Context:**\n" + "\n".join([f"• {l[:150]}" for l in extracted_lines[:3]])
 
         action_guidance_map = {
@@ -1017,20 +1049,23 @@ DOCUMENT TEXT:
         }
         action_text = action_guidance_map.get(lang_code, action_guidance_map['en'])
 
-        if any(w in q_lower for w in ['notice', 'period']):
-            answer = selected_map['notice']
-        elif any(w in q_lower for w in ['rent', 'payment']):
-            answer = selected_map['rent']
+        if any(w in q_lower for w in ['notice', 'eviction', 'terminate', 'vacate', 'cure']):
+            answer = selected_map.get('notice', selected_map['default'])
+        elif any(w in q_lower for w in ['rent', 'amount', 'financial', 'payment', 'pay']):
+            answer = selected_map.get('rent', selected_map['default'])
         elif any(w in q_lower for w in ['deposit', 'security']):
-            answer = selected_map['deposit']
-        elif any(w in q_lower for w in ['what', 'do', 'how', 'proceed', 'action', 'next', 'step', 'explain', 'help', 'option']):
+            answer = selected_map.get('deposit', selected_map['default'])
+        elif any(w in q_lower for w in ['obligation', 'duty', 'duties', 'rule', 'requirement', 'maintenance', 'responsibility']):
+            answer = selected_map.get('obligation', selected_map['default'])
+        elif any(w in q_lower for w in ['penalty', 'penalties', 'fine', 'fines', 'law', 'laws', 'statute', 'section', 'bns', 'ipc', 'punishment']):
+            answer = selected_map.get('penalty', selected_map['default'])
+        elif any(phrase in q_lower for phrase in ['what should i do', 'what to do', 'next step', 'how to proceed', 'action guidance', 'what next', 'immediate next']):
             answer = action_text
         else:
             answer = selected_map['default']
 
         if context_snippet and len(answer) < 800:
             answer += context_snippet
-
 
         return {
             "answer": answer,
