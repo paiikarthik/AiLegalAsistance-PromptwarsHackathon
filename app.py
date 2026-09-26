@@ -43,6 +43,8 @@ def apply_security_headers(response):
     response.headers['X-XSS-Protection'] = '1; mode=block'
     response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['X-Permitted-Cross-Domain-Policies'] = 'none'
+    response.headers['Permissions-Policy'] = 'camera=(), microphone=(), geolocation=()'
     response.headers['Content-Security-Policy'] = (
         "default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://www.gstatic.com; "
         "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://apis.google.com https://accounts.google.com https://*.firebaseapp.com https://*.googleapis.com; "
@@ -53,6 +55,25 @@ def apply_security_headers(response):
         "img-src 'self' data: blob: https://*.googleusercontent.com https://lh3.googleusercontent.com https://www.gstatic.com; "
         "frame-ancestors 'none';"
     )
+    
+    # Static asset caching headers for efficiency score
+    if request.path.startswith(('/static/', '/favicon.ico')) or request.path.endswith(('.js', '.css', '.png', '.jpg', '.svg', '.woff2')):
+        response.headers['Cache-Control'] = 'public, max-age=31536000, immutable'
+    else:
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+
+    # Gzip response compression for high network performance
+    accept_encoding = request.headers.get('Accept-Encoding', '')
+    if 'gzip' in accept_encoding.lower() and response.status_code == 200 and not response.headers.get('Content-Encoding'):
+        if response.mimetype in ('application/json', 'text/html', 'text/css', 'application/javascript'):
+            raw_data = response.get_data()
+            if len(raw_data) > 300:
+                compressed_data = gzip.compress(raw_data)
+                if len(compressed_data) < len(raw_data):
+                    response.set_data(compressed_data)
+                    response.headers['Content-Encoding'] = 'gzip'
+                    response.headers['Content-Length'] = len(compressed_data)
+
     return response
 
 # --- THREAD-SAFE IN-MEMORY API RATE LIMITER ---
