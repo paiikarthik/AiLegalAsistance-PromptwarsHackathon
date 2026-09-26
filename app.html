@@ -116,6 +116,10 @@
                     <span class="icon">📋</span>
                     <span data-i18n="navMyCase">My Case</span>
                 </button>
+                <button class="nav-tab" data-target="chatTab">
+                    <span class="icon">💬</span>
+                    <span data-i18n="navChat">Case AI ChatBot</span>
+                </button>
             </nav>
 
             <div class="disclaimer-sidebar-box">
@@ -518,24 +522,39 @@
                 </div>
             </section>
 
-            <!-- TAB 8: DOCUMENT AI CHAT (RAG) -->
+            <!-- TAB 8: DOCUMENT & CASE AI CHATBOT (RAG) -->
             <section id="chatTab" class="tab-pane">
-                <div class="section-header">
-                    <h2>Document-Grounded AI Chat</h2>
-                    <p>Ask questions about your uploaded housing document. Answers are strictly grounded in extracted clauses.</p>
+                <div class="section-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <h2 data-i18n="chatTitle">💬 Case AI ChatBot</h2>
+                        <p data-i18n="chatSub">Ask questions about your uploaded housing document or case. Answers are strictly grounded in your case facts in your selected language.</p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="clearChatMessages()" data-i18n="chatClear" style="font-size: 12px; padding: 6px 12px;">🗑️ Clear Chat</button>
+                </div>
+
+                <!-- Quick Question Suggestion Chips -->
+                <div class="card-box" style="margin-bottom: 16px; background: #f0f9ff; border: 1px solid #bae6fd; padding: 12px 16px;">
+                    <strong style="font-size: 13px; color: #0369a1; display: block; margin-bottom: 8px;" data-i18n="chatSuggestionsTitle">💡 Suggested Questions for this Case:</strong>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="source-chip" onclick="sendSuggestedQuestion('What is the notice period mentioned in this document?')" data-i18n="chipNotice" style="cursor: pointer; background: #ffffff; color: #0284c7; border: 1px solid #38bdf8;">📌 Notice Period?</button>
+                        <button class="source-chip" onclick="sendSuggestedQuestion('What are the rent or financial payment requirements?')" data-i18n="chipRent" style="cursor: pointer; background: #ffffff; color: #0284c7; border: 1px solid #38bdf8;">📌 Amount / Rent?</button>
+                        <button class="source-chip" onclick="sendSuggestedQuestion('What are my main legal obligations and duties under this contract?')" data-i18n="chipObligations" style="cursor: pointer; background: #ffffff; color: #0284c7; border: 1px solid #38bdf8;">📌 Key Obligations?</button>
+                        <button class="source-chip" onclick="sendSuggestedQuestion('What penalties, fines, or legal statutory provisions apply?')" data-i18n="chipPenalties" style="cursor: pointer; background: #ffffff; color: #0284c7; border: 1px solid #38bdf8;">📌 Penalties & Laws?</button>
+                    </div>
                 </div>
 
                 <div class="chat-wrapper">
-                    <div id="chatMessages" class="chat-messages-box">
-                        <div class="chat-bubble ai">
-                            <strong>⚖️ LawBuddy AI Assistant:</strong>
-                            <p>Hello! Ask me any question about your uploaded document (e.g., <em>"What is the eviction cure period?"</em> or <em>"Are maintenance charges included in the rent arrears?"</em>).</p>
+                    <div id="chatMessages" class="chat-messages-box" style="min-height: 350px; max-height: 500px; overflow-y: auto; padding: 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                        <div class="chat-bubble ai" style="background: #ffffff; border: 1px solid #e2e8f0; padding: 14px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                            <strong>⚖️ LawBuddy Case AI Assistant:</strong>
+                            <p data-i18n="chatWelcome">Hello! Ask me any question about your case or uploaded document in your preferred language. (e.g., <em>"What is the eviction notice period?"</em> or <em>"What are my rights regarding the security deposit?"</em>).</p>
                         </div>
                     </div>
 
-                    <div class="chat-input-row">
-                        <input type="text" id="chatInput" placeholder="Ask a question about your uploaded legal document..." onkeydown="if(event.key==='Enter') sendChatMessage()">
-                        <button class="btn btn-primary" onclick="sendChatMessage()">Send 📤</button>
+                    <div class="chat-input-row" style="margin-top: 14px; display: flex; gap: 10px;">
+                        <input type="text" id="chatInput" data-i18n-placeholder="chatPlaceholder" placeholder="Type or speak your question about this case..." onkeydown="if(event.key==='Enter') sendChatMessage()" style="flex: 1; padding: 12px 16px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px;">
+                        <button class="btn btn-secondary" onclick="startVoiceInput('chatInput')" title="Speak your question in your local language" data-i18n="chatSpeak">🎤 Speak</button>
+                        <button class="btn btn-primary" onclick="sendChatMessage()" data-i18n="chatSend">Send 📤</button>
                     </div>
                 </div>
             </section>
@@ -657,6 +676,13 @@
                 <button class="btn btn-primary" onclick="closeWordExplainerModal()" data-i18n="btnGotIt">Got it!</button>
             </div>
         </div>
+    </div>
+
+    <!-- Floating Case AI ChatBot Launcher Button -->
+    <div id="floatingChatContainer" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
+        <button id="floatingChatBtn" onclick="switchTab('chatTab')" style="background: linear-gradient(135deg, #0284c7, #2563eb); color: #ffffff; border: none; padding: 14px 20px; border-radius: 30px; font-weight: 700; font-size: 14px; box-shadow: 0 4px 14px rgba(37,99,235,0.4); cursor: pointer; display: flex; align-items: center; gap: 8px; transition: transform 0.2s ease;">
+            💬 <span data-i18n="floatingChatLabel">Chat with Case AI</span>
+        </button>
     </div>
 
     <!-- Scripts -->

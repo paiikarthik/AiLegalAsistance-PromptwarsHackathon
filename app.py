@@ -637,7 +637,24 @@ def chat_with_document():
     question = (data.get('question') or data.get('query') or '').strip()
     language = data.get('language', 'en')
 
-    if not doc_id or doc_id not in DOCUMENT_CACHE:
+    if not doc_id:
+        return jsonify({"error": "doc_id is required"}), 400
+
+    if doc_id not in DOCUMENT_CACHE:
+        db_doc = DatabaseService.get_document(doc_id)
+        if db_doc:
+            DOCUMENT_CACHE[doc_id] = {
+                "filename": db_doc["filename"],
+                "raw_text": db_doc["raw_text"],
+                "pages": [{"page_num": 1, "text": db_doc["raw_text"]}],
+                "total_pages": 1,
+                "doc_type": db_doc["doc_type"],
+                "chunks": RAGService.chunk_text(db_doc["raw_text"]),
+                "analysis": db_doc.get("analysis"),
+                "created_at": time.time()
+            }
+
+    if doc_id not in DOCUMENT_CACHE:
         return jsonify({"error": "Invalid or expired document session ID"}), 404
 
     if not question:

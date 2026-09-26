@@ -274,29 +274,35 @@ DOCUMENT TEXT:
     def answer_question(self, text: str, question: str, chat_history: list = None, language: str = 'en') -> dict:
         """
         Answer user question strictly grounded in the uploaded document text (RAG Q&A).
+        Responds in the user's selected language across all 9 supported Indian languages.
         """
         target_lang_name = Config.SUPPORTED_LANGUAGES.get(language, language)
         
-        kannada_qa_extension = ""
-        if language in ('kn', 'kannada'):
-            kannada_qa_extension = """
-KANNADA Q&A GUIDELINES:
-- Answer in clear, polite, grammatically natural Kannada (ಸರಳ ಹಾಗೂ ಉದಾತ್ತ ಕನ್ನಡ).
-- Follow Kannada SOV sentence structure.
-- Retain key English legal terms in brackets (e.g. 'ನೋಟಿಸ್ ಅವಧಿ (Notice Period)').
-"""
+        qa_language_guidelines = {
+            'kn': "KANNADA Q&A GUIDELINES: Provide response in clear, fluent, grammatically flawless Kannada (ಸರಳ ಹಾಗೂ ಉದಾತ್ತ ಕನ್ನಡ). Follow SOV sentence structure. Retain key English legal terms in brackets.",
+            'hi': "HINDI Q&A GUIDELINES: Provide response in clear, polite, natural Hindi (सरल एवं स्पष्ट हिंदी). Retain key English legal terms in brackets.",
+            'ml': "MALAYALAM Q&A GUIDELINES: Provide response in clear, polite, natural Malayalam (ലളിതമായ മലയാളം). Retain key English legal terms in brackets.",
+            'te': "TELUGU Q&A GUIDELINES: Provide response in clear, polite, natural Telugu (సులభమైన తెలుగు). Retain key English legal terms in brackets.",
+            'ta': "TAMIL Q&A GUIDELINES: Provide response in clear, polite, natural Tamil (எளிய தமிழ்). Retain key English legal terms in brackets.",
+            'mr': "MARATHI Q&A GUIDELINES: Provide response in clear, polite, natural Marathi (सोपी मराठी). Retain key English legal terms in brackets.",
+            'gu': "GUJARATI Q&A GUIDELINES: Provide response in clear, polite, natural Gujarati (સરળ ગુજરાતી). Retain key English legal terms in brackets.",
+            'bn': "BENGALI Q&A GUIDELINES: Provide response in clear, polite, natural Bengali (সহজ বাংলা). Retain key English legal terms in brackets.",
+            'en': "ENGLISH Q&A GUIDELINES: Provide response in clear, accessible plain English."
+        }
+        lang_code = (language or 'en').lower().strip()
+        guideline = qa_language_guidelines.get(lang_code, qa_language_guidelines['en'])
 
         prompt = f"""
-You are LawBuddy, an AI Legal Assistant for Indian citizens.
+You are LawBuddy, an expert Indian Legal AI Assistant answering user queries about their legal document / case.
 Answer the user's question STRICTLY based on the provided document text.
 
 CRITICAL RULES:
-1. Base your answer ONLY on facts stated in the document text.
-2. If the information is not present in the document text, explicitly state: "This information was not found in the uploaded document." Do not invent or assume facts.
-3. Provide line/clause or page references whenever possible.
-4. Respond in {target_lang_name}. Keep key English legal terms where appropriate.
-{kannada_qa_extension}
-5. Provide a clear, helpful response with a list of grounded citations/sources.
+1. Base your answer ONLY on facts stated in the document text provided below.
+2. Respond completely in {target_lang_name}.
+3. {guideline}
+4. If the requested information is not present in the document text, explicitly state in {target_lang_name}: "This information was not found in the uploaded document." Do not invent or assume facts.
+5. Provide line/clause or page references whenever possible.
+6. Provide a clear, helpful response.
 
 QUESTION: {question}
 
